@@ -2,7 +2,7 @@ package binding
 
 import (
 	"github.com/kubemq-hub/builder/connector/bridges/target"
-	"github.com/kubemq-hub/builder/connector/common/properties"
+	"github.com/kubemq-hub/builder/connector/pkg/properties"
 	"github.com/kubemq-hub/builder/connector/targets/source"
 )
 

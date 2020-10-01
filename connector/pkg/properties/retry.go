@@ -2,7 +2,7 @@ package properties
 
 import (
 	"fmt"
-	"github.com/kubemq-hub/builder/connector/common/survey"
+	"github.com/kubemq-hub/builder/connector/pkg/survey"
 	"math"
 )
 

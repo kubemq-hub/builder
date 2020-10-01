@@ -3,7 +3,7 @@ package binding
 import (
 	"github.com/kubemq-hub/builder/connector/bridges/source"
 	"github.com/kubemq-hub/builder/connector/bridges/target"
-	"github.com/kubemq-hub/builder/connector/common/properties"
+	"github.com/kubemq-hub/builder/connector/pkg/properties"
 )
 
 type Binding struct {

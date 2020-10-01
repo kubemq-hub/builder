@@ -2,7 +2,7 @@ package source
 
 import (
 	"fmt"
-	"github.com/kubemq-hub/builder/connector/common/survey"
+	"github.com/kubemq-hub/builder/connector/pkg/survey"
 )
 
 type Connection struct {

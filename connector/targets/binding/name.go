@@ -1,6 +1,6 @@
 package binding
 
-import "github.com/kubemq-hub/builder/connector/common/survey"
+import "github.com/kubemq-hub/builder/connector/pkg/survey"
 
 type Name struct {
 	takenNames []string

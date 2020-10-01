@@ -2,7 +2,7 @@ package bridges
 
 import (
 	"github.com/kubemq-hub/builder/connector/bridges/binding"
-	"github.com/kubemq-hub/builder/connector/common/survey"
+	"github.com/kubemq-hub/builder/connector/pkg/survey"
 )
 
 type Builder struct {

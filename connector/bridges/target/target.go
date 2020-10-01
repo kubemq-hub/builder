@@ -1,7 +1,7 @@
 package target
 
 import (
-	"github.com/kubemq-hub/builder/connector/common/survey"
+	"github.com/kubemq-hub/builder/connector/pkg/survey"
 )
 
 type Target struct {
