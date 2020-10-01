@@ -1,6 +1,6 @@
 package survey
 
-type Entry interface {
+type Question interface {
 	Complete() error
 	Render(target interface{}) error
 }

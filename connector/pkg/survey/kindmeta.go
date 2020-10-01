@@ -22,9 +22,7 @@ func (k *KindMeta) complete() error {
 	switch k.Kind {
 	case "string":
 	case "int":
-	case "strings_map":
 	case "confirm":
-
 	default:
 		return fmt.Errorf("invalid kind")
 	}
