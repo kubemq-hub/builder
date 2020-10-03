@@ -1,4 +1,4 @@
-package builder
+package common
 
 import "github.com/kubemq-hub/builder/survey"
 

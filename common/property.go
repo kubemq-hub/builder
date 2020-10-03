@@ -1,4 +1,4 @@
-package builder
+package common
 
 type Property struct {
 	Name        string   `json:"name"`

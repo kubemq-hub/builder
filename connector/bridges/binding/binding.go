@@ -1,9 +1,9 @@
 package binding
 
 import (
+	"github.com/kubemq-hub/builder/common"
 	"github.com/kubemq-hub/builder/connector/bridges/source"
 	"github.com/kubemq-hub/builder/connector/bridges/target"
-	"github.com/kubemq-hub/builder/connector/pkg/properties"
 )
 
 type Binding struct {
@@ -70,7 +70,7 @@ func (b *Binding) Render() (*Binding, error) {
 		Render(); err != nil {
 		return nil, err
 	}
-	if b.Properties, err = properties.NewProperties().
+	if b.Properties, err = common.NewProperties().
 		Render(); err != nil {
 		return nil, err
 	}

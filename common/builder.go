@@ -1,35 +1,38 @@
-package bridges
+package common
 
 import (
+	"fmt"
 	"github.com/ghodss/yaml"
-	"github.com/kubemq-hub/builder/connector/bridges/binding"
 	"github.com/kubemq-hub/builder/survey"
 )
 
 type Builder struct {
-	Bindings          []*binding.Binding `json:"bindings"`
+	Bindings          []*Binding `json:"bindings"`
+	manifest          *Manifest
+	loadedOptions     DefaultOptions
 	takenBindingNames []string
-	takenSourceNames  []string
-	takenTargetNames  []string
-	addressOptions    []string
 }
 
 func NewBuilder() *Builder {
 	return &Builder{}
 }
-func (b *Builder) SetAddress(value []string) *Builder {
-	b.addressOptions = value
+
+func (b *Builder) SetManifest(value *Manifest) *Builder {
+	b.manifest = value
 	return b
 }
-
+func (b *Builder) SetOptions(value DefaultOptions) *Builder {
+	b.loadedOptions = value
+	return b
+}
 func (b *Builder) askAddBinding() (bool, error) {
 	val := false
 	err := survey.NewBool().
 		SetKind("bool").
 		SetName("add-binding").
-		SetMessage("Would you like to add another bindings bridge").
+		SetMessage("Would you like to add another binding").
 		SetDefault("false").
-		SetHelp("Add new bindings bridge").
+		SetHelp("Add new binding").
 		SetRequired(true).
 		Render(&val)
 	if err != nil {
@@ -37,23 +40,26 @@ func (b *Builder) askAddBinding() (bool, error) {
 	}
 	return val, nil
 }
+
 func (b *Builder) addBinding() error {
-	if bnd, err := binding.NewBinding().
-		SetAddress(b.addressOptions).
+	if bnd, err := NewBinding().
+		SetOptions(b.loadedOptions).
+		SetSourcesList(b.manifest.Sources).
+		SetTargetsList(b.manifest.Targets).
 		SetTakenBindingNames(b.takenBindingNames).
-		SetTakenSourceNames(b.takenSourceNames).
-		SetTakenTargetsNames(b.takenTargetNames).
 		Render(); err != nil {
 		return err
 	} else {
 		b.Bindings = append(b.Bindings, bnd)
-		b.takenBindingNames = append(b.takenBindingNames, bnd.BindingName())
-		b.takenSourceNames = append(b.takenSourceNames, bnd.SourceName())
-		b.takenTargetNames = append(b.takenTargetNames, bnd.TargetName())
+		b.takenBindingNames = append(b.takenBindingNames, bnd.Name)
 	}
 	return nil
 }
-func (b *Builder) Render() (*Builder, error) {
+
+func (b *Builder) Render() ([]byte, error) {
+	if b.manifest == nil {
+		return nil, fmt.Errorf("inavlid manifest")
+	}
 	err := b.addBinding()
 	if err != nil {
 		return nil, err
@@ -61,7 +67,7 @@ func (b *Builder) Render() (*Builder, error) {
 	for {
 		addMore, err := b.askAddBinding()
 		if err != nil {
-			return b, nil
+			return nil, err
 		}
 		if addMore {
 			err := b.addBinding()
@@ -73,7 +79,7 @@ func (b *Builder) Render() (*Builder, error) {
 		}
 	}
 done:
-	return b, nil
+	return yaml.Marshal(b)
 }
 
 func (b *Builder) Yaml() ([]byte, error) {

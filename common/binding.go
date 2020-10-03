@@ -1,4 +1,4 @@
-package builder
+package common
 
 import (
 	"fmt"
@@ -127,6 +127,10 @@ func (b *Binding) Render() (*Binding, error) {
 		return nil, err
 	}
 	if err := b.askTarget(); err != nil {
+		return nil, err
+	}
+	if b.Properties, err = NewProperties().
+		Render(); err != nil {
 		return nil, err
 	}
 	return b, nil

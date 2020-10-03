@@ -1,4 +1,4 @@
-package builder
+package common
 
 type DefaultOptions map[string][]string
 

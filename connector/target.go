@@ -1,17 +1,17 @@
-package targets
+package connector
 
 import (
 	"fmt"
 	"github.com/ghodss/yaml"
-	"github.com/kubemq-hub/builder/connector/pkg/builder"
+	"github.com/kubemq-hub/builder/common"
 )
 
 type Target struct {
 	manifestData   []byte
-	defaultOptions builder.DefaultOptions
+	defaultOptions common.DefaultOptions
 }
 
-func NewSource() *Target {
+func NewTarget() *Target {
 	return &Target{}
 }
 
@@ -20,7 +20,7 @@ func (s *Target) SetManifest(value []byte) *Target {
 	return s
 }
 
-func (s *Target) SetDefault(value builder.DefaultOptions) *Target {
+func (s *Target) SetDefaultOptions(value common.DefaultOptions) *Target {
 	s.defaultOptions = value
 	return s
 }
@@ -29,11 +29,11 @@ func (s *Target) Render() ([]byte, error) {
 	if s.manifestData == nil {
 		return nil, fmt.Errorf("invalid manifest")
 	}
-	m, err := builder.LoadManifest(s.manifestData)
+	m, err := common.LoadManifest(s.manifestData)
 	if err != nil {
 		return nil, err
 	}
-	if b, err := builder.NewBuilder().
+	if b, err := common.NewBuilder().
 		SetManifest(m).
 		SetOptions(s.defaultOptions).
 		Render(); err != nil {
