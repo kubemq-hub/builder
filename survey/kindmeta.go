@@ -22,7 +22,10 @@ func (k *KindMeta) complete() error {
 	switch k.Kind {
 	case "string":
 	case "int":
-	case "confirm":
+	case "bool":
+	case "list":
+	case "multiline":
+	case "editor":
 	default:
 		return fmt.Errorf("invalid kind")
 	}

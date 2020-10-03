@@ -1,7 +1,7 @@
 package target
 
 import (
-	"github.com/kubemq-hub/builder/connector/pkg/survey"
+	"github.com/kubemq-hub/builder/survey"
 )
 
 type Target struct {
@@ -27,8 +27,8 @@ func (t *Target) SetTakenNames(value []string) *Target {
 }
 func (t *Target) askAddConnection() (bool, error) {
 	val := false
-	err := survey.NewConfirm().
-		SetKind("confirm").
+	err := survey.NewBool().
+		SetKind("bool").
 		SetName("add-connection").
 		SetMessage("Would you like to add another target connection").
 		SetDefault("false").

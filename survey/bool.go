@@ -2,54 +2,54 @@ package survey
 
 import "github.com/AlecAivazis/survey/v2"
 
-type Confirm struct {
+type Bool struct {
 	*KindMeta
 	*ObjectMeta
 	askOpts []survey.AskOpt
 }
 
-func (c *Confirm) NewKindMeta() *Confirm {
+func (c *Bool) NewKindMeta() *Bool {
 	c.KindMeta = NewKindMeta()
 	return c
 }
-func (c *Confirm) NewObjectMeta() *Confirm {
+func (c *Bool) NewObjectMeta() *Bool {
 	c.ObjectMeta = NewObjectMeta()
 	return c
 }
-func (c *Confirm) SetKind(value string) *Confirm {
+func (c *Bool) SetKind(value string) *Bool {
 	c.KindMeta.SetKind(value)
 	return c
 }
 
-func (c *Confirm) SetName(value string) *Confirm {
+func (c *Bool) SetName(value string) *Bool {
 	c.ObjectMeta.SetName(value)
 	return c
 }
 
-func (c *Confirm) SetMessage(value string) *Confirm {
+func (c *Bool) SetMessage(value string) *Bool {
 	c.ObjectMeta.SetMessage(value)
 	return c
 }
 
-func (c *Confirm) SetDefault(value string) *Confirm {
+func (c *Bool) SetDefault(value string) *Bool {
 	c.ObjectMeta.SetDefault(value)
 	return c
 }
 
-func (c *Confirm) SetHelp(value string) *Confirm {
+func (c *Bool) SetHelp(value string) *Bool {
 	c.ObjectMeta.SetHelp(value)
 	return c
 }
-func (c *Confirm) SetRequired(value bool) *Confirm {
+func (c *Bool) SetRequired(value bool) *Bool {
 	c.ObjectMeta.SetRequired(value)
 	return c
 }
 
-func (c *Confirm) Complete() error {
+func (c *Bool) Complete() error {
 	return nil
 }
 
-func (c *Confirm) Render(target interface{}) error {
+func (c *Bool) Render(target interface{}) error {
 	if err := c.Complete(); err != nil {
 		return err
 	}
@@ -57,18 +57,20 @@ func (c *Confirm) Render(target interface{}) error {
 	if c.Default == "true" {
 		defValue = true
 	}
-	confirm := &survey.Confirm{
+	boolVal := &survey.Confirm{
 		Renderer: survey.Renderer{},
 		Message:  c.Message,
 		Default:  defValue,
 		Help:     c.Help,
 	}
-	return survey.AskOne(confirm, target, c.askOpts...)
+	return survey.AskOne(boolVal, target, c.askOpts...)
 }
 
-func NewConfirm() *Confirm {
-	return &Confirm{
+func NewBool() *Bool {
+	return &Bool{
 		KindMeta:   NewKindMeta(),
 		ObjectMeta: NewObjectMeta(),
 	}
 }
+
+var _ Question = NewBool()

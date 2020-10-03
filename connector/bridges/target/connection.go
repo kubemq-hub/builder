@@ -2,7 +2,7 @@ package target
 
 import (
 	"fmt"
-	"github.com/kubemq-hub/builder/connector/pkg/survey"
+	"github.com/kubemq-hub/builder/survey"
 	"math"
 )
 
@@ -26,7 +26,7 @@ func (c *Connection) SetAddress(value []string) *Connection {
 
 func (c *Connection) askAddress() error {
 	val := ""
-	err := survey.NewInput().
+	err := survey.NewString().
 		SetKind("string").
 		SetName("address").
 		SetMessage("Sets Kubemq connection address").
@@ -43,7 +43,7 @@ func (c *Connection) askAddress() error {
 }
 func (c *Connection) askDefaultChannel() error {
 	val := ""
-	err := survey.NewInput().
+	err := survey.NewString().
 		SetKind("string").
 		SetName("default_channel").
 		SetMessage("Sets target default channel").
@@ -59,7 +59,7 @@ func (c *Connection) askDefaultChannel() error {
 }
 func (c *Connection) askChannelList() error {
 	val := ""
-	err := survey.NewInput().
+	err := survey.NewString().
 		SetKind("string").
 		SetName("channels").
 		SetMessage("Sets target channels list separated by comma").
@@ -76,14 +76,13 @@ func (c *Connection) askChannelList() error {
 
 func (c *Connection) askExpirationSeconds() error {
 	val := 0
-	err := survey.NewInput().
+	err := survey.NewInt().
 		SetKind("int").
 		SetName("expiration_seconds").
 		SetMessage("Sets target queue message expiration seconds (0 - not expired)").
 		SetDefault("0").
 		SetHelp("Sets target queue message expiration seconds (0 - not expired)").
-		SetMin(0).
-		SetMax(math.MaxInt32).
+		SetRange(0, math.MaxInt32).
 		SetRequired(false).
 		Render(&val)
 	if err != nil {
@@ -98,14 +97,13 @@ func (c *Connection) askExpirationSeconds() error {
 
 func (c *Connection) askDelaySeconds() error {
 	val := 0
-	err := survey.NewInput().
+	err := survey.NewInt().
 		SetKind("int").
 		SetName("delay_seconds").
 		SetMessage("Sets target queue message delay seconds (0 - no delay)").
 		SetDefault("0").
 		SetHelp("Sets target queue message delay seconds (0 - no delay)").
-		SetMin(0).
-		SetMax(math.MaxInt32).
+		SetRange(0, math.MaxInt32).
 		SetRequired(false).
 		Render(&val)
 	if err != nil {
@@ -119,7 +117,7 @@ func (c *Connection) askDelaySeconds() error {
 
 func (c *Connection) askDeadLetterQueue() error {
 	val := ""
-	err := survey.NewInput().
+	err := survey.NewString().
 		SetKind("string").
 		SetName("dead_letter_queue").
 		SetMessage("Sets target dead letter queue routing channel").
@@ -133,14 +131,13 @@ func (c *Connection) askDeadLetterQueue() error {
 	if val != "" {
 		c.properties["dead_letter_queue"] = val
 		maxVal := 0
-		err := survey.NewInput().
+		err := survey.NewInt().
 			SetKind("int").
 			SetName("max_receive_count").
 			SetMessage("Sets target queue dead letter routing max receive fails").
 			SetDefault("1").
 			SetHelp("Sets target queue dead letter routing max receive fails").
-			SetMin(1).
-			SetMax(math.MaxInt32).
+			SetRange(1, math.MaxInt32).
 			SetRequired(true).
 			Render(&maxVal)
 		if err != nil {
@@ -153,7 +150,7 @@ func (c *Connection) askDeadLetterQueue() error {
 
 func (c *Connection) askTimeoutSeconds() error {
 	val := 0
-	err := survey.NewInput().
+	err := survey.NewInt().
 		SetKind("int").
 		SetName("timeout_seconds").
 		SetMessage("Sets target response timeout seconds").
@@ -172,7 +169,7 @@ func (c *Connection) askTimeoutSeconds() error {
 }
 func (c *Connection) askClientID() error {
 	val := ""
-	err := survey.NewInput().
+	err := survey.NewString().
 		SetKind("string").
 		SetName("client_id").
 		SetMessage("Sets target connection client id").
@@ -190,7 +187,7 @@ func (c *Connection) askClientID() error {
 }
 func (c *Connection) askAuthToken() error {
 	val := ""
-	err := survey.NewInput().
+	err := survey.NewString().
 		SetKind("string").
 		SetName("auth_token").
 		SetMessage("Sets source connection authentication token").

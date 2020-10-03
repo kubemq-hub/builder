@@ -1,6 +1,6 @@
 package binding
 
-import "github.com/kubemq-hub/builder/connector/pkg/survey"
+import "github.com/kubemq-hub/builder/survey"
 
 type Name struct {
 	takenNames []string
@@ -15,7 +15,7 @@ func (n *Name) SetTakenNames(value []string) *Name {
 }
 func (n *Name) Render() (string, error) {
 	val := ""
-	err := survey.NewInput().
+	err := survey.NewString().
 		SetKind("string").
 		SetName("name").
 		SetMessage("Set Binding name").

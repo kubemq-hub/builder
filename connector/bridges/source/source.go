@@ -1,7 +1,7 @@
 package source
 
 import (
-	"github.com/kubemq-hub/builder/connector/pkg/survey"
+	"github.com/kubemq-hub/builder/survey"
 )
 
 type Source struct {
@@ -27,8 +27,8 @@ func (s *Source) SetTakenNames(value []string) *Source {
 }
 func (s *Source) askAddConnection() (bool, error) {
 	val := false
-	err := survey.NewConfirm().
-		SetKind("confirm").
+	err := survey.NewBool().
+		SetKind("bool").
 		SetName("add-connection").
 		SetMessage("Would you like to add another source connection").
 		SetDefault("false").

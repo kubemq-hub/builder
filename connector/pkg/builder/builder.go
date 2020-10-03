@@ -3,7 +3,7 @@ package builder
 import (
 	"fmt"
 	"github.com/ghodss/yaml"
-	"github.com/kubemq-hub/builder/connector/pkg/survey"
+	"github.com/kubemq-hub/builder/survey"
 )
 
 type Builder struct {
@@ -27,8 +27,8 @@ func (b *Builder) SetOptions(value DefaultOptions) *Builder {
 }
 func (b *Builder) askAddBinding() (bool, error) {
 	val := false
-	err := survey.NewConfirm().
-		SetKind("confirm").
+	err := survey.NewBool().
+		SetKind("bool").
 		SetName("add-binding").
 		SetMessage("Would you like to add another binding").
 		SetDefault("false").

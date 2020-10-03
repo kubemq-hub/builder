@@ -1,6 +1,6 @@
 package properties
 
-import "github.com/kubemq-hub/builder/connector/pkg/survey"
+import "github.com/kubemq-hub/builder/survey"
 
 type Log struct {
 }
@@ -10,23 +10,23 @@ func NewLog() *Log {
 }
 
 func (l *Log) Render() (map[string]string, error) {
-	confirmVal := false
-	err := survey.NewConfirm().
-		SetKind("confirm").
+	boolVal := false
+	err := survey.NewBool().
+		SetKind("bool").
 		SetName("add-log-middleware").
 		SetMessage("Would you to set a logging middleware").
 		SetDefault("true").
 		SetHelp("Add logging middleware properties").
 		SetRequired(true).
-		Render(&confirmVal)
+		Render(&boolVal)
 	if err != nil {
 		return nil, err
 	}
-	if !confirmVal {
+	if !boolVal {
 		return nil, nil
 	}
 	val := ""
-	err = survey.NewInput().
+	err = survey.NewString().
 		SetKind("string").
 		SetName("log-level").
 		SetMessage("Set Log level").

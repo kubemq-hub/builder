@@ -1,6 +1,6 @@
 package builder
 
-import "github.com/kubemq-hub/builder/connector/pkg/survey"
+import "github.com/kubemq-hub/builder/survey"
 
 type Name struct {
 	takenNames []string
@@ -15,7 +15,7 @@ func (n *Name) SetTakenNames(value []string) *Name {
 }
 func (n *Name) RenderBinding() (string, error) {
 	val := ""
-	err := survey.NewInput().
+	err := survey.NewString().
 		SetKind("string").
 		SetName("name").
 		SetMessage("Set Binding name").
@@ -32,7 +32,7 @@ func (n *Name) RenderBinding() (string, error) {
 }
 func (n *Name) RenderSource() (string, error) {
 	val := ""
-	err := survey.NewInput().
+	err := survey.NewString().
 		SetKind("string").
 		SetName("name").
 		SetMessage("Set Source name").
@@ -47,7 +47,7 @@ func (n *Name) RenderSource() (string, error) {
 }
 func (n *Name) RenderTarget() (string, error) {
 	val := ""
-	err := survey.NewInput().
+	err := survey.NewString().
 		SetKind("string").
 		SetName("name").
 		SetMessage("Set Target name").

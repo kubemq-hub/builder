@@ -2,7 +2,7 @@ package builder
 
 import (
 	"fmt"
-	"github.com/kubemq-hub/builder/connector/pkg/survey"
+	"github.com/kubemq-hub/builder/survey"
 )
 
 type Connector struct {
@@ -38,8 +38,8 @@ func (c *Connector) AddProperty(value *Property) *Connector {
 
 func (c *Connector) askString(p *Property) error {
 	val := ""
-	options, _ := c.loadedOptions[fmt.Sprintf("%s/%s", c.Kind, p.Name)]
-	err := survey.NewInput().
+	options := c.loadedOptions[fmt.Sprintf("%s/%s", c.Kind, p.Name)]
+	err := survey.NewString().
 		SetKind("string").
 		SetName(p.Name).
 		SetMessage(p.Description).
@@ -58,8 +58,8 @@ func (c *Connector) askString(p *Property) error {
 }
 func (c *Connector) askInt(p *Property) error {
 	val := 0
-	options, _ := c.loadedOptions[fmt.Sprintf("%s/%s", p.Kind, p.Name)]
-	err := survey.NewInput().
+	options := c.loadedOptions[fmt.Sprintf("%s/%s", p.Kind, p.Name)]
+	err := survey.NewInt().
 		SetKind("int").
 		SetName(p.Name).
 		SetMessage(p.Description).
@@ -67,8 +67,7 @@ func (c *Connector) askInt(p *Property) error {
 		SetOptions(options).
 		SetHelp(p.Description).
 		SetRequired(p.Must).
-		SetMin(p.Min).
-		SetMax(p.Max).
+		SetRange(p.Min, p.Max).
 		Render(&val)
 	if err != nil {
 		return err
@@ -78,8 +77,8 @@ func (c *Connector) askInt(p *Property) error {
 }
 func (c *Connector) askBool(p *Property) error {
 	val := false
-	err := survey.NewConfirm().
-		SetKind("confirm").
+	err := survey.NewBool().
+		SetKind("bool").
 		SetName(p.Name).
 		SetMessage(p.Description).
 		SetDefault(p.Default).

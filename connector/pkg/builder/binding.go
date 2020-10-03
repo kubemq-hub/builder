@@ -2,7 +2,7 @@ package builder
 
 import (
 	"fmt"
-	"github.com/kubemq-hub/builder/connector/pkg/survey"
+	"github.com/kubemq-hub/builder/survey"
 )
 
 type Binding struct {
@@ -52,7 +52,7 @@ func (b *Binding) TargetName() string {
 }
 func (b *Binding) askKind(kinds []string) (string, error) {
 	val := ""
-	err := survey.NewInput().
+	err := survey.NewString().
 		SetKind("string").
 		SetName("kind").
 		SetMessage("Select Connector Kind").

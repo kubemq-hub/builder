@@ -1,6 +1,6 @@
 package target
 
-import "github.com/kubemq-hub/builder/connector/pkg/survey"
+import "github.com/kubemq-hub/builder/survey"
 
 type Kind struct {
 }
@@ -11,7 +11,7 @@ func NewKind() *Kind {
 
 func (k *Kind) Render() (string, error) {
 	val := ""
-	err := survey.NewInput().
+	err := survey.NewString().
 		SetKind("string").
 		SetName("kind").
 		SetMessage("Set Target kind").

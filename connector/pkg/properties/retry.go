@@ -2,7 +2,7 @@ package properties
 
 import (
 	"fmt"
-	"github.com/kubemq-hub/builder/connector/pkg/survey"
+	"github.com/kubemq-hub/builder/survey"
 	"math"
 )
 
@@ -17,7 +17,7 @@ func NewRetry() *Retry {
 }
 func (r *Retry) askDelayType() error {
 	val := ""
-	err := survey.NewInput().
+	err := survey.NewString().
 		SetKind("string").
 		SetName("retry_delay_type").
 		SetMessage("Sets retry delay type").
@@ -34,15 +34,14 @@ func (r *Retry) askDelayType() error {
 }
 func (r *Retry) askAttempts() error {
 	val := 0
-	err := survey.NewInput().
+	err := survey.NewInt().
 		SetKind("int").
 		SetName("retry_attempts").
 		SetMessage("Sets retry max attempts type").
 		SetDefault("1").
 		SetHelp("Sets retry max attempts type").
 		SetRequired(true).
-		SetMin(1).
-		SetMax(1024).
+		SetRange(1, 1024).
 		Render(&val)
 	if err != nil {
 		return err
@@ -52,15 +51,14 @@ func (r *Retry) askAttempts() error {
 }
 func (r *Retry) askDelayMillisecond() error {
 	val := 0
-	err := survey.NewInput().
+	err := survey.NewInt().
 		SetKind("int").
 		SetName("retry_delay_milliseconds").
 		SetMessage("Sets retry delay milliseconds").
 		SetDefault("100").
 		SetHelp("Sets retry delay milliseconds").
 		SetRequired(true).
-		SetMin(0).
-		SetMax(math.MaxInt32).
+		SetRange(0, math.MaxInt32).
 		Render(&val)
 	if err != nil {
 		return err
@@ -70,15 +68,14 @@ func (r *Retry) askDelayMillisecond() error {
 }
 func (r *Retry) askDelayJitter() error {
 	val := 0
-	err := survey.NewInput().
+	err := survey.NewInt().
 		SetKind("int").
 		SetName("retry_max_jitter_milliseconds").
 		SetMessage("Sets retry delay milliseconds jitter").
 		SetDefault("100").
 		SetHelp("Sets retry delay milliseconds jitter").
 		SetRequired(true).
-		SetMin(1).
-		SetMax(math.MaxInt32).
+		SetRange(1, math.MaxInt32).
 		Render(&val)
 	if err != nil {
 		return err
@@ -87,19 +84,19 @@ func (r *Retry) askDelayJitter() error {
 	return nil
 }
 func (r *Retry) Render() (map[string]string, error) {
-	confirmVal := false
-	err := survey.NewConfirm().
-		SetKind("confirm").
+	boolVal := false
+	err := survey.NewBool().
+		SetKind("bool").
 		SetName("add-retry-middleware").
 		SetMessage("Would you like to set a request retries middleware").
 		SetDefault("false").
 		SetHelp("Add a request retries middleware properties").
 		SetRequired(true).
-		Render(&confirmVal)
+		Render(&boolVal)
 	if err != nil {
 		return nil, err
 	}
-	if !confirmVal {
+	if !boolVal {
 		return nil, nil
 	}
 	if err := r.askDelayType(); err != nil {
