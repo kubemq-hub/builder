@@ -27,7 +27,7 @@ func (b *Builder) askType() error {
 		SetDefault("KubeMQ Bridges").
 		SetHelp("Set connector type").
 		SetRequired(true).
-		Render(&c.Type)
+		Render(&b.kind)
 	if err != nil {
 		return err
 	}

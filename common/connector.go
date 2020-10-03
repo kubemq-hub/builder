@@ -58,13 +58,11 @@ func (c *Connector) askString(p *Property) error {
 }
 func (c *Connector) askInt(p *Property) error {
 	val := 0
-	options := c.loadedOptions[fmt.Sprintf("%s/%s", p.Kind, p.Name)]
 	err := survey.NewInt().
 		SetKind("int").
 		SetName(p.Name).
 		SetMessage(p.Description).
 		SetDefault(p.Default).
-		SetOptions(options).
 		SetHelp(p.Description).
 		SetRequired(p.Must).
 		SetRange(p.Min, p.Max).
