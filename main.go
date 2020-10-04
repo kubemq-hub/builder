@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/kubemq-hub/builder/cluster"
+	"github.com/kubemq-hub/builder/connector"
 	"log"
 )
 
@@ -29,11 +29,9 @@ func main() {
 	//	log.Fatal(err)
 	//}
 	//fmt.Println(string(b))
-	t, err := cluster.NewCluster().Render()
+	t, err := connector.NewSource().SetManifestFile("./sources-manifest.json").Render()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Println(t.Validate())
-
+	fmt.Println(string(t))
 }

@@ -2,8 +2,8 @@ package common
 
 import (
 	"fmt"
-	"github.com/ghodss/yaml"
 	"github.com/kubemq-hub/builder/survey"
+	"gopkg.in/yaml.v2"
 )
 
 type Builder struct {

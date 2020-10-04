@@ -2,8 +2,8 @@ package connector
 
 import (
 	"fmt"
-	"github.com/ghodss/yaml"
 	"github.com/kubemq-hub/builder/common"
+	"io/ioutil"
 )
 
 type Source struct {
@@ -17,6 +17,10 @@ func NewSource() *Source {
 
 func (s *Source) SetManifest(value []byte) *Source {
 	s.manifestData = value
+	return s
+}
+func (s *Source) SetManifestFile(filename string) *Source {
+	s.manifestData, _ = ioutil.ReadFile(filename)
 	return s
 }
 
@@ -39,6 +43,6 @@ func (s *Source) Render() ([]byte, error) {
 		Render(); err != nil {
 		return nil, err
 	} else {
-		return yaml.Marshal(b)
+		return b, nil
 	}
 }

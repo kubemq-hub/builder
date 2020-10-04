@@ -23,12 +23,23 @@ func LoadManifest(data []byte) (*Manifest, error) {
 	}
 	return m, nil
 }
+func LoadManifestFromFile(filename string) (*Manifest, error) {
+	b, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+	return LoadManifest(b)
+}
 func (m *Manifest) Save(filename string) error {
 	b, err := json.Marshal(m)
 	if err != nil {
 		return err
 	}
 	return ioutil.WriteFile(filename, b, 0644)
+}
+func (m *Manifest) Marshal() []byte {
+	b, _ := json.Marshal(m)
+	return b
 }
 
 func (m *Manifest) SetSchema(value string) *Manifest {

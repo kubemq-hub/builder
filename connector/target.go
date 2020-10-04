@@ -2,7 +2,6 @@ package connector
 
 import (
 	"fmt"
-	"github.com/ghodss/yaml"
 	"github.com/kubemq-hub/builder/common"
 )
 
@@ -39,6 +38,6 @@ func (s *Target) Render() ([]byte, error) {
 		Render(); err != nil {
 		return nil, err
 	} else {
-		return yaml.Marshal(b)
+		return b, nil
 	}
 }
