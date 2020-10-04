@@ -86,6 +86,9 @@ func (c *Connector) Render() (*Connector, error) {
 	if err := c.askNamespace(); err != nil {
 		return nil, err
 	}
+	if err := c.askReplicas(); err != nil {
+		return nil, err
+	}
 	switch c.Type {
 	case "KubeMQ Bridges":
 		cfg, err := NewBridge().
