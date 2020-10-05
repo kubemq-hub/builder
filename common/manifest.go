@@ -2,7 +2,11 @@ package common
 
 import (
 	"encoding/json"
+	"io"
 	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
 )
 
 type Manifest struct {
@@ -29,6 +33,28 @@ func LoadManifestFromFile(filename string) (*Manifest, error) {
 		return nil, err
 	}
 	return LoadManifest(b)
+}
+
+func LoadFromUrl(url string) (*Manifest, error) {
+	file, err := ioutil.TempFile("./", "mfx")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() {
+		_ = os.Remove(file.Name())
+	}()
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	_, err = io.Copy(file, resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return LoadManifestFromFile(file.Name())
 }
 func (m *Manifest) Save(filename string) error {
 	b, err := json.Marshal(m)

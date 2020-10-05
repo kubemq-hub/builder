@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/kubemq-hub/builder/common"
 	"github.com/kubemq-hub/builder/connector"
 	"log"
 )
@@ -29,7 +30,11 @@ func main() {
 	//	log.Fatal(err)
 	//}
 	//fmt.Println(string(b))
-	t, err := connector.NewSource().SetManifestFile("./sources-manifest.json").Render()
+	m, err := common.LoadFromUrl("https://raw.githubusercontent.com/kubemq-hub/kubemq-sources/master/manifest.json")
+	if err != nil {
+		log.Fatal(m)
+	}
+	t, err := connector.NewSource().SetManifest(m.Marshal()).Render()
 	if err != nil {
 		log.Fatal(err)
 	}
