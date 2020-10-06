@@ -30,7 +30,7 @@ func (c *Connection) askAddress() error {
 		SetKind("string").
 		SetName("address").
 		SetMessage("Sets Kubemq connection address").
-		SetDefault("kubemq-cluster-grpc:50000").
+		SetDefault("").
 		SetHelp("Sets address of Kubemq cluster grpc endpoint").
 		SetRequired(true).
 		SetOptions(c.addressOptions).
@@ -187,8 +187,8 @@ func (c *Connection) askClientID() error {
 }
 func (c *Connection) askAuthToken() error {
 	val := ""
-	err := survey.NewString().
-		SetKind("string").
+	err := survey.NewMultiline().
+		SetKind("multilines").
 		SetName("auth_token").
 		SetMessage("Sets source connection authentication token").
 		SetDefault("").

@@ -92,7 +92,7 @@ func (c *Connector) Render() (*Connector, error) {
 	switch c.Type {
 	case "KubeMQ Bridges":
 		cfg, err := NewBridge().
-			SetClusterAddress(c.defaultOptions["cluster_address"]).
+			SetClusterAddress(c.defaultOptions["kubemq-address"]).
 			Render()
 		if err != nil {
 			return nil, err
