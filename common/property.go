@@ -34,8 +34,8 @@ func (p *Property) SetDefault(value string) *Property {
 	return p
 }
 
-func (p *Property) SetOptions(value string) *Property {
-	p.Default = value
+func (p *Property) SetOptions(value []string) *Property {
+	p.Options = value
 	return p
 }
 func (p *Property) SetMust(value bool) *Property {

@@ -38,13 +38,12 @@ func (c *Connector) AddProperty(value *Property) *Connector {
 
 func (c *Connector) askString(p *Property) error {
 	val := ""
-	options := c.loadedOptions[fmt.Sprintf("%s/%s", c.Kind, p.Name)]
 	err := survey.NewString().
 		SetKind("string").
 		SetName(p.Name).
 		SetMessage(p.Description).
 		SetDefault(p.Default).
-		SetOptions(options).
+		SetOptions(p.Options).
 		SetHelp(p.Description).
 		SetRequired(p.Must).
 		Render(&val)
