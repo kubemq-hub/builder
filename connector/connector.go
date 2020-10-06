@@ -110,7 +110,7 @@ func (c *Connector) Render() (*Connector, error) {
 	case "KubeMQ Sources":
 		cfg, err := NewSource().
 			SetManifest(c.sourcesManifest).
-			SetDefault(c.defaultOptions).
+			SetDefaultOptions(c.defaultOptions).
 			Render()
 		if err != nil {
 			return nil, err

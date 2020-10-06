@@ -24,7 +24,7 @@ func (s *Source) SetManifestFile(filename string) *Source {
 	return s
 }
 
-func (s *Source) SetDefault(value common.DefaultOptions) *Source {
+func (s *Source) SetDefaultOptions(value common.DefaultOptions) *Source {
 	s.defaultOptions = value
 	return s
 }
@@ -36,6 +36,9 @@ func (s *Source) Render() ([]byte, error) {
 	m, err := common.LoadManifest(s.manifestData)
 	if err != nil {
 		return nil, err
+	}
+	if m.Schema != "sources" {
+		return nil, fmt.Errorf("invalid scheme")
 	}
 	if b, err := common.NewBuilder().
 		SetManifest(m).

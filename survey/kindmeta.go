@@ -24,7 +24,7 @@ func (k *KindMeta) complete() error {
 	case "int":
 	case "bool":
 	case "list":
-	case "multiline":
+	case "multiline", "multilines":
 	case "editor":
 	default:
 		return fmt.Errorf("invalid kind")

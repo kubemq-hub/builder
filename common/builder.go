@@ -43,7 +43,7 @@ func (b *Builder) askAddBinding() (bool, error) {
 
 func (b *Builder) addBinding() error {
 	if bnd, err := NewBinding().
-		SetOptions(b.loadedOptions).
+		SetDefaultOptions(b.loadedOptions).
 		SetSourcesList(b.manifest.Sources).
 		SetTargetsList(b.manifest.Targets).
 		SetTakenBindingNames(b.takenBindingNames).

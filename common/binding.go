@@ -10,9 +10,9 @@ type Binding struct {
 	Source            Spec              `json:"source"`
 	Target            Spec              `json:"target"`
 	Properties        map[string]string `json:"properties"`
-	loadedOptions     map[string][]string
-	targetsList       []*Connector
-	sourcesList       []*Connector
+	loadedOptions     DefaultOptions
+	targetsList       Connectors
+	sourcesList       Connectors
 	takenBindingNames []string
 }
 
@@ -28,15 +28,15 @@ func NewBinding() *Binding {
 		takenBindingNames: nil,
 	}
 }
-func (b *Binding) SetOptions(value map[string][]string) *Binding {
+func (b *Binding) SetDefaultOptions(value DefaultOptions) *Binding {
 	b.loadedOptions = value
 	return b
 }
-func (b *Binding) SetTargetsList(value []*Connector) *Binding {
+func (b *Binding) SetTargetsList(value Connectors) *Binding {
 	b.targetsList = value
 	return b
 }
-func (b *Binding) SetSourcesList(value []*Connector) *Binding {
+func (b *Binding) SetSourcesList(value Connectors) *Binding {
 	b.sourcesList = value
 	return b
 }

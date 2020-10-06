@@ -38,7 +38,7 @@ func (n *Name) RenderSource() (string, error) {
 		SetMessage("Set Source name").
 		SetDefault("").
 		SetHelp("Sets source name entry").
-		SetRequired(false).
+		SetRequired(true).
 		Render(&val)
 	if err != nil {
 		return "", err
@@ -53,7 +53,7 @@ func (n *Name) RenderTarget() (string, error) {
 		SetMessage("Set Target name").
 		SetDefault("").
 		SetHelp("Sets Target name entry").
-		SetRequired(false).
+		SetRequired(true).
 		Render(&val)
 	if err != nil {
 		return "", err

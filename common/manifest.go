@@ -10,10 +10,10 @@ import (
 )
 
 type Manifest struct {
-	Schema  string       `json:"schema"`
-	Version string       `json:"version"`
-	Sources []*Connector `json:"sources"`
-	Targets []*Connector `json:"targets"`
+	Schema  string     `json:"schema"`
+	Version string     `json:"version"`
+	Sources Connectors `json:"sources"`
+	Targets Connectors `json:"targets"`
 }
 
 func NewManifest() *Manifest {
@@ -77,11 +77,11 @@ func (m *Manifest) SetVersion(value string) *Manifest {
 	m.Version = value
 	return m
 }
-func (m *Manifest) SetSourceConnectors(value []*Connector) *Manifest {
+func (m *Manifest) SetSourceConnectors(value Connectors) *Manifest {
 	m.Sources = value
 	return m
 }
-func (m *Manifest) SetTargetConnectors(value []*Connector) *Manifest {
+func (m *Manifest) SetTargetConnectors(value Connectors) *Manifest {
 	m.Targets = value
 	return m
 }

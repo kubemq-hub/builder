@@ -125,6 +125,11 @@ func (s *String) Render(target interface{}) error {
 		}
 		return survey.AskOne(singleInput, target, s.askOpts...)
 	}
+
+	if s.Default == "" {
+		s.Default = s.Options[0]
+	}
+
 	selectInput := &survey.Select{
 		Renderer: survey.Renderer{},
 		Message:  s.Message,
