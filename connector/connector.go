@@ -11,6 +11,9 @@ type Connector struct {
 	Type            string `json:"type"`
 	Replicas        int    `json:"replicas"`
 	Config          string `json:"config"`
+	NodePort        int    `json:"node_port"`
+	ServiceType     string `json:"service_type"`
+	Image           string `json:"image"`
 	defaultOptions  common.DefaultOptions
 	targetManifest  []byte
 	sourcesManifest []byte
@@ -47,6 +50,23 @@ func (c *Connector) askType() error {
 	}
 	return nil
 }
+func (c *Connector) askImage() error {
+	err := survey.NewString().
+		SetKind("string").
+		SetName("connector image").
+		SetMessage("Set connector image").
+		SetDefault("latest").
+		SetHelp("Set connector image").
+		SetRequired(false).
+		Render(&c.Image)
+	if err != nil {
+		return err
+	}
+	if c.Image == "latest" {
+		c.Image = ""
+	}
+	return nil
+}
 func (c *Connector) askName() error {
 	if name, err := NewName().
 		Render(); err != nil {
@@ -56,7 +76,37 @@ func (c *Connector) askName() error {
 	}
 	return nil
 }
+func (c *Connector) askService() error {
+	err := survey.NewString().
+		SetKind("string").
+		SetName("service-type").
+		SetMessage("Set connector service type").
+		SetDefault("ClusterIP").
+		SetOptions([]string{"ClusterIP", "NodePort", "LoadBalancer"}).
+		SetHelp("Sets connector service type").
+		SetRequired(true).
+		Render(&c.ServiceType)
+	if err != nil {
+		return err
+	}
+	if c.ServiceType != "NodePort" {
+		return nil
+	}
+	err = survey.NewInt().
+		SetKind("int").
+		SetName("node-port").
+		SetMessage("Set connector service NodePort value").
+		SetDefault("30000").
+		SetHelp("Set connector service NodePort value").
+		SetRequired(false).
+		SetRange(30000, 32767).
+		Render(&c.NodePort)
+	if err != nil {
+		return err
+	}
 
+	return nil
+}
 func (c *Connector) askNamespace() error {
 	if n, err := NewNamespace().
 		SetNamespaces(c.defaultOptions["namespaces"]).
@@ -89,6 +139,13 @@ func (c *Connector) Render() (*Connector, error) {
 	if err := c.askReplicas(); err != nil {
 		return nil, err
 	}
+	if err := c.askService(); err != nil {
+		return nil, err
+	}
+	if err := c.askImage(); err != nil {
+		return nil, err
+	}
+
 	switch c.Type {
 	case "KubeMQ Bridges":
 		cfg, err := NewBridge().
@@ -98,6 +155,7 @@ func (c *Connector) Render() (*Connector, error) {
 			return nil, err
 		}
 		c.Config = string(cfg)
+		c.Type = "bridges"
 	case "KubeMQ Targets":
 		cfg, err := NewTarget().
 			SetManifest(c.targetManifest).
@@ -107,6 +165,7 @@ func (c *Connector) Render() (*Connector, error) {
 			return nil, err
 		}
 		c.Config = string(cfg)
+		c.Type = "targets"
 	case "KubeMQ Sources":
 		cfg, err := NewSource().
 			SetManifest(c.sourcesManifest).
@@ -116,6 +175,8 @@ func (c *Connector) Render() (*Connector, error) {
 			return nil, err
 		}
 		c.Config = string(cfg)
+		c.Type = "source"
 	}
+
 	return c, nil
 }

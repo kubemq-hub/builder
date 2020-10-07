@@ -36,7 +36,7 @@ func (n *Name) Render() (*Name, error) {
 		SetKind("string").
 		SetName("name").
 		SetMessage("Set cluster name").
-		SetDefault("").
+		SetDefault("kubemq-cluster").
 		SetHelp("Sets cluster name").
 		SetRequired(true).
 		SetInvalidOptions(n.takenNames).

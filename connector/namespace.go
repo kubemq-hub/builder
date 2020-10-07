@@ -37,6 +37,7 @@ func (n *Namespace) Render() (*Namespace, error) {
 		SetName("namespace").
 		SetMessage("Set connector namespace").
 		SetDefault("").
+		SetOptions(n.namespaces).
 		SetHelp("Sets connector namespace").
 		SetRequired(true).
 		SetValidator(n.checkNonEmptyNamespace).
