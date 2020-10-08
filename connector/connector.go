@@ -39,10 +39,10 @@ func (c *Connector) askType() error {
 	err := survey.NewString().
 		SetKind("string").
 		SetName("connector type").
-		SetMessage("Choose connector type").
+		SetMessage("Choose Connector type").
 		SetOptions([]string{"KubeMQ Bridges", "KubeMQ Targets", "KubeMQ Sources"}).
 		SetDefault("KubeMQ Bridges").
-		SetHelp("Set connector type").
+		SetHelp("Set Connector type").
 		SetRequired(true).
 		Render(&c.Type)
 	if err != nil {
@@ -54,9 +54,9 @@ func (c *Connector) askImage() error {
 	err := survey.NewString().
 		SetKind("string").
 		SetName("connector image").
-		SetMessage("Set connector image").
+		SetMessage("Set Connector image").
 		SetDefault("latest").
-		SetHelp("Set connector image").
+		SetHelp("Set Connector image").
 		SetRequired(false).
 		Render(&c.Image)
 	if err != nil {
@@ -80,10 +80,10 @@ func (c *Connector) askService() error {
 	err := survey.NewString().
 		SetKind("string").
 		SetName("service-type").
-		SetMessage("Set connector service type").
+		SetMessage("Set Connector service type").
 		SetDefault("ClusterIP").
 		SetOptions([]string{"ClusterIP", "NodePort", "LoadBalancer"}).
-		SetHelp("Sets connector service type").
+		SetHelp("Sets Connector service type").
 		SetRequired(true).
 		Render(&c.ServiceType)
 	if err != nil {
@@ -95,9 +95,9 @@ func (c *Connector) askService() error {
 	err = survey.NewInt().
 		SetKind("int").
 		SetName("node-port").
-		SetMessage("Set connector service NodePort value").
+		SetMessage("Set Connector service NodePort value").
 		SetDefault("30000").
-		SetHelp("Set connector service NodePort value").
+		SetHelp("Set Connector service NodePort value").
 		SetRequired(false).
 		SetRange(30000, 32767).
 		Render(&c.NodePort)

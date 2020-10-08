@@ -35,12 +35,12 @@ func (n *Name) Render() (*Name, error) {
 	err := survey.NewString().
 		SetKind("string").
 		SetName("name").
-		SetMessage("Set connector name").
+		SetMessage("Set Connector name").
 		SetDefault("").
-		SetHelp("Sets connector name").
+		SetHelp("Sets Connector name").
 		SetRequired(true).
 		SetInvalidOptions(n.takenNames).
-		SetInvalidOptionsMessage("Cluster name must be unique within the same namespace").
+		SetInvalidOptionsMessage("Connector name must be unique within the same namespace").
 		SetValidator(n.checkNonEmptyName).
 		Render(&n.Name)
 	if err != nil {

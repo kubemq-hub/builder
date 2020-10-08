@@ -35,7 +35,7 @@ func (n *Name) Render() (*Name, error) {
 	err := survey.NewString().
 		SetKind("string").
 		SetName("name").
-		SetMessage("Set cluster name").
+		SetMessage("Set Cluster name").
 		SetDefault("kubemq-cluster").
 		SetHelp("Sets cluster name").
 		SetRequired(true).

@@ -35,8 +35,8 @@ func (n *Namespace) Render() (*Namespace, error) {
 	err := survey.NewString().
 		SetKind("string").
 		SetName("namespace").
-		SetMessage("Set cluster namespace").
-		SetDefault("").
+		SetMessage("Set Cluster namespace").
+		SetDefault("kubemq").
 		SetHelp("Sets cluster namespace").
 		SetRequired(true).
 		SetValidator(n.checkNonEmptyNamespace).

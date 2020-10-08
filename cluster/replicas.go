@@ -41,7 +41,7 @@ func (r *Replicas) Render() (int, error) {
 	err := survey.NewInt().
 		SetKind("int").
 		SetName("replicas").
-		SetMessage("Set how many nodes (3,5,7,9)").
+		SetMessage("Set Cluster replicas (3,5,7,9)").
 		SetDefault("3").
 		SetRange(3, 9).
 		SetHelp("Sets how many cluster nodes to deploy").
