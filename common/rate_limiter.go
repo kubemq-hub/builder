@@ -34,7 +34,7 @@ func (r *RateLimiter) Render() (map[string]string, error) {
 		SetName("rate-limiter").
 		SetMessage("Set rate request per second limiting").
 		SetDefault("100").
-		SetHelp("Sets how many request per second to limit").
+		SetHelp("Set how many request per second to limit").
 		SetRequired(true).
 		Render(&val)
 	if err != nil {

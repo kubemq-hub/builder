@@ -32,7 +32,7 @@ func (l *Log) Render() (map[string]string, error) {
 		SetMessage("Set Log level").
 		SetOptions([]string{"debug", "info", "error"}).
 		SetDefault("info").
-		SetHelp("Sets Log level printing").
+		SetHelp("Set Log level printing").
 		SetRequired(true).
 		Render(&val)
 	if err != nil {

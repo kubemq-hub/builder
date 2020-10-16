@@ -66,7 +66,7 @@ func (r *Resource) askLimitCpuSize() error {
 		SetName("limit-cpu").
 		SetMessage("Set Limit CPU resource").
 		SetDefault("1").
-		SetHelp("Sets Limit CPU resource").
+		SetHelp("Set Limit CPU resource").
 		SetRequired(false).
 		SetValidator(r.checkCPU).
 		Render(&r.LimitsCpu)
@@ -81,7 +81,7 @@ func (r *Resource) askRequestCpuSize() error {
 		SetName("request-cpu").
 		SetMessage("Set Request CPU resource").
 		SetDefault("1").
-		SetHelp("Sets Request CPU resource").
+		SetHelp("Set Request CPU resource").
 		SetRequired(false).
 		SetValidator(r.checkCPU).
 		Render(&r.RequestsCpu)
@@ -96,7 +96,7 @@ func (r *Resource) askLimitMemSize() error {
 		SetName("limit-mem").
 		SetMessage("Set Limit Memory resource").
 		SetDefault("1Gi").
-		SetHelp("Sets Limit Memory resource").
+		SetHelp("Set Limit Memory resource").
 		SetRequired(false).
 		SetValidator(r.checkMem).
 		Render(&r.LimitsMemory)
@@ -111,7 +111,7 @@ func (r *Resource) askRequestMemSize() error {
 		SetName("request-mem").
 		SetMessage("Set Request Memory resource").
 		SetDefault("1Gi").
-		SetHelp("Sets Request Memory resource").
+		SetHelp("Set Request Memory resource").
 		SetRequired(false).
 		SetValidator(r.checkMem).
 		Render(&r.RequestsMemory)

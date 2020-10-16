@@ -36,7 +36,7 @@ func (n *Namespace) Render() (*Namespace, error) {
 		SetName("namespace").
 		SetMessage("Set Connector namespace").
 		SetDefault("kubemq").
-		SetHelp("Sets Connector namespace").
+		SetHelp("Set Connector namespace").
 		SetRequired(true).
 		SetValidator(n.checkNonEmptyNamespace).
 		Render(&n.Namespace)

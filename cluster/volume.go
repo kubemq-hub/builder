@@ -49,7 +49,7 @@ func (v *Volume) askSize() error {
 		SetName("size").
 		SetMessage("Set persistence volume size").
 		SetDefault("30Gi").
-		SetHelp("Sets persistence volume size for each node").
+		SetHelp("Set persistence volume size for each node").
 		SetRequired(true).
 		SetValidator(v.checkSize).
 		Render(&v.Size)
@@ -65,7 +65,7 @@ func (v *Volume) askStorageClass() error {
 		SetMessage("Set persistence volume storage class").
 		SetDefault("default").
 		SetOptions(v.storageClasses).
-		SetHelp("Sets persistence volume size storage class").
+		SetHelp("Set persistence volume size storage class").
 		SetRequired(false).
 		Render(&v.StorageClass)
 	if err != nil {

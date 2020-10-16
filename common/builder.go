@@ -6,26 +6,26 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type Builder struct {
+type Bindings struct {
 	Bindings          []*Binding `json:"bindings"`
 	manifest          *Manifest
 	loadedOptions     DefaultOptions
 	takenBindingNames []string
 }
 
-func NewBuilder() *Builder {
-	return &Builder{}
+func NewBindings() *Bindings {
+	return &Bindings{}
 }
 
-func (b *Builder) SetManifest(value *Manifest) *Builder {
+func (b *Bindings) SetManifest(value *Manifest) *Bindings {
 	b.manifest = value
 	return b
 }
-func (b *Builder) SetOptions(value DefaultOptions) *Builder {
+func (b *Bindings) SetOptions(value DefaultOptions) *Bindings {
 	b.loadedOptions = value
 	return b
 }
-func (b *Builder) askAddBinding() (bool, error) {
+func (b *Bindings) askAddBinding() (bool, error) {
 	val := false
 	err := survey.NewBool().
 		SetKind("bool").
@@ -41,7 +41,7 @@ func (b *Builder) askAddBinding() (bool, error) {
 	return val, nil
 }
 
-func (b *Builder) addBinding() error {
+func (b *Bindings) addBinding() error {
 	if bnd, err := NewBinding().
 		SetDefaultOptions(b.loadedOptions).
 		SetSourcesList(b.manifest.Sources).
@@ -56,7 +56,7 @@ func (b *Builder) addBinding() error {
 	return nil
 }
 
-func (b *Builder) Render() ([]byte, error) {
+func (b *Bindings) Render() ([]byte, error) {
 	if b.manifest == nil {
 		return nil, fmt.Errorf("inavlid manifest")
 	}
@@ -82,6 +82,6 @@ done:
 	return yaml.Marshal(b)
 }
 
-func (b *Builder) Yaml() ([]byte, error) {
+func (b *Bindings) Yaml() ([]byte, error) {
 	return yaml.Marshal(b)
 }

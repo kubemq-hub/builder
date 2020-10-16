@@ -37,7 +37,7 @@ func (n *Namespace) Render() (*Namespace, error) {
 		SetName("namespace").
 		SetMessage("Set Cluster namespace").
 		SetDefault("kubemq").
-		SetHelp("Sets cluster namespace").
+		SetHelp("Set cluster namespace").
 		SetRequired(true).
 		SetValidator(n.checkNonEmptyNamespace).
 		Render(&n.Namespace)

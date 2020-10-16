@@ -1,9 +1,19 @@
 package common
 
-import "github.com/kubemq-hub/builder/survey"
+import (
+	"fmt"
+	"github.com/kubemq-hub/builder/pkg/utils"
+	"github.com/kubemq-hub/builder/survey"
+)
+
+const propertiesTml = `
+<red>properties:</>
+{{ .ValuesSpec | indent 2}}
+`
 
 type Properties struct {
-	values map[string]string
+	values     map[string]string
+	ValuesSpec string
 }
 
 func NewProperties() *Properties {
@@ -50,4 +60,16 @@ func (p *Properties) Render() (map[string]string, error) {
 		}
 	}
 	return p.values, nil
+}
+func (p *Properties) String() string {
+	if len(p.values) == 0 {
+		return "<red>properties: {}"
+	}
+	p.ValuesSpec = utils.MapToYaml(p.values)
+	tpl := utils.NewTemplate(propertiesTml, p)
+	b, err := tpl.Get()
+	if err != nil {
+		return fmt.Sprintf("error rendring properties spec,%s", err.Error())
+	}
+	return string(b)
 }

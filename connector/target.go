@@ -37,9 +37,9 @@ func (t *Target) Render() ([]byte, error) {
 		return nil, err
 	}
 	if m.Schema != "targets" {
-		return nil, fmt.Errorf("invalid scheme")
+		return nil, fmt.Errorf("invalid scheme, %s", m.Schema)
 	}
-	if b, err := common.NewBuilder().
+	if b, err := common.NewBindings().
 		SetManifest(m).
 		SetOptions(t.defaultOptions).
 		Render(); err != nil {

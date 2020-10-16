@@ -20,7 +20,7 @@ func (n *Name) Render() (string, error) {
 		SetName("name").
 		SetMessage("Set Binding name").
 		SetDefault("").
-		SetHelp("Sets binding name entry").
+		SetHelp("Set binding name entry").
 		SetRequired(true).
 		SetInvalidOptions(n.takenNames).
 		SetInvalidOptionsMessage("binding name must be unique").

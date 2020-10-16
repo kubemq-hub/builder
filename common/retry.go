@@ -20,10 +20,10 @@ func (r *Retry) askDelayType() error {
 	err := survey.NewString().
 		SetKind("string").
 		SetName("retry_delay_type").
-		SetMessage("Sets retry delay type").
+		SetMessage("Set retry delay type").
 		SetOptions([]string{"fixed", "back-off", "random"}).
 		SetDefault("fixed").
-		SetHelp("Sets retry delay type").
+		SetHelp("Set retry delay type").
 		SetRequired(true).
 		Render(&val)
 	if err != nil {
@@ -37,9 +37,9 @@ func (r *Retry) askAttempts() error {
 	err := survey.NewInt().
 		SetKind("int").
 		SetName("retry_attempts").
-		SetMessage("Sets retry max attempts type").
+		SetMessage("Set retry max attempts type").
 		SetDefault("1").
-		SetHelp("Sets retry max attempts type").
+		SetHelp("Set retry max attempts type").
 		SetRequired(true).
 		SetRange(1, 1024).
 		Render(&val)
@@ -54,9 +54,9 @@ func (r *Retry) askDelayMillisecond() error {
 	err := survey.NewInt().
 		SetKind("int").
 		SetName("retry_delay_milliseconds").
-		SetMessage("Sets retry delay milliseconds").
+		SetMessage("Set retry delay milliseconds").
 		SetDefault("100").
-		SetHelp("Sets retry delay milliseconds").
+		SetHelp("Set retry delay milliseconds").
 		SetRequired(true).
 		SetRange(0, math.MaxInt32).
 		Render(&val)
@@ -71,9 +71,9 @@ func (r *Retry) askDelayJitter() error {
 	err := survey.NewInt().
 		SetKind("int").
 		SetName("retry_max_jitter_milliseconds").
-		SetMessage("Sets retry delay milliseconds jitter").
+		SetMessage("Set retry delay milliseconds jitter").
 		SetDefault("100").
-		SetHelp("Sets retry delay milliseconds jitter").
+		SetHelp("Set retry delay milliseconds jitter").
 		SetRequired(true).
 		SetRange(1, math.MaxInt32).
 		Render(&val)

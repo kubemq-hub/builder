@@ -2,6 +2,7 @@ package common
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -41,7 +42,8 @@ func LoadFromUrl(url string) (*Manifest, error) {
 		log.Fatal(err)
 	}
 	defer func() {
-		_ = os.Remove(file.Name())
+		err := os.Remove(file.Name())
+		fmt.Println(err)
 	}()
 	resp, err := http.Get(url)
 	if err != nil {

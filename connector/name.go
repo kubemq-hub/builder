@@ -37,7 +37,7 @@ func (n *Name) Render() (*Name, error) {
 		SetName("name").
 		SetMessage("Set Connector name").
 		SetDefault("").
-		SetHelp("Sets Connector name").
+		SetHelp("Set Connector name").
 		SetRequired(true).
 		SetInvalidOptions(n.takenNames).
 		SetInvalidOptionsMessage("Connector name must be unique within the same namespace").

@@ -20,7 +20,7 @@ func (n *Name) Render() (string, error) {
 		SetName("name").
 		SetMessage("Set Target name").
 		SetDefault("").
-		SetHelp("Sets targets name entry").
+		SetHelp("Set targets name entry").
 		SetRequired(true).
 		SetInvalidOptions(n.takenNames).
 		SetInvalidOptionsMessage("target name must be unique").

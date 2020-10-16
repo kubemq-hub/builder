@@ -44,7 +44,7 @@ func (r *Replicas) Render() (int, error) {
 		SetMessage("Set Cluster replicas (3,5,7,9)").
 		SetDefault("3").
 		SetRange(3, 9).
-		SetHelp("Sets how many cluster nodes to deploy").
+		SetHelp("Set how many cluster nodes to deploy").
 		SetRequired(true).
 		SetValidator(r.checkValue).
 		Render(&r.value)

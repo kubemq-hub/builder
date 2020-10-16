@@ -39,7 +39,7 @@ func (r *Replicas) Render() (int, error) {
 		SetMessage("Set how many replicas").
 		SetDefault("1").
 		SetRange(0, math.MaxInt32).
-		SetHelp("Sets how many replicas").
+		SetHelp("Set how many replicas").
 		SetRequired(true).
 		SetValidator(r.checkValue).
 		Render(&r.value)

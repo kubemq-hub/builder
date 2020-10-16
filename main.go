@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"github.com/kubemq-hub/builder/common"
 	"github.com/kubemq-hub/builder/connector"
 	"log"
 )
@@ -23,20 +21,35 @@ func main() {
 	//if err != nil {
 	//	log.Fatal(err)
 	//}
-	//b, err := builder.NewBuilder().
+	//b, err := builder.NewBindings().
 	//	SetManifest(m).
 	//	SetOptions(options).Render()
 	//if err != nil {
 	//	log.Fatal(err)
 	//}
 	//fmt.Println(string(b))
-	m, err := common.LoadFromUrl("https://raw.githubusercontent.com/kubemq-hub/kubemq-sources/master/manifest.json")
-	if err != nil {
-		log.Fatal(m)
-	}
-	t, err := connector.NewSource().SetManifest(m.Marshal()).Render()
+	//m, err := common.LoadFromUrl("https://raw.githubusercontent.com/kubemq-hub/kubemq-sources/master/manifest.json")
+	//if err != nil {
+	//	log.Fatal(m)
+	//}
+	_, err := connector.NewBridgeBinding().Render()
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(string(t))
+	//	m1 := map[string]string{
+	//		"key1": "value1",
+	//		"aksdasda2": `value2
+	//asdasd
+	//asd
+	//asdasdasd
+	//asd`,
+	//	}
+	//	m2 := map[string]string{
+	//		"key1":      "value1",
+	//		"aksdasda2": "value2",
+	//	}
+	//
+	//	utils.Println(MapArrayToYaml([]map[string]string{m1, m2}))
+	//
+	//}
 }

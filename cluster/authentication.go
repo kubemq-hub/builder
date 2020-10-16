@@ -47,7 +47,7 @@ func (a *Authentication) askType() error {
 		SetMessage("Set JWT signing method").
 		SetDefault("HS256").
 		SetOptions([]string{"HS256", "HS384", "HS512", "RS256", "RS384", "RS512", "ES256", "ES384", "ES512"}).
-		SetHelp("Sets JWT signing Method").
+		SetHelp("Set JWT signing Method").
 		SetRequired(true).
 		Render(&a.Type)
 	if err != nil {

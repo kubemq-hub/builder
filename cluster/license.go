@@ -24,7 +24,7 @@ func (l *License) Render() (string, error) {
 		SetName("license").
 		SetMessage("Load license data").
 		SetDefault("").
-		SetHelp("Sets license data via editor").
+		SetHelp("Set license data via editor").
 		SetRequired(false).
 		Render(&l.data)
 	if err != nil {

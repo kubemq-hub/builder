@@ -20,7 +20,7 @@ func (n *Name) Render() (string, error) {
 		SetName("name").
 		SetMessage("Set Source name").
 		SetDefault("").
-		SetHelp("Sets sources name entry").
+		SetHelp("Set sources name entry").
 		SetRequired(true).
 		SetInvalidOptions(n.takenNames).
 		SetInvalidOptionsMessage("source name must be unique").

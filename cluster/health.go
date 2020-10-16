@@ -40,7 +40,7 @@ func (h *Health) askPeriodSeconds() error {
 		SetName("period-seconds").
 		SetMessage("Set health check period in seconds").
 		SetDefault("5").
-		SetHelp("Sets health check period in seconds").
+		SetHelp("Set health check period in seconds").
 		SetRequired(true).
 		SetRange(0, math.MaxInt32).
 		Render(&h.PeriodSeconds)
@@ -55,7 +55,7 @@ func (h *Health) askTimeoutSeconds() error {
 		SetName("timeout-seconds").
 		SetMessage("Set health check timeout in seconds").
 		SetDefault("5").
-		SetHelp("Sets health check timeout in seconds").
+		SetHelp("Set health check timeout in seconds").
 		SetRequired(true).
 		SetRange(0, math.MaxInt32).
 		Render(&h.TimeoutSeconds)
@@ -71,7 +71,7 @@ func (h *Health) askSuccessThreshold() error {
 		SetName("success-threshold").
 		SetMessage("Set health check success threshold").
 		SetDefault("1").
-		SetHelp("Sets health check health check success threshold").
+		SetHelp("Set health check health check success threshold").
 		SetRequired(true).
 		SetRange(0, math.MaxInt32).
 		Render(&h.SuccessThreshold)
@@ -86,7 +86,7 @@ func (h *Health) askFailureThreshold() error {
 		SetName("failure threshold").
 		SetMessage("Set health check failure threshold").
 		SetDefault("3").
-		SetHelp("Sets health check health check success threshold").
+		SetHelp("Set health check health check success threshold").
 		SetRequired(true).
 		SetRange(0, math.MaxInt32).
 		Render(&h.FailureThreshold)

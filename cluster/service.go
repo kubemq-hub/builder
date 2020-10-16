@@ -72,7 +72,7 @@ func (s *Service) askBufferSize() error {
 		SetName("buffer-size").
 		SetMessage("Set subscribe message / requests buffer size to use on server").
 		SetDefault("100").
-		SetHelp("Sets subscribe message / requests buffer size to use on server").
+		SetHelp("Set subscribe message / requests buffer size to use on server").
 		SetRequired(false).
 		SetRange(0, math.MaxInt32).
 		Render(&s.BufferSize)
@@ -87,7 +87,7 @@ func (s *Service) askBodyLimit() error {
 		SetName("body=limit").
 		SetMessage("Set max size of payload in bytes (0 - no limit)").
 		SetDefault("0").
-		SetHelp("Sets max size of payload in bytes").
+		SetHelp("Set max size of payload in bytes").
 		SetRequired(false).
 		SetRange(0, math.MaxInt32).
 		Render(&s.BodyLimit)

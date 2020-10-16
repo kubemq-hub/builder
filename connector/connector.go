@@ -2,7 +2,18 @@ package connector
 
 import (
 	"github.com/kubemq-hub/builder/common"
+	"github.com/kubemq-hub/builder/pkg/utils"
 	"github.com/kubemq-hub/builder/survey"
+)
+
+var (
+	promptBridgesStart = `<cyan>In the next steps, we will add Bindings for the connector %s.
+Bindings represent a set of links between Sources and Targets.
+Each link (Binding) consists of:</>
+<yellow>Source:</> A connection which receives data from an external service
+<yellow>Target:</> A connection which sends data to an external service
+<yellow>Middlewares:</> Allows setting logging, retries, and rate-limiting functions between Source and Target
+<cyan>Lets add our first Binding:</>`
 )
 
 type Connector struct {
@@ -83,7 +94,7 @@ func (c *Connector) askService() error {
 		SetMessage("Set Connector service type").
 		SetDefault("ClusterIP").
 		SetOptions([]string{"ClusterIP", "NodePort", "LoadBalancer"}).
-		SetHelp("Sets Connector service type").
+		SetHelp("Set Connector service type").
 		SetRequired(true).
 		Render(&c.ServiceType)
 	if err != nil {
@@ -127,9 +138,11 @@ func (c *Connector) askReplicas() error {
 }
 
 func (c *Connector) Render() (*Connector, error) {
+
 	if err := c.askType(); err != nil {
 		return nil, err
 	}
+
 	if err := c.askName(); err != nil {
 		return nil, err
 	}
@@ -145,10 +158,10 @@ func (c *Connector) Render() (*Connector, error) {
 	if err := c.askImage(); err != nil {
 		return nil, err
 	}
-
+	utils.Println(promptBridgesStart, c.Name)
 	switch c.Type {
 	case "KubeMQ Bridges":
-		cfg, err := NewBridge().
+		cfg, err := NewBridgeBinding().
 			SetClusterAddress(c.defaultOptions["kubemq-address"]).
 			Render()
 		if err != nil {

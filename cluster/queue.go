@@ -27,7 +27,7 @@ func (q *Queue) askMaxReceiveMessagesRequest() error {
 		SetName("MaxReceiveMessagesRequest").
 		SetMessage("Set max of sending / receiving batch of queue message").
 		SetDefault("1024").
-		SetHelp("Sets max of sending / receiving batch of queue message").
+		SetHelp("Set max of sending / receiving batch of queue message").
 		SetRequired(true).
 		SetRange(0, math.MaxInt32).
 		Render(&q.MaxReceiveMessagesRequest)
@@ -43,7 +43,7 @@ func (q *Queue) askMaxWaitTimeoutSeconds() error {
 		SetName("MaxWaitTimeoutSeconds").
 		SetMessage("Set max wait timeout allowed for message").
 		SetDefault("3600").
-		SetHelp("Sets max wait timeout allowed for message").
+		SetHelp("Set max wait timeout allowed for message").
 		SetRequired(true).
 		SetRange(1, math.MaxInt32).
 		Render(&q.MaxWaitTimeoutSeconds)
@@ -58,7 +58,7 @@ func (q *Queue) askMaxExpirationSeconds() error {
 		SetName("MaxWaitTimeoutSeconds").
 		SetMessage("Set max expiration allowed for message").
 		SetDefault("43200").
-		SetHelp("Sets max expiration allowed for message").
+		SetHelp("Set max expiration allowed for message").
 		SetRequired(true).
 		SetRange(1, math.MaxInt32).
 		Render(&q.MaxExpirationSeconds)
@@ -73,7 +73,7 @@ func (q *Queue) asMaxDelaySeconds() error {
 		SetName("MaxDelaySeconds").
 		SetMessage("Set max delay seconds allowed for message").
 		SetDefault("43200").
-		SetHelp("Sets max delay seconds allowed for message").
+		SetHelp("Set max delay seconds allowed for message").
 		SetRequired(true).
 		SetRange(1, math.MaxInt32).
 		Render(&q.MaxDelaySeconds)
@@ -88,7 +88,7 @@ func (q *Queue) askMaxReQueues() error {
 		SetName("MaxReQueues").
 		SetMessage("Set max retires to receive message before discard").
 		SetDefault("1024").
-		SetHelp("Sets max retires to receive message before discard").
+		SetHelp("Set max retires to receive message before discard").
 		SetRequired(true).
 		SetRange(1, math.MaxInt32).
 		Render(&q.MaxReQueues)
@@ -133,7 +133,7 @@ func (q *Queue) askDefaultWaitTimeoutSeconds() error {
 		SetName("DefaultWaitTimeoutSeconds").
 		SetMessage("Set default time to wait for a message in a queue").
 		SetDefault("1").
-		SetHelp("Sets default time to wait for a message in a queue").
+		SetHelp("Set default time to wait for a message in a queue").
 		SetRequired(true).
 		SetRange(1, math.MaxInt32).
 		Render(&q.DefaultWaitTimeoutSeconds)

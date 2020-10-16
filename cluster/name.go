@@ -37,7 +37,7 @@ func (n *Name) Render() (*Name, error) {
 		SetName("name").
 		SetMessage("Set Cluster name").
 		SetDefault("kubemq-cluster").
-		SetHelp("Sets cluster name").
+		SetHelp("Set cluster name").
 		SetRequired(true).
 		SetInvalidOptions(n.takenNames).
 		SetInvalidOptionsMessage("Cluster name must be unique within the same namespace").

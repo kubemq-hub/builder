@@ -27,7 +27,7 @@ func (s *Store) askClean() error {
 		SetName("Clean").
 		SetMessage("Set clear persistence data on start-up").
 		SetDefault("false").
-		SetHelp("Sets clear persistence data on start-up").
+		SetHelp("Set clear persistence data on start-up").
 		SetRequired(true).
 		Render(&s.Clean)
 	if err != nil {
@@ -139,7 +139,7 @@ func (s *Store) askPurgeInactiveMinutes() error {
 		SetName("purge inactive minutes").
 		SetMessage("Set time in minutes of channel inactivity to delete (0 - no limit)").
 		SetDefault("1440").
-		SetHelp("Sets health check health check success threshold").
+		SetHelp("Set health check health check success threshold").
 		SetRequired(true).
 		SetRange(0, math.MaxInt32).
 		Render(&s.PurgeInactiveMinutes)

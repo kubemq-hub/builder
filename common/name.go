@@ -20,7 +20,7 @@ func (n *Name) RenderBinding() (string, error) {
 		SetName("name").
 		SetMessage("Set Binding name").
 		SetDefault("").
-		SetHelp("Sets binding name entry").
+		SetHelp("Set binding name entry").
 		SetRequired(true).
 		SetInvalidOptions(n.takenNames).
 		SetInvalidOptionsMessage("binding name must be unique").
@@ -37,7 +37,7 @@ func (n *Name) RenderSource() (string, error) {
 		SetName("name").
 		SetMessage("Set Source name").
 		SetDefault("").
-		SetHelp("Sets source name entry").
+		SetHelp("Set source name entry").
 		SetRequired(true).
 		Render(&val)
 	if err != nil {
@@ -52,7 +52,7 @@ func (n *Name) RenderTarget() (string, error) {
 		SetName("name").
 		SetMessage("Set Target name").
 		SetDefault("").
-		SetHelp("Sets Target name entry").
+		SetHelp("Set Target name entry").
 		SetRequired(true).
 		Render(&val)
 	if err != nil {

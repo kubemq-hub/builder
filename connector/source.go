@@ -40,7 +40,7 @@ func (s *Source) Render() ([]byte, error) {
 	if m.Schema != "sources" {
 		return nil, fmt.Errorf("invalid scheme")
 	}
-	if b, err := common.NewBuilder().
+	if b, err := common.NewBindings().
 		SetManifest(m).
 		SetOptions(s.defaultOptions).
 		Render(); err != nil {

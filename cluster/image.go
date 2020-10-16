@@ -20,7 +20,7 @@ func (i *Image) askImage() error {
 		SetName("image").
 		SetMessage("Set docker image").
 		SetDefault("docker.io/kubemq/kubemq:latest").
-		SetHelp("Sets cluster docker image").
+		SetHelp("Set cluster docker image").
 		SetRequired(true).
 		Render(&i.Image)
 	if err != nil {
@@ -35,7 +35,7 @@ func (i *Image) askPullPolicy() error {
 		SetMessage("Set image pull policy").
 		SetDefault("Always").
 		SetOptions([]string{"Always", "IfNotPresent", "Never"}).
-		SetHelp("Sets image pull policy").
+		SetHelp("Set image pull policy").
 		SetRequired(true).
 		Render(&i.PullPolicy)
 	if err != nil {

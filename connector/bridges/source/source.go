@@ -1,13 +1,24 @@
 package source
 
 import (
+	"fmt"
+	"github.com/kubemq-hub/builder/pkg/utils"
 	"github.com/kubemq-hub/builder/survey"
 )
 
+const sourceTml = `
+<red>sources:</>
+  <red>name:</> {{.Name}}
+  <red>kind:</> {{.Kind}}
+  <red>connections:</>
+{{ .ConnectionSpec | indent 4}}
+`
+
 type Source struct {
-	Name           string
-	Kind           string
-	Connections    []map[string]string
+	Name           string              `json:"name"`
+	Kind           string              `json:"kind"`
+	Connections    []map[string]string `json:"connections"`
+	ConnectionSpec string
 	addressOptions []string
 	takenNames     []string
 }
@@ -40,6 +51,7 @@ func (s *Source) askAddConnection() (bool, error) {
 	}
 	return val, nil
 }
+
 func (s *Source) addConnection() error {
 	if connection, err := NewConnection().
 		SetAddress(s.addressOptions).
@@ -62,6 +74,7 @@ func (s *Source) Render() (*Source, error) {
 		Render(); err != nil {
 		return nil, err
 	}
+	utils.Println("<cyan>Lets add our first connection for kind %s:</>", s.Kind)
 	err = s.addConnection()
 	if err != nil {
 		return nil, err
@@ -83,4 +96,15 @@ func (s *Source) Render() (*Source, error) {
 	}
 done:
 	return s, nil
+
+}
+
+func (s *Source) String() string {
+	s.ConnectionSpec = utils.MapArrayToYaml(s.Connections)
+	t := utils.NewTemplate(sourceTml, s)
+	b, err := t.Get()
+	if err != nil {
+		return fmt.Sprintf("error rendring source  spec,%s", err.Error())
+	}
+	return string(b)
 }
