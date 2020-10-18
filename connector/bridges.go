@@ -14,10 +14,13 @@ type Bridges struct {
 	takenSourceNames  []string
 	takenTargetNames  []string
 	addressOptions    []string
+	defaultName       string
 }
 
-func NewBridges() *Bridges {
-	return &Bridges{}
+func NewBridges(defaultName string) *Bridges {
+	return &Bridges{
+		defaultName: defaultName,
+	}
 }
 func (b *Bridges) SetClusterAddress(value []string) *Bridges {
 	b.addressOptions = value
@@ -29,7 +32,7 @@ func (b *Bridges) askAddBinding() (bool, error) {
 	err := survey.NewBool().
 		SetKind("bool").
 		SetName("add-binding").
-		SetMessage("Would you like to add another bindings bridge").
+		SetMessage("Would you like to add another bindings").
 		SetDefault("false").
 		SetHelp("Add new bindings bridge").
 		SetRequired(true).
@@ -59,7 +62,7 @@ func (b *Bridges) confirmBinding(bnd *binding.Binding) bool {
 }
 func (b *Bridges) addBinding() error {
 	for {
-		bnd := binding.NewBinding()
+		bnd := binding.NewBinding(fmt.Sprintf("%s-binding-%d", b.defaultName, len(b.Bindings)+1))
 		var err error
 		if bnd, err = bnd.
 			SetAddress(b.addressOptions).

@@ -3,11 +3,14 @@ package binding
 import "github.com/kubemq-hub/builder/survey"
 
 type Name struct {
-	takenNames []string
+	takenNames  []string
+	defaultName string
 }
 
-func NewName() *Name {
-	return &Name{}
+func NewName(defaultName string) *Name {
+	return &Name{
+		defaultName: defaultName,
+	}
 }
 func (n *Name) SetTakenNames(value []string) *Name {
 	n.takenNames = value
@@ -19,7 +22,7 @@ func (n *Name) Render() (string, error) {
 		SetKind("string").
 		SetName("name").
 		SetMessage("Set Binding name").
-		SetDefault("").
+		SetDefault(n.defaultName).
 		SetHelp("Set binding name entry").
 		SetRequired(true).
 		SetInvalidOptions(n.takenNames).

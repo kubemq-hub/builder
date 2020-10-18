@@ -13,11 +13,13 @@ type Source struct {
 	ConnectionSpec string              `json:"-"`
 	addressOptions []string
 	takenNames     []string
+	defaultName    string
 }
 
-func NewSource() *Source {
+func NewSource(defaultName string) *Source {
 	return &Source{
 		addressOptions: nil,
+		defaultName:    defaultName,
 	}
 }
 func (s *Source) SetAddress(value []string) *Source {
@@ -57,7 +59,7 @@ func (s *Source) addConnection() error {
 
 func (s *Source) Render() (*Source, error) {
 	var err error
-	if s.Name, err = NewName().
+	if s.Name, err = NewName(s.defaultName).
 		SetTakenNames(s.takenNames).
 		Render(); err != nil {
 		return nil, err

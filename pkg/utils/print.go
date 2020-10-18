@@ -41,7 +41,7 @@ func Println(format string, args ...interface{}) {
 }
 func Print(format string, args ...interface{}) {
 	str := fmt.Sprintf(format, args...)
-	color.Print(fmt.Sprintf("%s", str))
+	color.Print(str)
 }
 func Block(theme string, format string, args ...interface{}) {
 	colorTheme := themes[theme]
@@ -54,7 +54,7 @@ func stringSplitter(str string) string {
 		return str
 	}
 	newLines := []string{
-		fmt.Sprintf(" |-"),
+		" |-",
 	}
 	for _, line := range lines {
 		newLines = append(newLines, fmt.Sprintf("    %s", line))

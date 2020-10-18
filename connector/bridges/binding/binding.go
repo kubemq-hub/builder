@@ -10,21 +10,24 @@ import (
 )
 
 type Binding struct {
-	Name              string            `json:"name"`
-	Sources           *source.Source    `json:"sources"`
-	Targets           *target.Target    `json:"targets"`
-	Properties        map[string]string `json:"properties"`
-	SourcesSpec       string            `json:"-"`
-	TargetSpec        string            `json:"-"`
-	PropertiesSpec    string            `json:"-"`
-	addressOptions    []string
-	takenSourceNames  []string
-	takenTargetsNames []string
-	takenBindingNames []string
+	Name               string            `json:"name"`
+	Sources            *source.Source    `json:"sources"`
+	Targets            *target.Target    `json:"targets"`
+	Properties         map[string]string `json:"properties"`
+	SourcesSpec        string            `json:"-"`
+	TargetSpec         string            `json:"-"`
+	PropertiesSpec     string            `json:"-"`
+	addressOptions     []string
+	takenSourceNames   []string
+	takenTargetsNames  []string
+	takenBindingNames  []string
+	defaultBindingName string
 }
 
-func NewBinding() *Binding {
-	return &Binding{}
+func NewBinding(defaultName string) *Binding {
+	return &Binding{
+		defaultBindingName: defaultName,
+	}
 }
 func (b *Binding) SetAddress(value []string) *Binding {
 	b.addressOptions = value
@@ -113,14 +116,14 @@ func (b *Binding) confirmProperties(p *common.Properties) bool {
 }
 func (b *Binding) Render() (*Binding, error) {
 	var err error
-	if b.Name, err = NewName().
+	if b.Name, err = NewName(b.defaultBindingName).
 		SetTakenNames(b.takenBindingNames).
 		Render(); err != nil {
 		return nil, err
 	}
 	utils.Println(promptSourceStart)
 	for {
-		if b.Sources, err = source.NewSource().
+		if b.Sources, err = source.NewSource(fmt.Sprintf("%s-source", b.defaultBindingName)).
 			SetAddress(b.addressOptions).
 			SetTakenNames(b.takenSourceNames).
 			Render(); err != nil {
@@ -135,7 +138,7 @@ func (b *Binding) Render() (*Binding, error) {
 	utils.Println(promptTargetStart)
 
 	for {
-		if b.Targets, err = target.NewTarget().
+		if b.Targets, err = target.NewTarget(fmt.Sprintf("%s-target", b.defaultBindingName)).
 			SetAddress(b.addressOptions).
 			SetTakenNames(b.takenTargetsNames).
 			Render(); err != nil {

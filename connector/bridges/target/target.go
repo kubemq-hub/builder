@@ -13,11 +13,13 @@ type Target struct {
 	ConnectionSpec string              `json:"-"`
 	addressOptions []string
 	takenNames     []string
+	defaultName    string
 }
 
-func NewTarget() *Target {
+func NewTarget(defaultName string) *Target {
 	return &Target{
 		addressOptions: nil,
+		defaultName:    defaultName,
 	}
 }
 func (t *Target) SetAddress(value []string) *Target {
@@ -56,7 +58,7 @@ func (t *Target) addConnection() error {
 
 func (t *Target) Render() (*Target, error) {
 	var err error
-	if t.Name, err = NewName().
+	if t.Name, err = NewName(t.defaultName).
 		SetTakenNames(t.takenNames).
 		Render(); err != nil {
 		return nil, err

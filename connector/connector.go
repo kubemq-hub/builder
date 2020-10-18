@@ -50,7 +50,7 @@ func (c *Connector) Confirm() bool {
 		return false
 	}
 	if !val {
-		utils.Println(promptConnectorConfirm)
+		utils.Println(promptConnectorReconfigure)
 	}
 	return val
 }
@@ -154,7 +154,7 @@ func (c *Connector) String() string {
 }
 
 func (c *Connector) Render() (*Connector, error) {
-
+	utils.Println(promptConnectorStart)
 	if err := c.askType(); err != nil {
 		return nil, err
 	}
@@ -168,7 +168,7 @@ func (c *Connector) Render() (*Connector, error) {
 			return nil, err
 		}
 		utils.Println(promptBindingStart, c.Name)
-		cfg, err := NewBridges().
+		cfg, err := NewBridges(c.Name).
 			SetClusterAddress(c.defaultOptions["kubemq-address"]).
 			Render()
 		if err != nil {
