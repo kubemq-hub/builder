@@ -8,7 +8,7 @@ import (
 	"github.com/kubemq-hub/builder/survey"
 )
 
-type BridgesBindings struct {
+type Bridges struct {
 	Bindings          []*binding.Binding `json:"bindings"`
 	takenBindingNames []string
 	takenSourceNames  []string
@@ -16,15 +16,15 @@ type BridgesBindings struct {
 	addressOptions    []string
 }
 
-func NewBridgeBinding() *BridgesBindings {
-	return &BridgesBindings{}
+func NewBridges() *Bridges {
+	return &Bridges{}
 }
-func (b *BridgesBindings) SetClusterAddress(value []string) *BridgesBindings {
+func (b *Bridges) SetClusterAddress(value []string) *Bridges {
 	b.addressOptions = value
 	return b
 }
 
-func (b *BridgesBindings) askAddBinding() (bool, error) {
+func (b *Bridges) askAddBinding() (bool, error) {
 	val := false
 	err := survey.NewBool().
 		SetKind("bool").
@@ -39,8 +39,8 @@ func (b *BridgesBindings) askAddBinding() (bool, error) {
 	}
 	return val, nil
 }
-func (b *BridgesBindings) confirmBinding(bnd *binding.Binding) bool {
-	utils.Println(fmt.Sprintf("<cyan>Here is Binding configuration:</>%s", bnd.String()))
+func (b *Bridges) confirmBinding(bnd *binding.Binding) bool {
+	utils.Println(fmt.Sprintf(promptBindingConfirm, bnd.String()))
 	val := true
 	err := survey.NewBool().
 		SetKind("bool").
@@ -53,11 +53,11 @@ func (b *BridgesBindings) confirmBinding(bnd *binding.Binding) bool {
 		return false
 	}
 	if !val {
-		utils.Println("<cyan>Lets reconfigure Binding:</>")
+		utils.Println(promptBindingReconfigure)
 	}
 	return val
 }
-func (b *BridgesBindings) addBinding() error {
+func (b *Bridges) addBinding() error {
 	for {
 		bnd := binding.NewBinding()
 		var err error
@@ -81,7 +81,7 @@ func (b *BridgesBindings) addBinding() error {
 
 	return nil
 }
-func (b *BridgesBindings) Render() ([]byte, error) {
+func (b *Bridges) Render() ([]byte, error) {
 
 	err := b.addBinding()
 	if err != nil {
@@ -105,6 +105,6 @@ done:
 	return yaml.Marshal(b)
 }
 
-func (b *BridgesBindings) Yaml() ([]byte, error) {
+func (b *Bridges) Yaml() ([]byte, error) {
 	return yaml.Marshal(b)
 }

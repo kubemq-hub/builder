@@ -6,19 +6,11 @@ import (
 	"github.com/kubemq-hub/builder/survey"
 )
 
-const targetTml = `
-<red>targets:</>
-  <red>name:</> {{.Name}}
-  <red>kind:</> {{.Kind}}
-  <red>connections:</>
-{{ .ConnectionSpec | indent 4}}
-`
-
 type Target struct {
 	Name           string              `json:"name"`
 	Kind           string              `json:"kind"`
 	Connections    []map[string]string `json:"connections"`
-	ConnectionSpec string
+	ConnectionSpec string              `json:"-"`
 	addressOptions []string
 	takenNames     []string
 }
@@ -73,7 +65,7 @@ func (t *Target) Render() (*Target, error) {
 		Render(); err != nil {
 		return nil, err
 	}
-	utils.Println("<cyan>Lets add our first connection for kind %s:</>", t.Kind)
+	utils.Println(promptTargetFirstConnection, t.Kind)
 	err = t.addConnection()
 	if err != nil {
 		return nil, err
@@ -97,7 +89,7 @@ done:
 }
 func (t *Target) String() string {
 	t.ConnectionSpec = utils.MapArrayToYaml(t.Connections)
-	tpl := utils.NewTemplate(targetTml, t)
+	tpl := utils.NewTemplate(targetTemplate, t)
 	b, err := tpl.Get()
 	if err != nil {
 		return fmt.Sprintf("error rendring target  spec,%s", err.Error())

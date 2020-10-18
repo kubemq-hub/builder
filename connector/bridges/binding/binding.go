@@ -9,35 +9,14 @@ import (
 	"github.com/kubemq-hub/builder/survey"
 )
 
-const (
-	promptSource = `<cyan>In the next steps, we will configure the Source connection.
-We will set:</>
-<yellow>Name -</> A unique name for the Source's binding
-<yellow>Kind -</> A Source connection type 
-<yellow>Connections -</> A list of connections properties based on the selected kind`
-
-	promptTarget = `<cyan>In the next steps, we will configure the Target connection.
-We will set:</>
-<yellow>Name -</> A unique name for the Source's binding
-<yellow>Kind -</> A Source connection type 
-<yellow>Connections -</> A list of connections properties based on the selected kind`
-)
-
-const bindingsTml = `
-<red>name:</> {{.Name}}
-{{- .SourcesSpec -}}
-{{- .TargetSpec -}}
-{{- .PropertiesSpec -}}
-`
-
 type Binding struct {
 	Name              string            `json:"name"`
 	Sources           *source.Source    `json:"sources"`
 	Targets           *target.Target    `json:"targets"`
 	Properties        map[string]string `json:"properties"`
-	SourcesSpec       string
-	TargetSpec        string
-	PropertiesSpec    string
+	SourcesSpec       string            `json:"-"`
+	TargetSpec        string            `json:"-"`
+	PropertiesSpec    string            `json:"-"`
 	addressOptions    []string
 	takenSourceNames  []string
 	takenTargetsNames []string
@@ -79,7 +58,7 @@ func (b *Binding) BindingName() string {
 	return b.Name
 }
 func (b *Binding) confirmSource() bool {
-	utils.Println(fmt.Sprintf("<cyan>Here is Binding Source configuration:</>%s", b.Sources.String()))
+	utils.Println(fmt.Sprintf(promptSourceConfirm, b.Sources.String()))
 	val := true
 	err := survey.NewBool().
 		SetKind("bool").
@@ -92,12 +71,12 @@ func (b *Binding) confirmSource() bool {
 		return false
 	}
 	if !val {
-		utils.Println("<cyan>Lets reconfigure Binding Source:</>")
+		utils.Println(promptSourceReconfigure)
 	}
 	return val
 }
 func (b *Binding) confirmTarget() bool {
-	utils.Println(fmt.Sprintf("<cyan>Here is Binding Target configuration:</>%s", b.Targets.String()))
+	utils.Println(fmt.Sprintf(promptTargetConfirm, b.Targets.String()))
 	val := true
 	err := survey.NewBool().
 		SetKind("bool").
@@ -110,12 +89,12 @@ func (b *Binding) confirmTarget() bool {
 		return false
 	}
 	if !val {
-		utils.Println("<cyan>Lets reconfigure Binding Target:</>")
+		utils.Println(promptTargetReconfigure)
 	}
 	return val
 }
 func (b *Binding) confirmProperties(p *common.Properties) bool {
-	utils.Println(fmt.Sprintf("<cyan>Here is Binding Middleware Properties configuration:</>%s", p.String()))
+	utils.Println(fmt.Sprintf(promptPropertiesConfirm, p.String()))
 	val := true
 	err := survey.NewBool().
 		SetKind("bool").
@@ -128,7 +107,7 @@ func (b *Binding) confirmProperties(p *common.Properties) bool {
 		return false
 	}
 	if !val {
-		utils.Println("<cyan>Lets reconfigure Middleware Properties:</>")
+		utils.Println(promptPropertiesReconfigure)
 	}
 	return val
 }
@@ -139,8 +118,7 @@ func (b *Binding) Render() (*Binding, error) {
 		Render(); err != nil {
 		return nil, err
 	}
-	utils.Println(promptSource)
-	utils.Println("<cyan>Lets Set Source Configuration:</>")
+	utils.Println(promptSourceStart)
 	for {
 		if b.Sources, err = source.NewSource().
 			SetAddress(b.addressOptions).
@@ -154,8 +132,8 @@ func (b *Binding) Render() (*Binding, error) {
 			break
 		}
 	}
-	utils.Println(promptTarget)
-	utils.Println("<cyan>Lets Set Target Configuration:</>")
+	utils.Println(promptTargetStart)
+
 	for {
 		if b.Targets, err = target.NewTarget().
 			SetAddress(b.addressOptions).
@@ -169,7 +147,7 @@ func (b *Binding) Render() (*Binding, error) {
 			break
 		}
 	}
-	utils.Println("<cyan>We have completed Source and Target Configuration</>")
+	utils.Println(promptBindingComplete)
 	for {
 		p := common.NewProperties()
 		if b.Properties, err = p.
@@ -187,7 +165,7 @@ func (b *Binding) Render() (*Binding, error) {
 }
 
 func (b *Binding) String() string {
-	tpl := utils.NewTemplate(bindingsTml, b)
+	tpl := utils.NewTemplate(bindingTemplate, b)
 	bnd, err := tpl.Get()
 	if err != nil {
 		return fmt.Sprintf("error rendring binding spec,%s", err.Error())

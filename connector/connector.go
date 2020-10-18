@@ -1,19 +1,10 @@
 package connector
 
 import (
+	"fmt"
 	"github.com/kubemq-hub/builder/common"
 	"github.com/kubemq-hub/builder/pkg/utils"
 	"github.com/kubemq-hub/builder/survey"
-)
-
-var (
-	promptBridgesStart = `<cyan>In the next steps, we will add Bindings for the connector %s.
-Bindings represent a set of links between Sources and Targets.
-Each link (Binding) consists of:</>
-<yellow>Source:</> A connection which receives data from an external service
-<yellow>Target:</> A connection which sends data to an external service
-<yellow>Middlewares:</> Allows setting logging, retries, and rate-limiting functions between Source and Target
-<cyan>Lets add our first Binding:</>`
 )
 
 type Connector struct {
@@ -45,7 +36,24 @@ func (c *Connector) SetSourcesManifest(value []byte) *Connector {
 	c.sourcesManifest = value
 	return c
 }
-
+func (c *Connector) Confirm() bool {
+	utils.Println(fmt.Sprintf(promptConnectorConfirm, c.String()))
+	val := true
+	err := survey.NewBool().
+		SetKind("bool").
+		SetName("confirm-connection").
+		SetMessage("Would you like save this configuration").
+		SetDefault("true").
+		SetRequired(true).
+		Render(&val)
+	if err != nil {
+		return false
+	}
+	if !val {
+		utils.Println(promptConnectorConfirm)
+	}
+	return val
+}
 func (c *Connector) askType() error {
 	err := survey.NewString().
 		SetKind("string").
@@ -78,9 +86,9 @@ func (c *Connector) askImage() error {
 	}
 	return nil
 }
-func (c *Connector) askName() error {
+func (c *Connector) askName(defaultName string) error {
 	if name, err := NewName().
-		Render(); err != nil {
+		Render(defaultName); err != nil {
 		return err
 	} else {
 		c.Name = name.Name
@@ -136,6 +144,14 @@ func (c *Connector) askReplicas() error {
 	}
 	return nil
 }
+func (c *Connector) String() string {
+	t := utils.NewTemplate(connectorTemplate, c)
+	b, err := t.Get()
+	if err != nil {
+		return fmt.Sprintf("error rendring source  spec,%s", err.Error())
+	}
+	return string(b)
+}
 
 func (c *Connector) Render() (*Connector, error) {
 
@@ -143,25 +159,16 @@ func (c *Connector) Render() (*Connector, error) {
 		return nil, err
 	}
 
-	if err := c.askName(); err != nil {
-		return nil, err
-	}
-	if err := c.askNamespace(); err != nil {
-		return nil, err
-	}
-	if err := c.askReplicas(); err != nil {
-		return nil, err
-	}
-	if err := c.askService(); err != nil {
-		return nil, err
-	}
-	if err := c.askImage(); err != nil {
-		return nil, err
-	}
-	utils.Println(promptBridgesStart, c.Name)
 	switch c.Type {
 	case "KubeMQ Bridges":
-		cfg, err := NewBridgeBinding().
+		if err := c.askName("kubemq-bridges"); err != nil {
+			return nil, err
+		}
+		if err := c.askNamespace(); err != nil {
+			return nil, err
+		}
+		utils.Println(promptBindingStart, c.Name)
+		cfg, err := NewBridges().
 			SetClusterAddress(c.defaultOptions["kubemq-address"]).
 			Render()
 		if err != nil {
@@ -170,6 +177,13 @@ func (c *Connector) Render() (*Connector, error) {
 		c.Config = string(cfg)
 		c.Type = "bridges"
 	case "KubeMQ Targets":
+		if err := c.askName("kubemq-targets"); err != nil {
+			return nil, err
+		}
+		if err := c.askNamespace(); err != nil {
+			return nil, err
+		}
+		utils.Println(promptBindingStart, c.Name)
 		cfg, err := NewTarget().
 			SetManifest(c.targetManifest).
 			SetDefaultOptions(c.defaultOptions).
@@ -180,6 +194,13 @@ func (c *Connector) Render() (*Connector, error) {
 		c.Config = string(cfg)
 		c.Type = "targets"
 	case "KubeMQ Sources":
+		if err := c.askName("kubemq-sources"); err != nil {
+			return nil, err
+		}
+		if err := c.askNamespace(); err != nil {
+			return nil, err
+		}
+		utils.Println(promptBindingStart, c.Name)
 		cfg, err := NewSource().
 			SetManifest(c.sourcesManifest).
 			SetDefaultOptions(c.defaultOptions).
@@ -189,6 +210,17 @@ func (c *Connector) Render() (*Connector, error) {
 		}
 		c.Config = string(cfg)
 		c.Type = "source"
+	}
+
+	utils.Println(promptConnectorContinue)
+	if err := c.askReplicas(); err != nil {
+		return nil, err
+	}
+	if err := c.askService(); err != nil {
+		return nil, err
+	}
+	if err := c.askImage(); err != nil {
+		return nil, err
 	}
 
 	return c, nil

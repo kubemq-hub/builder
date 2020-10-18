@@ -31,12 +31,12 @@ func (n *Name) checkNonEmptyName(val interface{}) error {
 	}
 	return nil
 }
-func (n *Name) Render() (*Name, error) {
+func (n *Name) Render(defaultName string) (*Name, error) {
 	err := survey.NewString().
 		SetKind("string").
 		SetName("name").
 		SetMessage("Set Connector name").
-		SetDefault("").
+		SetDefault(defaultName).
 		SetHelp("Set Connector name").
 		SetRequired(true).
 		SetInvalidOptions(n.takenNames).

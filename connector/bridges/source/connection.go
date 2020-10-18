@@ -194,10 +194,6 @@ func (c *Connection) renderQueueKind() (map[string]string, error) {
 	if err := c.askChannel(); err != nil {
 		return nil, err
 	}
-	if err := c.askGroup(); err != nil {
-		return nil, err
-	}
-
 	if err := c.askClientID(); err != nil {
 		return nil, err
 	}

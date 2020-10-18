@@ -63,7 +63,7 @@ func (p *Properties) Render() (map[string]string, error) {
 }
 func (p *Properties) String() string {
 	if len(p.values) == 0 {
-		return "<red>properties: {}"
+		return "\n<red>properties: {}</>"
 	}
 	p.ValuesSpec = utils.MapToYaml(p.values)
 	tpl := utils.NewTemplate(propertiesTml, p)
