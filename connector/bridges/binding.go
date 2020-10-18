@@ -22,6 +22,7 @@ type Binding struct {
 	takenTargetsNames []string
 	takenBindingNames []string
 	defaultName       string
+	isEditMode        bool
 }
 
 func NewBinding(defaultName string) *Binding {
@@ -29,8 +30,32 @@ func NewBinding(defaultName string) *Binding {
 		defaultName: defaultName,
 	}
 }
+func (b *Binding) Clone() *Binding {
+	newBnd := &Binding{
+		Name:              b.Name,
+		Sources:           b.Sources.Clone(),
+		Targets:           b.Targets.Clone(),
+		Properties:        map[string]string{},
+		SourcesSpec:       "",
+		TargetsSpec:       "",
+		PropertiesSpec:    "",
+		addressOptions:    nil,
+		takenSourceNames:  nil,
+		takenTargetsNames: nil,
+		takenBindingNames: nil,
+		defaultName:       "",
+	}
+	for key, val := range b.Properties {
+		newBnd.Properties[key] = val
+	}
+	return newBnd
+}
 func (b *Binding) SetAddress(value []string) *Binding {
 	b.addressOptions = value
+	return b
+}
+func (b *Binding) SetEditMode(value bool) *Binding {
+	b.isEditMode = value
 	return b
 }
 func (b *Binding) SetTakenSourceNames(value []string) *Binding {

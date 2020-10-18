@@ -22,6 +22,26 @@ func NewSource(defaultName string) *Source {
 		defaultName:    defaultName,
 	}
 }
+func (s *Source) Clone() *Source {
+	newSrc := &Source{
+		Name:           s.Name,
+		Kind:           s.Kind,
+		Connections:    []map[string]string{},
+		ConnectionSpec: "",
+		addressOptions: nil,
+		takenNames:     nil,
+		defaultName:    "",
+	}
+	for _, connection := range s.Connections {
+		newConnection := map[string]string{}
+		for Key, val := range connection {
+			newConnection[Key] = val
+		}
+		newSrc.Connections = append(newSrc.Connections, newConnection)
+	}
+	return newSrc
+}
+
 func (s *Source) SetAddress(value []string) *Source {
 	s.addressOptions = value
 	return s

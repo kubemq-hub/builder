@@ -21,3 +21,15 @@ func (s Spec) String(template string) string {
 	}
 	return string(spec)
 }
+func (s Spec) Clone() Spec {
+	newSpec := Spec{
+		Name:           s.Name,
+		Kind:           s.Kind,
+		Properties:     map[string]string{},
+		PropertiesSpec: "",
+	}
+	for key, val := range s.Properties {
+		newSpec.Properties[key] = val
+	}
+	return newSpec
+}

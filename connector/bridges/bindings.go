@@ -23,6 +23,7 @@ func NewBindings(defaultName string) *Bindings {
 		defaultName: defaultName,
 	}
 }
+
 func (b *Bindings) SetDefaultOptions(value common.DefaultOptions) *Bindings {
 	b.defaultOptions = value
 	return b
@@ -56,58 +57,190 @@ func (b *Bindings) confirmBinding(bnd *Binding) bool {
 	if err != nil {
 		return false
 	}
-	if !val {
-		utils.Println(promptBindingReconfigure)
-	}
 	return val
 }
 func (b *Bindings) addBinding() error {
-	for {
-		bnd := NewBinding(fmt.Sprintf("%s-binding-%d", b.defaultName, len(b.Bindings)+1))
-		var err error
-		if bnd, err = bnd.
-			SetAddress(b.addressOptions).
-			SetTakenBindingNames(b.takenBindingNames).
-			SetTakenSourceNames(b.takenSourceNames).
-			SetTakenTargetsNames(b.takenTargetNames).
-			Render(); err != nil {
-			return err
+
+	bnd := NewBinding(fmt.Sprintf("%s-binding-%d", b.defaultName, len(b.Bindings)+1))
+	var err error
+	if bnd, err = bnd.
+		SetAddress(b.addressOptions).
+		SetTakenBindingNames(b.takenBindingNames).
+		SetTakenSourceNames(b.takenSourceNames).
+		SetTakenTargetsNames(b.takenTargetNames).
+		Render(); err != nil {
+		return err
+	}
+	ok := b.confirmBinding(bnd)
+	if ok {
+		b.Bindings = append(b.Bindings, bnd)
+		b.takenBindingNames = append(b.takenBindingNames, bnd.BindingName())
+		b.takenSourceNames = append(b.takenSourceNames, bnd.SourceName())
+		b.takenTargetNames = append(b.takenTargetNames, bnd.TargetName())
+
+	}
+	return nil
+}
+func (b *Bindings) askSelectBinding(op string) (*Binding, error) {
+	var bindingList []string
+	for _, bnd := range b.Bindings {
+		bindingList = append(bindingList, bnd.Name)
+	}
+	bindingList = append(bindingList, "Cancel")
+	val := ""
+	err := survey.NewString().
+		SetKind("string").
+		SetName("select-binding").
+		SetMessage(fmt.Sprintf("Select Binding name to %s", op)).
+		SetDefault(bindingList[0]).
+		SetHelp("Select Binding name to delete or Cancel ").
+		SetRequired(true).
+		SetOptions(bindingList).
+		Render(&val)
+	if err != nil {
+		return nil, err
+	}
+	if val == "Cancel" {
+		return nil, nil
+	}
+	for _, binding := range b.Bindings {
+		if val == binding.Name {
+			return binding, nil
 		}
-		ok := b.confirmBinding(bnd)
-		if ok {
-			b.Bindings = append(b.Bindings, bnd)
-			b.takenBindingNames = append(b.takenBindingNames, bnd.BindingName())
-			b.takenSourceNames = append(b.takenSourceNames, bnd.SourceName())
-			b.takenTargetNames = append(b.takenTargetNames, bnd.TargetName())
-			break
+	}
+	return nil, nil
+}
+func (b *Bindings) switchOrRemove(old, new *Binding) {
+	var newBindingList []*Binding
+	var newTakenBindingNames []string
+	var newTakenSourceNames []string
+	var newTakenTargetNames []string
+
+	for _, binding := range b.Bindings {
+		if old.Name != binding.Name {
+			newBindingList = append(newBindingList, binding)
+			newTakenBindingNames = append(newTakenBindingNames, binding.Name)
+			newTakenSourceNames = append(newTakenSourceNames, binding.Sources.Name)
+			newTakenTargetNames = append(newTakenTargetNames, binding.Targets.Name)
 		}
+	}
+	if new != nil {
+		newBindingList = append(newBindingList, new)
+		newTakenBindingNames = append(newTakenBindingNames, new.Name)
+		newTakenBindingNames = append(newTakenBindingNames, new.Name)
+		newTakenSourceNames = append(newTakenSourceNames, new.Sources.Name)
+		newTakenTargetNames = append(newTakenTargetNames, new.Targets.Name)
+	}
+	b.Bindings = newBindingList
+	b.takenBindingNames = newTakenBindingNames
+	b.takenSourceNames = newTakenSourceNames
+	b.takenTargetNames = newTakenTargetNames
+
+}
+func (b *Bindings) editBinding() error {
+	bnd, err := b.askSelectBinding("edit")
+	if err != nil {
+		return err
+	}
+
+	if bnd == nil {
+		utils.Println(promptBindingEditCanceled)
+		return nil
+	}
+
+	edited := bnd.Clone()
+	if edited, err = edited.
+		SetEditMode(true).
+		SetAddress(b.addressOptions).
+		SetTakenBindingNames(b.takenBindingNames).
+		SetTakenSourceNames(b.takenSourceNames).
+		SetTakenTargetsNames(b.takenTargetNames).
+		Render(); err != nil {
+		return err
+	}
+	ok := b.confirmBinding(edited)
+	if ok {
+		b.switchOrRemove(bnd, edited)
+		utils.Println(promptBindingEditedConfirmation, bnd.Name)
+
+	} else {
+		utils.Println(promptBindingEditedNoSave, bnd.Name)
 	}
 
 	return nil
 }
-func (b *Bindings) Render() ([]byte, error) {
-	err := b.addBinding()
+func (b *Bindings) deleteBinding() error {
+	bnd, err := b.askSelectBinding("delete")
 	if err != nil {
-		return nil, err
+		return err
+	}
+	if bnd == nil {
+		utils.Println(promptBindingDeleteCanceled)
+		return nil
+	}
+	b.switchOrRemove(bnd, nil)
+	utils.Println(promptBindingDeleteConfirmation, bnd.Name)
+	return nil
+}
+func (b *Bindings) askMenu() error {
+	utils.Println(promptBindingStartMenu)
+	ops := []string{
+		"Add Binding",
+		"Edit Binding",
+		"Delete Binding",
+		"Done",
 	}
 	for {
-		addMore, err := b.askAddBinding()
+		val := ""
+		err := survey.NewString().
+			SetKind("string").
+			SetName("select-operation").
+			SetMessage("Select Binding operation").
+			SetDefault(ops[0]).
+			SetHelp("Select Binding operation").
+			SetRequired(true).
+			SetOptions(ops).
+			Render(&val)
 		if err != nil {
-			return yaml.Marshal(b)
+			return err
 		}
-		if addMore {
-			err := b.addBinding()
-			if err != nil {
-				return nil, err
+		switch val {
+		case "Add Binding":
+			if err := b.addBinding(); err != nil {
+				return err
 			}
-		} else {
-			goto done
+		case "Edit Binding":
+			if err := b.editBinding(); err != nil {
+				return err
+			}
+		case "Delete Binding":
+			if err := b.deleteBinding(); err != nil {
+				return err
+			}
+		default:
+			return nil
 		}
 	}
-done:
+}
+func (b *Bindings) Render() ([]byte, error) {
+	if err := b.askMenu(); err != nil {
+		return nil, err
+	}
+
+	if len(b.Bindings) == 0 {
+		return nil, fmt.Errorf("at least one binding must be configured")
+	}
 	return yaml.Marshal(b)
 }
 
-func (b *Bindings) Yaml() ([]byte, error) {
+func (b *Bindings) Marshal() ([]byte, error) {
 	return yaml.Marshal(b)
+}
+func (b *Bindings) Unmarshal(data []byte) *Bindings {
+	bnd := &Bindings{}
+	err := yaml.Unmarshal(data, bnd)
+	if err != nil {
+		return b
+	}
+	return bnd
 }

@@ -45,5 +45,12 @@ const (
 {{- .PropertiesSpec -}}
 `
 
-	promptBindingComplete = "<cyan>We have completed Source and Target binding configuration</>"
+	promptBindingStartMenu = "<cyan>Lets configure the binding list:</>"
+	promptBindingComplete  = "<cyan>We have completed Source and Target binding configuration</>"
+
+	promptBindingDeleteConfirmation = "<red>Binding %s deleted successfully</>"
+	promptBindingDeleteCanceled     = "<red>Delete binding operation, cancelled</>"
+	promptBindingEditedConfirmation = "<red>Binding %s edited successfully</>"
+	promptBindingEditedNoSave       = "<red>Binding %s was not edited</>"
+	promptBindingEditCanceled       = "<red>Edit binding operation, cancelled</>"
 )

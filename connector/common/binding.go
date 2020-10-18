@@ -7,10 +7,10 @@ import (
 )
 
 type Binding struct {
-	Name              string            `json:"name"`
-	Source            Spec              `json:"source"`
-	Target            Spec              `json:"target"`
-	Properties        map[string]string `json:"properties"`
+	Name              string            `json:"name" yaml:"name"`
+	Source            Spec              `json:"source" yaml:"source"`
+	Target            Spec              `json:"target" yaml:"target"`
+	Properties        map[string]string `json:"properties" yaml:"properties"`
 	SourceSpec        string            `json:"-" yaml:"-"`
 	TargetSpec        string            `json:"-" yaml:"-"`
 	PropertiesSpec    string            `json:"-" yaml:"-"`
@@ -19,6 +19,7 @@ type Binding struct {
 	sourcesList       Connectors
 	takenBindingNames []string
 	defaultName       string
+	isEditMode        bool
 }
 
 func NewBinding(defaultName string) *Binding {
@@ -27,16 +28,41 @@ func NewBinding(defaultName string) *Binding {
 		Source:            Spec{},
 		Target:            Spec{},
 		Properties:        map[string]string{},
+		SourceSpec:        "",
+		TargetSpec:        "",
+		PropertiesSpec:    "",
 		loadedOptions:     nil,
 		targetsList:       nil,
 		sourcesList:       nil,
 		takenBindingNames: nil,
 		defaultName:       defaultName,
+		isEditMode:        false,
 	}
 }
 func (b *Binding) SetDefaultOptions(value DefaultOptions) *Binding {
 	b.loadedOptions = value
 	return b
+}
+func (b *Binding) Clone() *Binding {
+	newBinding := &Binding{
+		Name:              b.Name,
+		Source:            b.Source.Clone(),
+		Target:            b.Target.Clone(),
+		Properties:        map[string]string{},
+		SourceSpec:        "",
+		TargetSpec:        "",
+		PropertiesSpec:    "",
+		loadedOptions:     nil,
+		targetsList:       nil,
+		sourcesList:       nil,
+		takenBindingNames: nil,
+		defaultName:       "",
+		isEditMode:        false,
+	}
+	for key, val := range b.Properties {
+		newBinding.Properties[key] = val
+	}
+	return newBinding
 }
 func (b *Binding) SetTargetsList(value Connectors) *Binding {
 	b.targetsList = value
@@ -44,6 +70,10 @@ func (b *Binding) SetTargetsList(value Connectors) *Binding {
 }
 func (b *Binding) SetSourcesList(value Connectors) *Binding {
 	b.sourcesList = value
+	return b
+}
+func (b *Binding) SetEditMode(value bool) *Binding {
+	b.isEditMode = value
 	return b
 }
 func (b *Binding) SetTakenBindingNames(value []string) *Binding {
@@ -56,13 +86,22 @@ func (b *Binding) SourceName() string {
 func (b *Binding) TargetName() string {
 	return b.Target.Name
 }
-func (b *Binding) askKind(kinds []string) (string, error) {
+func (b *Binding) askKind(kinds []string, currentKind string) (string, error) {
+	defaultKind := ""
+	if b.isEditMode {
+		defaultKind = currentKind
+	} else {
+		defaultKind = kinds[0]
+	}
+	if defaultKind == "" {
+		defaultKind = kinds[0]
+	}
 	val := ""
 	err := survey.NewString().
 		SetKind("string").
 		SetName("kind").
 		SetMessage("Select Connector Kind").
-		SetDefault(kinds[0]).
+		SetDefault(defaultKind).
 		SetOptions(kinds).
 		SetHelp("Select Connector Kind").
 		SetRequired(true).
@@ -86,9 +125,7 @@ func (b *Binding) confirmSource() bool {
 	if err != nil {
 		return false
 	}
-	if !val {
-		utils.Println(promptSourceReconfigure)
-	}
+
 	return val
 }
 func (b *Binding) confirmTarget() bool {
@@ -104,9 +141,7 @@ func (b *Binding) confirmTarget() bool {
 	if err != nil {
 		return false
 	}
-	if !val {
-		utils.Println(promptTargetReconfigure)
-	}
+
 	return val
 }
 func (b *Binding) confirmProperties(p *Properties) bool {
@@ -129,7 +164,13 @@ func (b *Binding) confirmProperties(p *Properties) bool {
 }
 func (b *Binding) askSource(defaultName string) error {
 	var err error
-	if b.Source.Name, err = NewName(defaultName).
+	sourceDefaultName := ""
+	if b.isEditMode {
+		sourceDefaultName = b.Source.Name
+	} else {
+		sourceDefaultName = defaultName
+	}
+	if b.Source.Name, err = NewName(sourceDefaultName).
 		RenderSource(); err != nil {
 		return err
 	}
@@ -142,7 +183,8 @@ func (b *Binding) askSource(defaultName string) error {
 	if len(kinds) == 0 {
 		return fmt.Errorf("no source connectors available")
 	}
-	if b.Source.Kind, err = b.askKind(kinds); err != nil {
+
+	if b.Source.Kind, err = b.askKind(kinds, b.Source.Kind); err != nil {
 		return err
 	}
 	connector := sources[b.Source.Kind]
@@ -153,7 +195,13 @@ func (b *Binding) askSource(defaultName string) error {
 }
 func (b *Binding) askTarget(defaultName string) error {
 	var err error
-	if b.Target.Name, err = NewName(defaultName).
+	targetDefaultName := ""
+	if b.isEditMode {
+		targetDefaultName = b.Target.Name
+	} else {
+		targetDefaultName = defaultName
+	}
+	if b.Target.Name, err = NewName(targetDefaultName).
 		RenderTarget(); err != nil {
 		return err
 	}
@@ -167,7 +215,7 @@ func (b *Binding) askTarget(defaultName string) error {
 		return fmt.Errorf("no targets connectors available")
 	}
 
-	if b.Target.Kind, err = b.askKind(kinds); err != nil {
+	if b.Target.Kind, err = b.askKind(kinds, b.Target.Kind); err != nil {
 		return err
 	}
 	connector := targets[b.Target.Kind]
@@ -179,14 +227,20 @@ func (b *Binding) askTarget(defaultName string) error {
 
 func (b *Binding) Render() (*Binding, error) {
 	var err error
-	if b.Name, err = NewName(b.defaultName).
+	defaultName := ""
+	if b.isEditMode {
+		defaultName = b.Name
+	} else {
+		defaultName = b.defaultName
+	}
+	if b.Name, err = NewName(defaultName).
 		SetTakenNames(b.takenBindingNames).
 		RenderBinding(); err != nil {
 		return nil, err
 	}
 	utils.Println(promptSourceStart)
 	for {
-		if err := b.askSource(fmt.Sprintf("%s-source", b.defaultName)); err != nil {
+		if err := b.askSource(fmt.Sprintf("%s-source", b.Name)); err != nil {
 			return nil, err
 		}
 		ok := b.confirmSource()
@@ -197,7 +251,7 @@ func (b *Binding) Render() (*Binding, error) {
 	}
 	utils.Println(promptTargetStart)
 	for {
-		if err := b.askTarget(fmt.Sprintf("%s-target", b.defaultName)); err != nil {
+		if err := b.askTarget(fmt.Sprintf("%s-target", b.Name)); err != nil {
 			return nil, err
 		}
 		ok := b.confirmTarget()

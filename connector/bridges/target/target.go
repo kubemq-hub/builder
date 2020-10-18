@@ -22,6 +22,26 @@ func NewTarget(defaultName string) *Target {
 		defaultName:    defaultName,
 	}
 }
+func (t *Target) Clone() *Target {
+	newTarget := &Target{
+		Name:           t.Name,
+		Kind:           t.Kind,
+		Connections:    []map[string]string{},
+		ConnectionSpec: "",
+		addressOptions: nil,
+		takenNames:     nil,
+		defaultName:    "",
+	}
+	for _, connection := range t.Connections {
+		newConnection := map[string]string{}
+		for Key, val := range connection {
+			newConnection[Key] = val
+		}
+		newTarget.Connections = append(newTarget.Connections, newConnection)
+	}
+	return newTarget
+}
+
 func (t *Target) SetAddress(value []string) *Target {
 	t.addressOptions = value
 	return t

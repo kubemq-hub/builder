@@ -10,6 +10,7 @@ type Target struct {
 	manifestData   []byte
 	defaultOptions common.DefaultOptions
 	defaultName    string
+	bindingsList   []*common.Binding
 }
 
 func NewTarget(defaultName string) *Target {
@@ -30,6 +31,10 @@ func (t *Target) SetDefaultOptions(value common.DefaultOptions) *Target {
 	t.defaultOptions = value
 	return t
 }
+func (t *Target) SetBindings(value []*common.Binding) *Target {
+	t.bindingsList = value
+	return t
+}
 
 func (t *Target) Render() ([]byte, error) {
 	if t.manifestData == nil {
@@ -45,6 +50,7 @@ func (t *Target) Render() ([]byte, error) {
 	if b, err := common.NewBindings(t.defaultName).
 		SetManifest(m).
 		SetOptions(t.defaultOptions).
+		SetBindings(t.bindingsList).
 		Render(); err != nil {
 		return nil, err
 	} else {
