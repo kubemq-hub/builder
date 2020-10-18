@@ -1,18 +1,21 @@
-package connector
+package sources
 
 import (
 	"fmt"
-	"github.com/kubemq-hub/builder/common"
+	"github.com/kubemq-hub/builder/connector/common"
 	"io/ioutil"
 )
 
 type Source struct {
 	manifestData   []byte
 	defaultOptions common.DefaultOptions
+	defaultName    string
 }
 
-func NewSource() *Source {
-	return &Source{}
+func NewSource(defaultName string) *Source {
+	return &Source{
+		defaultName: defaultName,
+	}
 }
 
 func (s *Source) SetManifest(value []byte) *Source {
@@ -40,7 +43,7 @@ func (s *Source) Render() ([]byte, error) {
 	if m.Schema != "sources" {
 		return nil, fmt.Errorf("invalid scheme")
 	}
-	if b, err := common.NewBindings().
+	if b, err := common.NewBindings(s.defaultName).
 		SetManifest(m).
 		SetOptions(s.defaultOptions).
 		Render(); err != nil {

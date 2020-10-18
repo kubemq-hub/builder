@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"github.com/kubemq-hub/builder/pkg/utils"
 	"github.com/kubemq-hub/builder/survey"
 	"gopkg.in/yaml.v2"
 )
@@ -11,10 +12,13 @@ type Bindings struct {
 	manifest          *Manifest
 	loadedOptions     DefaultOptions
 	takenBindingNames []string
+	defaultName       string
 }
 
-func NewBindings() *Bindings {
-	return &Bindings{}
+func NewBindings(defaultName string) *Bindings {
+	return &Bindings{
+		defaultName: defaultName,
+	}
 }
 
 func (b *Bindings) SetManifest(value *Manifest) *Bindings {
@@ -40,18 +44,42 @@ func (b *Bindings) askAddBinding() (bool, error) {
 	}
 	return val, nil
 }
-
+func (b *Bindings) confirmBinding(bnd *Binding) bool {
+	utils.Println(fmt.Sprintf(promptBindingConfirm, bnd.String()))
+	val := true
+	err := survey.NewBool().
+		SetKind("bool").
+		SetName("confirm-connection").
+		SetMessage("Would you like save this configuration").
+		SetDefault("true").
+		SetRequired(true).
+		Render(&val)
+	if err != nil {
+		return false
+	}
+	if !val {
+		utils.Println(promptBindingReconfigure)
+	}
+	return val
+}
 func (b *Bindings) addBinding() error {
-	if bnd, err := NewBinding().
-		SetDefaultOptions(b.loadedOptions).
-		SetSourcesList(b.manifest.Sources).
-		SetTargetsList(b.manifest.Targets).
-		SetTakenBindingNames(b.takenBindingNames).
-		Render(); err != nil {
-		return err
-	} else {
-		b.Bindings = append(b.Bindings, bnd)
-		b.takenBindingNames = append(b.takenBindingNames, bnd.Name)
+	for {
+		bnd := NewBinding(fmt.Sprintf("%s-binding-%d", b.defaultName, len(b.Bindings)+1))
+		var err error
+		if bnd, err = bnd.
+			SetDefaultOptions(b.loadedOptions).
+			SetSourcesList(b.manifest.Sources).
+			SetTargetsList(b.manifest.Targets).
+			SetTakenBindingNames(b.takenBindingNames).
+			Render(); err != nil {
+			return err
+		}
+		ok := b.confirmBinding(bnd)
+		if ok {
+			b.Bindings = append(b.Bindings, bnd)
+			b.takenBindingNames = append(b.takenBindingNames, bnd.Name)
+			break
+		}
 	}
 	return nil
 }

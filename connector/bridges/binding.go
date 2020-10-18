@@ -1,32 +1,32 @@
-package binding
+package bridges
 
 import (
 	"fmt"
-	"github.com/kubemq-hub/builder/common"
 	"github.com/kubemq-hub/builder/connector/bridges/source"
 	"github.com/kubemq-hub/builder/connector/bridges/target"
+	"github.com/kubemq-hub/builder/connector/common"
 	"github.com/kubemq-hub/builder/pkg/utils"
 	"github.com/kubemq-hub/builder/survey"
 )
 
 type Binding struct {
-	Name               string            `json:"name"`
-	Sources            *source.Source    `json:"sources"`
-	Targets            *target.Target    `json:"targets"`
-	Properties         map[string]string `json:"properties"`
-	SourcesSpec        string            `json:"-"`
-	TargetSpec         string            `json:"-"`
-	PropertiesSpec     string            `json:"-"`
-	addressOptions     []string
-	takenSourceNames   []string
-	takenTargetsNames  []string
-	takenBindingNames  []string
-	defaultBindingName string
+	Name              string            `json:"name"`
+	Sources           *source.Source    `json:"sources"`
+	Targets           *target.Target    `json:"targets"`
+	Properties        map[string]string `json:"properties"`
+	SourcesSpec       string            `json:"-" yaml:"-"`
+	TargetsSpec       string            `json:"-" yaml:"-"`
+	PropertiesSpec    string            `json:"-" yaml:"-"`
+	addressOptions    []string
+	takenSourceNames  []string
+	takenTargetsNames []string
+	takenBindingNames []string
+	defaultName       string
 }
 
 func NewBinding(defaultName string) *Binding {
 	return &Binding{
-		defaultBindingName: defaultName,
+		defaultName: defaultName,
 	}
 }
 func (b *Binding) SetAddress(value []string) *Binding {
@@ -116,14 +116,14 @@ func (b *Binding) confirmProperties(p *common.Properties) bool {
 }
 func (b *Binding) Render() (*Binding, error) {
 	var err error
-	if b.Name, err = NewName(b.defaultBindingName).
+	if b.Name, err = NewName(b.defaultName).
 		SetTakenNames(b.takenBindingNames).
 		Render(); err != nil {
 		return nil, err
 	}
 	utils.Println(promptSourceStart)
 	for {
-		if b.Sources, err = source.NewSource(fmt.Sprintf("%s-source", b.defaultBindingName)).
+		if b.Sources, err = source.NewSource(fmt.Sprintf("%s-source", b.defaultName)).
 			SetAddress(b.addressOptions).
 			SetTakenNames(b.takenSourceNames).
 			Render(); err != nil {
@@ -138,7 +138,7 @@ func (b *Binding) Render() (*Binding, error) {
 	utils.Println(promptTargetStart)
 
 	for {
-		if b.Targets, err = target.NewTarget(fmt.Sprintf("%s-target", b.defaultBindingName)).
+		if b.Targets, err = target.NewTarget(fmt.Sprintf("%s-target", b.defaultName)).
 			SetAddress(b.addressOptions).
 			SetTakenNames(b.takenTargetsNames).
 			Render(); err != nil {
@@ -146,7 +146,7 @@ func (b *Binding) Render() (*Binding, error) {
 		}
 		ok := b.confirmTarget()
 		if ok {
-			b.TargetSpec = b.Targets.String()
+			b.TargetsSpec = b.Targets.String()
 			break
 		}
 	}

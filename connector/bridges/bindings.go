@@ -1,15 +1,16 @@
-package connector
+package bridges
 
 import (
 	"fmt"
 	"github.com/ghodss/yaml"
-	"github.com/kubemq-hub/builder/connector/bridges/binding"
+	"github.com/kubemq-hub/builder/connector/common"
 	"github.com/kubemq-hub/builder/pkg/utils"
 	"github.com/kubemq-hub/builder/survey"
 )
 
-type Bridges struct {
-	Bindings          []*binding.Binding `json:"bindings"`
+type Bindings struct {
+	Bindings          []*Binding `json:"bindings"`
+	defaultOptions    common.DefaultOptions
 	takenBindingNames []string
 	takenSourceNames  []string
 	takenTargetNames  []string
@@ -17,17 +18,17 @@ type Bridges struct {
 	defaultName       string
 }
 
-func NewBridges(defaultName string) *Bridges {
-	return &Bridges{
+func NewBindings(defaultName string) *Bindings {
+	return &Bindings{
 		defaultName: defaultName,
 	}
 }
-func (b *Bridges) SetClusterAddress(value []string) *Bridges {
-	b.addressOptions = value
+func (b *Bindings) SetDefaultOptions(value common.DefaultOptions) *Bindings {
+	b.defaultOptions = value
 	return b
 }
 
-func (b *Bridges) askAddBinding() (bool, error) {
+func (b *Bindings) askAddBinding() (bool, error) {
 	val := false
 	err := survey.NewBool().
 		SetKind("bool").
@@ -42,7 +43,7 @@ func (b *Bridges) askAddBinding() (bool, error) {
 	}
 	return val, nil
 }
-func (b *Bridges) confirmBinding(bnd *binding.Binding) bool {
+func (b *Bindings) confirmBinding(bnd *Binding) bool {
 	utils.Println(fmt.Sprintf(promptBindingConfirm, bnd.String()))
 	val := true
 	err := survey.NewBool().
@@ -60,9 +61,9 @@ func (b *Bridges) confirmBinding(bnd *binding.Binding) bool {
 	}
 	return val
 }
-func (b *Bridges) addBinding() error {
+func (b *Bindings) addBinding() error {
 	for {
-		bnd := binding.NewBinding(fmt.Sprintf("%s-binding-%d", b.defaultName, len(b.Bindings)+1))
+		bnd := NewBinding(fmt.Sprintf("%s-binding-%d", b.defaultName, len(b.Bindings)+1))
 		var err error
 		if bnd, err = bnd.
 			SetAddress(b.addressOptions).
@@ -84,8 +85,7 @@ func (b *Bridges) addBinding() error {
 
 	return nil
 }
-func (b *Bridges) Render() ([]byte, error) {
-
+func (b *Bindings) Render() ([]byte, error) {
 	err := b.addBinding()
 	if err != nil {
 		return nil, err
@@ -108,6 +108,6 @@ done:
 	return yaml.Marshal(b)
 }
 
-func (b *Bridges) Yaml() ([]byte, error) {
+func (b *Bindings) Yaml() ([]byte, error) {
 	return yaml.Marshal(b)
 }

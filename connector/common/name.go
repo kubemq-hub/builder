@@ -3,11 +3,14 @@ package common
 import "github.com/kubemq-hub/builder/survey"
 
 type Name struct {
-	takenNames []string
+	takenNames  []string
+	defaultName string
 }
 
-func NewName() *Name {
-	return &Name{}
+func NewName(defaultName string) *Name {
+	return &Name{
+		defaultName: defaultName,
+	}
 }
 func (n *Name) SetTakenNames(value []string) *Name {
 	n.takenNames = value
@@ -19,7 +22,7 @@ func (n *Name) RenderBinding() (string, error) {
 		SetKind("string").
 		SetName("name").
 		SetMessage("Set Binding name").
-		SetDefault("").
+		SetDefault(n.defaultName).
 		SetHelp("Set binding name entry").
 		SetRequired(true).
 		SetInvalidOptions(n.takenNames).
@@ -36,7 +39,7 @@ func (n *Name) RenderSource() (string, error) {
 		SetKind("string").
 		SetName("name").
 		SetMessage("Set Source name").
-		SetDefault("").
+		SetDefault(n.defaultName).
 		SetHelp("Set source name entry").
 		SetRequired(true).
 		Render(&val)
@@ -51,7 +54,7 @@ func (n *Name) RenderTarget() (string, error) {
 		SetKind("string").
 		SetName("name").
 		SetMessage("Set Target name").
-		SetDefault("").
+		SetDefault(n.defaultName).
 		SetHelp("Set Target name entry").
 		SetRequired(true).
 		Render(&val)

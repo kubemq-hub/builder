@@ -1,4 +1,4 @@
-package binding
+package bridges
 
 import "github.com/kubemq-hub/builder/survey"
 

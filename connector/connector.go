@@ -2,7 +2,10 @@ package connector
 
 import (
 	"fmt"
-	"github.com/kubemq-hub/builder/common"
+	"github.com/kubemq-hub/builder/connector/bridges"
+	"github.com/kubemq-hub/builder/connector/common"
+	"github.com/kubemq-hub/builder/connector/sources"
+	"github.com/kubemq-hub/builder/connector/targets"
 	"github.com/kubemq-hub/builder/pkg/utils"
 	"github.com/kubemq-hub/builder/survey"
 )
@@ -168,8 +171,8 @@ func (c *Connector) Render() (*Connector, error) {
 			return nil, err
 		}
 		utils.Println(promptBindingStart, c.Name)
-		cfg, err := NewBridges(c.Name).
-			SetClusterAddress(c.defaultOptions["kubemq-address"]).
+		cfg, err := bridges.NewBridges(c.Name).
+			SetDefaultOptions(c.defaultOptions).
 			Render()
 		if err != nil {
 			return nil, err
@@ -184,7 +187,7 @@ func (c *Connector) Render() (*Connector, error) {
 			return nil, err
 		}
 		utils.Println(promptBindingStart, c.Name)
-		cfg, err := NewTarget().
+		cfg, err := targets.NewTarget(c.Name).
 			SetManifest(c.targetManifest).
 			SetDefaultOptions(c.defaultOptions).
 			Render()
@@ -201,7 +204,7 @@ func (c *Connector) Render() (*Connector, error) {
 			return nil, err
 		}
 		utils.Println(promptBindingStart, c.Name)
-		cfg, err := NewSource().
+		cfg, err := sources.NewSource(c.Name).
 			SetManifest(c.sourcesManifest).
 			SetDefaultOptions(c.defaultOptions).
 			Render()

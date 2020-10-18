@@ -10,7 +10,7 @@ type Source struct {
 	Name           string              `json:"name"`
 	Kind           string              `json:"kind"`
 	Connections    []map[string]string `json:"connections"`
-	ConnectionSpec string              `json:"-"`
+	ConnectionSpec string              `json:"-" yaml:"-"`
 	addressOptions []string
 	takenNames     []string
 	defaultName    string

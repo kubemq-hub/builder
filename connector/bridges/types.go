@@ -1,4 +1,9 @@
-package binding
+package bridges
+
+const (
+	promptBindingConfirm     = "<cyan>Here is the binding configuration:</>%s"
+	promptBindingReconfigure = "<cyan>Lets reconfigure the binding:</>"
+)
 
 const (
 	promptSourceStart = `
@@ -36,7 +41,7 @@ const (
 	bindingTemplate = `
 <red>name:</> {{.Name}}
 {{- .SourcesSpec -}}
-{{- .TargetSpec -}}
+{{- .TargetsSpec -}}
 {{- .PropertiesSpec -}}
 `
 

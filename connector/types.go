@@ -1,9 +1,6 @@
 package connector
 
 const (
-	promptBindingConfirm     = "<cyan>Here is the binding configuration:</>%s"
-	promptBindingReconfigure = "<cyan>Lets reconfigure the binding:</>"
-
 	promptBindingStart = `
 <cyan>In the next steps, we will add Bindings for the connector %s.
 Bindings represent a set of links between Sources and Targets.

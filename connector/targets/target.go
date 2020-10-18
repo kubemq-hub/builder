@@ -1,18 +1,21 @@
-package connector
+package targets
 
 import (
 	"fmt"
-	"github.com/kubemq-hub/builder/common"
+	"github.com/kubemq-hub/builder/connector/common"
 	"io/ioutil"
 )
 
 type Target struct {
 	manifestData   []byte
 	defaultOptions common.DefaultOptions
+	defaultName    string
 }
 
-func NewTarget() *Target {
-	return &Target{}
+func NewTarget(defaultName string) *Target {
+	return &Target{
+		defaultName: defaultName,
+	}
 }
 
 func (t *Target) SetManifest(value []byte) *Target {
@@ -39,7 +42,7 @@ func (t *Target) Render() ([]byte, error) {
 	if m.Schema != "targets" {
 		return nil, fmt.Errorf("invalid scheme, %s", m.Schema)
 	}
-	if b, err := common.NewBindings().
+	if b, err := common.NewBindings(t.defaultName).
 		SetManifest(m).
 		SetOptions(t.defaultOptions).
 		Render(); err != nil {
