@@ -446,13 +446,21 @@ func (b *Binding) edit() (*Binding, error) {
 			}
 			b.wasEdited = true
 		case ops[1]:
-			if err := b.editSource(); err != nil {
-				return nil, err
+			for {
+				if err := b.editSource(); err != nil {
+					return nil, err
+				}
+				if b.confirmSource() {
+					break
+				}
 			}
 
 		case ops[2]:
 			if err := b.editTarget(); err != nil {
 				return nil, err
+			}
+			if b.confirmTarget() {
+				break
 			}
 
 		case ops[3]:
@@ -474,13 +482,22 @@ func (b *Binding) add() (*Binding, error) {
 	if err := b.setName(); err != nil {
 		return nil, err
 	}
-
-	if err := b.addSource(fmt.Sprintf("%s-source", b.Name)); err != nil {
-		return nil, err
+	for {
+		if err := b.addSource(fmt.Sprintf("%s-source", b.Name)); err != nil {
+			return nil, err
+		}
+		if b.confirmSource() {
+			break
+		}
 	}
 
-	if err := b.addTarget(fmt.Sprintf("%s-target", b.Name)); err != nil {
-		return nil, err
+	for {
+		if err := b.addTarget(fmt.Sprintf("%s-target", b.Name)); err != nil {
+			return nil, err
+		}
+		if b.confirmTarget() {
+			break
+		}
 	}
 	utils.Println(promptBindingComplete)
 	var err error
