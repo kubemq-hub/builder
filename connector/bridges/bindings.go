@@ -28,7 +28,10 @@ func (b *Bindings) SetDefaultOptions(value common.DefaultOptions) *Bindings {
 	b.defaultOptions = value
 	return b
 }
-
+func (b *Bindings) SetBindings(value []*Binding) *Bindings {
+	b.Bindings = value
+	return b
+}
 func (b *Bindings) askAddBinding() (bool, error) {
 	val := false
 	err := survey.NewBool().
@@ -86,7 +89,7 @@ func (b *Bindings) askSelectBinding(op string) (*Binding, error) {
 	for _, bnd := range b.Bindings {
 		bindingList = append(bindingList, bnd.Name)
 	}
-	bindingList = append(bindingList, "Cancel")
+	bindingList = append(bindingList, "Back")
 	val := ""
 	err := survey.NewString().
 		SetKind("string").
@@ -100,7 +103,7 @@ func (b *Bindings) askSelectBinding(op string) (*Binding, error) {
 	if err != nil {
 		return nil, err
 	}
-	if val == "Cancel" {
+	if val == "Back" {
 		return nil, nil
 	}
 	for _, binding := range b.Bindings {
@@ -184,11 +187,19 @@ func (b *Bindings) deleteBinding() error {
 }
 func (b *Bindings) askMenu() error {
 	utils.Println(promptBindingStartMenu)
-	ops := []string{
-		"Add Binding",
-		"Edit Binding",
-		"Delete Binding",
-		"Done",
+	var ops []string
+	if len(b.Bindings) == 0 {
+		ops = []string{
+			"Add Binding",
+			"Done",
+		}
+	} else {
+		ops = []string{
+			"Add Binding",
+			"Edit Binding",
+			"Delete Binding",
+			"Done",
+		}
 	}
 	for {
 		val := ""

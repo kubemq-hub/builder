@@ -14,6 +14,7 @@ type Target struct {
 	addressOptions []string
 	takenNames     []string
 	defaultName    string
+	isEdit         bool
 }
 
 func NewTarget(defaultName string) *Target {
@@ -77,13 +78,25 @@ func (t *Target) addConnection() error {
 }
 
 func (t *Target) Render() (*Target, error) {
+	defaultName := ""
+	if t.isEdit {
+		defaultName = t.Name
+	} else {
+		defaultName = t.defaultName
+	}
 	var err error
-	if t.Name, err = NewName(t.defaultName).
+	if t.Name, err = NewName(defaultName).
 		SetTakenNames(t.takenNames).
 		Render(); err != nil {
 		return nil, err
 	}
-	if t.Kind, err = NewKind().
+	defaultKind := ""
+	if t.isEdit {
+		defaultKind = t.Kind
+	} else {
+		defaultKind = ""
+	}
+	if t.Kind, err = NewKind(defaultKind).
 		Render(); err != nil {
 		return nil, err
 	}

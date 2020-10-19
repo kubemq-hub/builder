@@ -7,7 +7,7 @@ const (
 
 const (
 	promptSourceStart = `
-<cyan>In the next steps, we will configure the Source connection.
+<cyan>In the next steps, we will configure the Source connections.
 We will set:</>
 <yellow>Name -</> A unique name for the Source's binding
 <yellow>Kind -</> A Source connection type 
@@ -20,7 +20,7 @@ We will set:</>
 )
 const (
 	promptTargetStart = `
-<cyan>In the next steps, we will configure the Target connection.
+<cyan>In the next steps, we will configure the Target connections.
 We will set:</>
 <yellow>Name -</> A unique name for the Target's binding
 <yellow>Kind -</> A Target connection type 
@@ -46,7 +46,7 @@ const (
 `
 
 	promptBindingStartMenu = "<cyan>Lets configure the binding list:</>"
-	promptBindingComplete  = "<cyan>We have completed Source and Target binding configuration</>"
+	promptBindingComplete  = "<cyan>We have completed Source and Target binding configurations</>"
 
 	promptBindingDeleteConfirmation = "<red>Binding %s deleted successfully</>"
 	promptBindingDeleteCanceled     = "<red>Delete binding operation, cancelled</>"

@@ -14,6 +14,7 @@ type Source struct {
 	addressOptions []string
 	takenNames     []string
 	defaultName    string
+	isEdit         bool
 }
 
 func NewSource(defaultName string) *Source {
@@ -50,6 +51,10 @@ func (s *Source) SetTakenNames(value []string) *Source {
 	s.takenNames = value
 	return s
 }
+func (s *Source) SetIsEdit(value bool) *Source {
+	s.isEdit = value
+	return s
+}
 func (s *Source) askAddConnection() (bool, error) {
 	val := false
 	err := survey.NewBool().
@@ -78,13 +83,25 @@ func (s *Source) addConnection() error {
 }
 
 func (s *Source) Render() (*Source, error) {
+	defaultName := ""
+	if s.isEdit {
+		defaultName = s.Name
+	} else {
+		defaultName = s.defaultName
+	}
 	var err error
-	if s.Name, err = NewName(s.defaultName).
+	if s.Name, err = NewName(defaultName).
 		SetTakenNames(s.takenNames).
 		Render(); err != nil {
 		return nil, err
 	}
-	if s.Kind, err = NewKind().
+	defaultKind := ""
+	if s.isEdit {
+		defaultKind = s.Kind
+	} else {
+		defaultKind = ""
+	}
+	if s.Kind, err = NewKind(defaultKind).
 		Render(); err != nil {
 		return nil, err
 	}
@@ -93,7 +110,6 @@ func (s *Source) Render() (*Source, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	for {
 		addMore, err := s.askAddConnection()
 		if err != nil {

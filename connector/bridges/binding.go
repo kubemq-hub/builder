@@ -182,6 +182,9 @@ func (b *Binding) Render() (*Binding, error) {
 			Render(); err != nil {
 			return nil, err
 		}
+		if len(b.Properties) == 0 {
+			break
+		}
 		ok := b.confirmProperties(p)
 		if ok {
 			b.PropertiesSpec = p.String()
