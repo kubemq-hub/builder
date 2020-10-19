@@ -145,7 +145,7 @@ func (b *Binding) confirmTarget() bool {
 	return val
 }
 func (b *Binding) confirmProperties(p *Properties) bool {
-	utils.Println(fmt.Sprintf(promptPropertiesConfirm, p.String()))
+	utils.Println(fmt.Sprintf(promptPropertiesConfirm, p.ColoredYaml()))
 	val := true
 	err := survey.NewBool().
 		SetKind("bool").
@@ -272,7 +272,7 @@ func (b *Binding) Render() (*Binding, error) {
 		}
 		ok := b.confirmProperties(p)
 		if ok {
-			b.PropertiesSpec = p.String()
+			b.PropertiesSpec = p.ColoredYaml()
 			break
 		}
 	}

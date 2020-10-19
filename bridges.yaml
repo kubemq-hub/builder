@@ -1,0 +1,27 @@
+bindings:
+- name: asd
+  properties: {}
+  sources:
+    connections:
+    - address: localhost:50000
+      channel: source.da.queues
+    kind: source.queue
+    name: da
+  targets:
+    connections: null
+    kind: ""
+    name: asd
+- name: kubemq-bridges-binding-2
+  properties: null
+  sources:
+    connections:
+    - address: da
+      channel: source.kubemq-bridges-binding-2-source.queues
+    kind: source.queue
+    name: kubemq-bridges-binding-2-source
+  targets:
+    connections:
+    - address: asd
+      channels: target.kubemq-bridges-binding-2-target.queues
+    kind: target.queue
+    name: kubemq-bridges-binding-2-target

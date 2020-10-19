@@ -1,8 +1,7 @@
 package bridges
 
 const (
-	promptBindingConfirm     = "<cyan>Here is the binding configuration:</>%s"
-	promptBindingReconfigure = "<cyan>Lets reconfigure the binding:</>"
+	promptBindingConfirm = "<cyan>Here is the binding configuration:</>%s"
 )
 
 const (
@@ -12,6 +11,7 @@ We will set:</>
 <yellow>Name -</> A unique name for the Source's binding
 <yellow>Kind -</> A Source connection type 
 <yellow>Connections -</> A list of connections properties based on the selected kind
+
 <cyan>Lets start binding source configuration:</>`
 
 	promptSourceConfirm = `<cyan>Here is the binding's Source configuration:</>%s`
@@ -25,6 +25,7 @@ We will set:</>
 <yellow>Name -</> A unique name for the Target's binding
 <yellow>Kind -</> A Target connection type 
 <yellow>Connections -</> A list of connections properties based on the selected kind
+
 <cyan>Lets start binding target configuration:</>`
 
 	promptTargetConfirm = `<cyan>Here is the binding's Target configuration:</>%s`
@@ -46,10 +47,13 @@ const (
 `
 
 	promptBindingStartMenu = "<cyan>Lets configure the binding list:</>"
-	promptBindingComplete  = "<cyan>We have completed Source and Target binding configurations</>"
+	promptBindingComplete  = "<cyan>We have completed Source and Target binding configurations\n</>"
+	promptShowList         = "<cyan>Current Bindings list:</>"
+	promptShowBinding      = "<cyan>Showing Binding %s configuration:</>"
 
 	promptBindingDeleteConfirmation = "<red>Binding %s deleted successfully</>"
 	promptBindingDeleteCanceled     = "<red>Delete binding operation, cancelled</>"
+	promptBindingShowCanceled       = "<red>Show binding operation, cancelled</>"
 	promptBindingEditedConfirmation = "<red>Binding %s edited successfully</>"
 	promptBindingEditedNoSave       = "<red>Binding %s was not edited</>"
 	promptBindingEditCanceled       = "<red>Edit binding operation, cancelled</>"

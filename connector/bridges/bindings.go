@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"github.com/ghodss/yaml"
 	"github.com/kubemq-hub/builder/connector/common"
+	"github.com/kubemq-hub/builder/pkg/uitable"
 	"github.com/kubemq-hub/builder/pkg/utils"
 	"github.com/kubemq-hub/builder/survey"
+	"sort"
 )
 
 type Bindings struct {
@@ -32,23 +34,9 @@ func (b *Bindings) SetBindings(value []*Binding) *Bindings {
 	b.Bindings = value
 	return b
 }
-func (b *Bindings) askAddBinding() (bool, error) {
-	val := false
-	err := survey.NewBool().
-		SetKind("bool").
-		SetName("add-binding").
-		SetMessage("Would you like to add another bindings").
-		SetDefault("false").
-		SetHelp("Add new bindings bridge").
-		SetRequired(true).
-		Render(&val)
-	if err != nil {
-		return false, err
-	}
-	return val, nil
-}
+
 func (b *Bindings) confirmBinding(bnd *Binding) bool {
-	utils.Println(fmt.Sprintf(promptBindingConfirm, bnd.String()))
+	utils.Println(fmt.Sprintf(promptBindingConfirm, bnd.ColoredYaml()))
 	val := true
 	err := survey.NewBool().
 		SetKind("bool").
@@ -89,12 +77,12 @@ func (b *Bindings) askSelectBinding(op string) (*Binding, error) {
 	for _, bnd := range b.Bindings {
 		bindingList = append(bindingList, bnd.Name)
 	}
-	bindingList = append(bindingList, "Back")
+	bindingList = append(bindingList, "Return")
 	val := ""
 	err := survey.NewString().
 		SetKind("string").
 		SetName("select-binding").
-		SetMessage(fmt.Sprintf("Select Binding name to %s", op)).
+		SetMessage(fmt.Sprintf("Select Binding to %s", op)).
 		SetDefault(bindingList[0]).
 		SetHelp("Select Binding name to delete or Cancel ").
 		SetRequired(true).
@@ -103,7 +91,7 @@ func (b *Bindings) askSelectBinding(op string) (*Binding, error) {
 	if err != nil {
 		return nil, err
 	}
-	if val == "Back" {
+	if val == "Return" {
 		return nil, nil
 	}
 	for _, binding := range b.Bindings {
@@ -129,7 +117,6 @@ func (b *Bindings) switchOrRemove(old, new *Binding) {
 	}
 	if new != nil {
 		newBindingList = append(newBindingList, new)
-		newTakenBindingNames = append(newTakenBindingNames, new.Name)
 		newTakenBindingNames = append(newTakenBindingNames, new.Name)
 		newTakenSourceNames = append(newTakenSourceNames, new.Sources.Name)
 		newTakenTargetNames = append(newTakenTargetNames, new.Targets.Name)
@@ -161,11 +148,13 @@ func (b *Bindings) editBinding() error {
 		Render(); err != nil {
 		return err
 	}
+	if !edited.wasEdited {
+		return nil
+	}
 	ok := b.confirmBinding(edited)
 	if ok {
 		b.switchOrRemove(bnd, edited)
 		utils.Println(promptBindingEditedConfirmation, bnd.Name)
-
 	} else {
 		utils.Println(promptBindingEditedNoSave, bnd.Name)
 	}
@@ -185,23 +174,52 @@ func (b *Bindings) deleteBinding() error {
 	utils.Println(promptBindingDeleteConfirmation, bnd.Name)
 	return nil
 }
+func (b *Bindings) showBinding() error {
+	bnd, err := b.askSelectBinding("show")
+	if err != nil {
+		return err
+	}
+	if bnd == nil {
+		utils.Println(promptBindingShowCanceled)
+		return nil
+	}
+	utils.Println(promptShowBinding, bnd.Name)
+	utils.Println(bnd.ColoredYaml())
+	return nil
+}
+func (b *Bindings) showList() error {
+	utils.Println(promptShowList)
+	table := uitable.New()
+	table.MaxColWidth = 80
+	rows := b.TableShort()
+	for i := 0; i < len(rows); i++ {
+		table.AddRow(rows[i]...)
+	}
+	utils.Println(fmt.Sprintf("%s\n", table.String()))
+	return nil
+}
 func (b *Bindings) askMenu() error {
 	utils.Println(promptBindingStartMenu)
-	var ops []string
-	if len(b.Bindings) == 0 {
-		ops = []string{
-			"Add Binding",
-			"Done",
-		}
-	} else {
-		ops = []string{
-			"Add Binding",
-			"Edit Binding",
-			"Delete Binding",
-			"Done",
-		}
-	}
 	for {
+		sort.Slice(b.Bindings, func(i, j int) bool {
+			return b.Bindings[i].Name < b.Bindings[j].Name
+		})
+		var ops []string
+		if len(b.Bindings) == 0 {
+			ops = []string{
+				"Add",
+				"RETURN",
+			}
+		} else {
+			ops = []string{
+				"Add new binding",
+				"Edit existed binding",
+				"Show existed binding",
+				"Delete existed binding",
+				"List of bindings",
+				"RETURN",
+			}
+		}
 		val := ""
 		err := survey.NewString().
 			SetKind("string").
@@ -216,16 +234,25 @@ func (b *Bindings) askMenu() error {
 			return err
 		}
 		switch val {
-		case "Add Binding":
+		case ops[0]:
 			if err := b.addBinding(); err != nil {
 				return err
 			}
-		case "Edit Binding":
+		case ops[1]:
 			if err := b.editBinding(); err != nil {
 				return err
 			}
-		case "Delete Binding":
+		case ops[2]:
+			if err := b.showBinding(); err != nil {
+				return err
+			}
+		case ops[3]:
 			if err := b.deleteBinding(); err != nil {
+				return err
+			}
+
+		case ops[4]:
+			if err := b.showList(); err != nil {
 				return err
 			}
 		default:
@@ -234,6 +261,7 @@ func (b *Bindings) askMenu() error {
 	}
 }
 func (b *Bindings) Render() ([]byte, error) {
+
 	if err := b.askMenu(); err != nil {
 		return nil, err
 	}
@@ -254,4 +282,26 @@ func (b *Bindings) Unmarshal(data []byte) *Bindings {
 		return b
 	}
 	return bnd
+}
+func (b *Bindings) TableShort() [][]interface{} {
+	var rows [][]interface{}
+	headers := [][]interface{}{
+		{
+			"NAME",
+			"SOURCES (Name/Kind/Connections)",
+			"TARGETS (Name/Kind/Connections)",
+			"MIDDLEWARES",
+		},
+		{
+			"----",
+			"-------------------------------",
+			"-------------------------------",
+			"------------",
+		},
+	}
+	rows = append(rows, headers...)
+	for _, bnd := range b.Bindings {
+		rows = append(rows, bnd.TableRowShort())
+	}
+	return rows
 }
