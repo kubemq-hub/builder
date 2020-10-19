@@ -1,0 +1,19 @@
+bindings:
+- name: asd
+  source:
+    name: dad
+    kind: source.messaging.mqtt
+    properties:
+      host: ddddd
+      password: asd
+      qos: "0"
+      topic: asd
+      username: asd
+  target:
+    name: newtarget
+    kind: source.http
+    properties:
+      methods: asd
+      path: /
+  properties:
+    log_level: error

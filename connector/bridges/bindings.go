@@ -84,7 +84,7 @@ func (b *Bindings) askSelectBinding(op string) (*Binding, error) {
 		SetName("select-binding").
 		SetMessage(fmt.Sprintf("Select Binding to %s", op)).
 		SetDefault(bindingList[0]).
-		SetHelp("Select Binding name to delete or Cancel ").
+		SetHelp("Select Binding name to edit, show or delete").
 		SetRequired(true).
 		SetOptions(bindingList).
 		Render(&val)
@@ -261,11 +261,9 @@ func (b *Bindings) askMenu() error {
 	}
 }
 func (b *Bindings) Render() ([]byte, error) {
-
 	if err := b.askMenu(); err != nil {
 		return nil, err
 	}
-
 	if len(b.Bindings) == 0 {
 		return nil, fmt.Errorf("at least one binding must be configured")
 	}

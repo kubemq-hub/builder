@@ -14,7 +14,7 @@ func ValidateNoneEmptyString(val interface{}) error {
 }
 func ValidateNoneSpace(val interface{}) error {
 	str, _ := val.(string)
-	if strings.Contains(str, "") {
+	if strings.Contains(str, " ") {
 		return fmt.Errorf("value cannot contains spaces")
 	}
 	return nil

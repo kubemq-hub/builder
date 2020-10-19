@@ -46,6 +46,11 @@ const (
 	promptBindingEditedConfirmation = "<red>Binding %s edited successfully</>"
 	promptBindingEditedNoSave       = "<red>Binding %s was not edited</>"
 	promptBindingEditCanceled       = "<red>Edit binding operation, cancelled</>"
+	promptBindingShowCanceled       = "<red>Show binding operation, cancelled</>"
+	promptShowBinding               = "<cyan>Showing Binding %s configuration:</>"
+	promptShowList                  = "<cyan>Current Bindings list:</>"
+	promptShowSource                = "<cyan>Showing Source %s configuration:</>"
+	promptShowTarget                = "<cyan>Showing Target %s configuration:</>"
 )
 
 const (

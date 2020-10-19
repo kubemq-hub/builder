@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"github.com/kubemq-hub/builder/pkg/uitable"
 	"github.com/kubemq-hub/builder/pkg/utils"
 	"github.com/kubemq-hub/builder/survey"
 	"gopkg.in/yaml.v2"
@@ -35,7 +36,7 @@ func (b *Bindings) SetOptions(value DefaultOptions) *Bindings {
 }
 
 func (b *Bindings) confirmBinding(bnd *Binding) bool {
-	utils.Println(fmt.Sprintf(promptBindingConfirm, bnd.String()))
+	utils.Println(fmt.Sprintf(promptBindingConfirm, bnd.ColoredYaml()))
 	val := true
 	err := survey.NewBool().
 		SetKind("bool").
@@ -147,7 +148,7 @@ func (b *Bindings) askSelectBinding(op string) (*Binding, error) {
 		SetName("select-binding").
 		SetMessage(fmt.Sprintf("Select Binding name to %s", op)).
 		SetDefault(bindingList[0]).
-		SetHelp("Select Binding name to delete or Cancel ").
+		SetHelp("Select Binding name to edit, show or delete").
 		SetRequired(true).
 		SetOptions(bindingList).
 		Render(&val)
@@ -164,7 +165,30 @@ func (b *Bindings) askSelectBinding(op string) (*Binding, error) {
 	}
 	return nil, nil
 }
-
+func (b *Bindings) showBinding() error {
+	bnd, err := b.askSelectBinding("show")
+	if err != nil {
+		return err
+	}
+	if bnd == nil {
+		utils.Println(promptBindingShowCanceled)
+		return nil
+	}
+	utils.Println(promptShowBinding, bnd.Name)
+	utils.Println(bnd.ColoredYaml())
+	return nil
+}
+func (b *Bindings) showList() error {
+	utils.Println(promptShowList)
+	table := uitable.New()
+	table.MaxColWidth = 80
+	rows := b.TableShort()
+	for i := 0; i < len(rows); i++ {
+		table.AddRow(rows[i]...)
+	}
+	utils.Println(fmt.Sprintf("%s\n", table.String()))
+	return nil
+}
 func (b *Bindings) askMenu() error {
 	utils.Println(promptBindingStartMenu)
 
@@ -172,15 +196,17 @@ func (b *Bindings) askMenu() error {
 		var ops []string
 		if len(b.Bindings) == 0 {
 			ops = []string{
-				"Add Binding",
-				"Done",
+				"Add",
+				"RETURN",
 			}
 		} else {
 			ops = []string{
-				"Add Binding",
-				"Edit Binding",
-				"Delete Binding",
-				"Done",
+				"Add new binding",
+				"Edit existed binding",
+				"Show existed binding",
+				"Delete existed binding",
+				"List of bindings",
+				"RETURN",
 			}
 		}
 		val := ""
@@ -197,16 +223,25 @@ func (b *Bindings) askMenu() error {
 			return err
 		}
 		switch val {
-		case "Add Binding":
+		case ops[0]:
 			if err := b.addBinding(); err != nil {
 				return err
 			}
-		case "Edit Binding":
+		case ops[1]:
 			if err := b.editBinding(); err != nil {
 				return err
 			}
-		case "Delete Binding":
+		case ops[2]:
+			if err := b.showBinding(); err != nil {
+				return err
+			}
+		case ops[3]:
 			if err := b.deleteBinding(); err != nil {
+				return err
+			}
+
+		case ops[4]:
+			if err := b.showList(); err != nil {
 				return err
 			}
 		default:
@@ -239,4 +274,26 @@ func (b *Bindings) Unmarshal(data []byte) *Bindings {
 		return b
 	}
 	return bnd
+}
+func (b *Bindings) TableShort() [][]interface{} {
+	var rows [][]interface{}
+	headers := [][]interface{}{
+		{
+			"NAME",
+			"SOURCE (Name/Kind)",
+			"TARGET (Name/Kind)",
+			"MIDDLEWARES",
+		},
+		{
+			"----",
+			"-----------------",
+			"-----------------",
+			"------------",
+		},
+	}
+	rows = append(rows, headers...)
+	for _, bnd := range b.Bindings {
+		rows = append(rows, bnd.TableRowShort())
+	}
+	return rows
 }
