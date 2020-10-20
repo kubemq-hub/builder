@@ -1,11 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"github.com/ghodss/yaml"
-	"github.com/kubemq-hub/builder/connector/common"
-	connectorSources "github.com/kubemq-hub/builder/connector/sources"
-	"io/ioutil"
+	"github.com/kubemq-hub/builder/manager"
 	"log"
 )
 
@@ -28,26 +24,34 @@ func main() {
 	////}
 	//utils.Println(c.ColoredYaml())
 
-	file, err := ioutil.ReadFile("./sources.yaml")
+	//file, err := ioutil.ReadFile("./sources.yaml")
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//list := &common.Bindings{}
+	//err = yaml.Unmarshal(file, list)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//
+	//var bindingsYaml []byte
+	//if bindingsYaml, err = connectorSources.NewSource("kubemq-bridges").
+	//	SetBindings(list.Bindings).
+	//	SetManifestFile("./sources-manifest.json").
+	//	Render(); err != nil {
+	//	log.Fatal(err)
+	//}
+	//err = ioutil.WriteFile("./sources.yaml", bindingsYaml, 0644)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//fmt.Println(string(bindingsYaml))
+	h, err := NewConnectorsFileHandler("connectors.yaml")
 	if err != nil {
 		log.Fatal(err)
 	}
-	list := &common.Bindings{}
-	err = yaml.Unmarshal(file, list)
-	if err != nil {
+	cm := manager.NewConnectorsManager(h)
+	if err := cm.Render(); err != nil {
 		log.Fatal(err)
 	}
-
-	var bindingsYaml []byte
-	if bindingsYaml, err = connectorSources.NewSource("kubemq-bridges").
-		SetBindings(list.Bindings).
-		SetManifestFile("./sources-manifest.json").
-		Render(); err != nil {
-		log.Fatal(err)
-	}
-	err = ioutil.WriteFile("./sources.yaml", bindingsYaml, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(string(bindingsYaml))
 }

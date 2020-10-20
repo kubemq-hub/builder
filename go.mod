@@ -18,5 +18,6 @@ require (
 	github.com/mattn/go-runewidth v0.0.9
 	github.com/mitchellh/copystructure v1.0.0 // indirect
 	github.com/rivo/tview v0.0.0-20200915114512-42866ecf6ca6 // indirect
+	github.com/stretchr/testify v1.3.0
 	gopkg.in/yaml.v2 v2.3.0
 )

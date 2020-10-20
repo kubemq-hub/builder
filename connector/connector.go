@@ -39,6 +39,9 @@ func (c *Connector) SetSourcesManifest(value []byte) *Connector {
 	c.sourcesManifest = value
 	return c
 }
+func (c *Connector) Key() string {
+	return fmt.Sprintf("%s/%s", c.Namespace, c.Name)
+}
 func (c *Connector) Confirm() bool {
 	utils.Println(fmt.Sprintf(promptConnectorConfirm, c.String()))
 	val := true
