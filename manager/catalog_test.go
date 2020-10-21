@@ -43,6 +43,7 @@ func TestConnectorsCatalog_initResourceUpdate(t *testing.T) {
 	m.Version = "update"
 	_ = file.Close()
 	err = m.SaveFile(file.Name())
+	require.NoError(t, err)
 	resource, err = cc.initResource(file.Name(), targetRemoteUrl, targetRemoteHash)
 	require.NoError(t, err)
 	require.NotNil(t, resource)

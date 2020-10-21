@@ -49,7 +49,7 @@ func (t *Target) Render() ([]byte, error) {
 	}
 	if b, err := common.NewBindings(t.defaultName).
 		SetManifest(m).
-		SetOptions(t.defaultOptions).
+		SetDefaultOptions(t.defaultOptions).
 		SetBindings(t.bindingsList).
 		Render(); err != nil {
 		return nil, err

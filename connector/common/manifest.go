@@ -44,8 +44,8 @@ func LoadFromUrl(url string) (*Manifest, error) {
 		log.Fatal(err)
 	}
 	defer func() {
-		err := os.Remove(file.Name())
-		fmt.Println(err)
+		_ = os.Remove(file.Name())
+
 	}()
 	resp, err := http.Get(url)
 	if err != nil {
@@ -66,7 +66,7 @@ func (m *Manifest) Save() error {
 		return err
 	}
 	h := sha256.New()
-	h.Write(b)
+	_, _ = h.Write(b)
 	hash := hex.EncodeToString(h.Sum(nil))
 	err = ioutil.WriteFile(fmt.Sprintf("%s-manifest.json", m.Schema), b, 0644)
 	if err != nil {

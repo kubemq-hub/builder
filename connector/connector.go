@@ -22,10 +22,27 @@ type Connector struct {
 	defaultOptions  common.DefaultOptions
 	targetManifest  []byte
 	sourcesManifest []byte
+	isEditMode      bool
 }
 
 func NewConnector() *Connector {
 	return &Connector{}
+}
+func (c *Connector) Clone() *Connector {
+	return &Connector{
+		Name:            c.Name,
+		Namespace:       c.Namespace,
+		Type:            c.Type,
+		Replicas:        c.Replicas,
+		Config:          c.Config,
+		NodePort:        c.NodePort,
+		ServiceType:     c.ServiceType,
+		Image:           c.Image,
+		defaultOptions:  c.defaultOptions,
+		targetManifest:  c.targetManifest,
+		sourcesManifest: c.sourcesManifest,
+		isEditMode:      false,
+	}
 }
 func (c *Connector) SetDefaultOptions(value common.DefaultOptions) *Connector {
 	c.defaultOptions = value
@@ -42,8 +59,12 @@ func (c *Connector) SetSourcesManifest(value []byte) *Connector {
 func (c *Connector) Key() string {
 	return fmt.Sprintf("%s/%s", c.Namespace, c.Name)
 }
+func (c *Connector) SetEditMode() *Connector {
+	c.isEditMode = true
+	return c
+}
 func (c *Connector) Confirm() bool {
-	utils.Println(fmt.Sprintf(promptConnectorConfirm, c.String()))
+	utils.Println(fmt.Sprintf(promptConnectorConfirm, c.ColoredYaml()))
 	val := true
 	err := survey.NewBool().
 		SetKind("bool").
@@ -60,21 +81,7 @@ func (c *Connector) Confirm() bool {
 	}
 	return val
 }
-func (c *Connector) askType() error {
-	err := survey.NewString().
-		SetKind("string").
-		SetName("connector type").
-		SetMessage("Choose Connector type").
-		SetOptions([]string{"KubeMQ Bridges", "KubeMQ Targets", "KubeMQ Sources"}).
-		SetDefault("KubeMQ Bridges").
-		SetHelp("Set Connector type").
-		SetRequired(true).
-		Render(&c.Type)
-	if err != nil {
-		return err
-	}
-	return nil
-}
+
 func (c *Connector) askImage() error {
 	err := survey.NewString().
 		SetKind("string").
@@ -150,7 +157,7 @@ func (c *Connector) askReplicas() error {
 	}
 	return nil
 }
-func (c *Connector) String() string {
+func (c *Connector) ColoredYaml() string {
 	t := utils.NewTemplate(connectorTemplate, c)
 	b, err := t.Get()
 	if err != nil {
@@ -160,62 +167,61 @@ func (c *Connector) String() string {
 }
 
 func (c *Connector) Render() (*Connector, error) {
-	utils.Println(promptConnectorStart)
-	if err := c.askType(); err != nil {
+	if c.isEditMode {
+		return c.edit()
+	} else {
+		return c.add()
+	}
+}
+func (c *Connector) edit() (*Connector, error) {
+	switch c.Type {
+	case "bridges":
+		bindings, err := bridges.Unmarshal([]byte(c.Config))
+		if err != nil {
+			return nil, err
+		}
+		bindings.SetDefaultOptions(c.defaultOptions)
+		bindings.SetDefaultName(c.Name)
+		if newBindings, err := bindings.Render(); err != nil {
+			return nil, err
+		} else {
+			c.Config = string(newBindings)
+		}
+	case "targets", "sources":
+		bindings, err := common.Unmarshal([]byte(c.Config))
+		if err != nil {
+			return nil, err
+		}
+		bindings.SetDefaultOptions(c.defaultOptions)
+		bindings.SetDefaultName(c.Name)
+		if newBindings, err := bindings.Render(); err != nil {
+			return nil, err
+		} else {
+			c.Config = string(newBindings)
+		}
+	}
+	utils.Println(promptConnectorContinue)
+	if err := c.askReplicas(); err != nil {
 		return nil, err
 	}
-
-	switch c.Type {
-	case "KubeMQ Bridges":
-		if err := c.askName("kubemq-bridges"); err != nil {
-			return nil, err
-		}
-		if err := c.askNamespace(); err != nil {
-			return nil, err
-		}
-		utils.Println(promptBindingStart, c.Name)
-		cfg, err := bridges.NewBridges(c.Name).
-			SetDefaultOptions(c.defaultOptions).
-			Render()
-		if err != nil {
-			return nil, err
-		}
-		c.Config = string(cfg)
-		c.Type = "bridges"
-	case "KubeMQ Targets":
-		if err := c.askName("kubemq-targets"); err != nil {
-			return nil, err
-		}
-		if err := c.askNamespace(); err != nil {
-			return nil, err
-		}
-		utils.Println(promptBindingStart, c.Name)
-		cfg, err := targets.NewTarget(c.Name).
-			SetManifest(c.targetManifest).
-			SetDefaultOptions(c.defaultOptions).
-			Render()
-		if err != nil {
-			return nil, err
-		}
-		c.Config = string(cfg)
-		c.Type = "targets"
-	case "KubeMQ Sources":
-		if err := c.askName("kubemq-sources"); err != nil {
-			return nil, err
-		}
-		if err := c.askNamespace(); err != nil {
-			return nil, err
-		}
-		utils.Println(promptBindingStart, c.Name)
-		cfg, err := sources.NewSource(c.Name).
-			SetManifest(c.sourcesManifest).
-			SetDefaultOptions(c.defaultOptions).
-			Render()
-		if err != nil {
-			return nil, err
-		}
-		c.Config = string(cfg)
-		c.Type = "source"
+	if err := c.askService(); err != nil {
+		return nil, err
+	}
+	if err := c.askImage(); err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+func (c *Connector) add() (*Connector, error) {
+	utils.Println(promptConnectorStart)
+	menu := survey.NewMenu("Select Connector type").
+		AddItem("KubeMQ Bridges", c.addBridges).
+		AddItem("KubeMQ Targets", c.addTargets).
+		AddItem("KubeMQ Sources", c.addSources).
+		SetDisableLoop(true).SetBackOption(true).
+		SetErrorHandler(survey.MenuShowErrorFn)
+	if err := menu.Render(); err != nil {
+		return nil, err
 	}
 
 	utils.Println(promptConnectorContinue)
@@ -230,4 +236,61 @@ func (c *Connector) Render() (*Connector, error) {
 	}
 
 	return c, nil
+}
+
+func (c *Connector) addBridges() error {
+	if err := c.askName("kubemq-bridges"); err != nil {
+		return err
+	}
+	if err := c.askNamespace(); err != nil {
+		return err
+	}
+	utils.Println(promptBindingStart, c.Name)
+	cfg, err := bridges.NewBridges(c.Name).
+		SetDefaultOptions(c.defaultOptions).
+		Render()
+	if err != nil {
+		return err
+	}
+	c.Config = string(cfg)
+	c.Type = "bridges"
+	return nil
+}
+func (c *Connector) addTargets() error {
+	if err := c.askName("kubemq-targets"); err != nil {
+		return err
+	}
+	if err := c.askNamespace(); err != nil {
+		return err
+	}
+	utils.Println(promptBindingStart, c.Name)
+	cfg, err := targets.NewTarget(c.Name).
+		SetManifest(c.targetManifest).
+		SetDefaultOptions(c.defaultOptions).
+		Render()
+	if err != nil {
+		return err
+	}
+	c.Config = string(cfg)
+	c.Type = "targets"
+	return nil
+}
+func (c *Connector) addSources() error {
+	if err := c.askName("kubemq-sources"); err != nil {
+		return err
+	}
+	if err := c.askNamespace(); err != nil {
+		return err
+	}
+	utils.Println(promptBindingStart, c.Name)
+	cfg, err := sources.NewSource(c.Name).
+		SetManifest(c.sourcesManifest).
+		SetDefaultOptions(c.defaultOptions).
+		Render()
+	if err != nil {
+		return err
+	}
+	c.Config = string(cfg)
+	c.Type = "source"
+	return nil
 }

@@ -50,7 +50,7 @@ func (s *Source) Render() ([]byte, error) {
 	}
 	if b, err := common.NewBindings(s.defaultName).
 		SetManifest(m).
-		SetOptions(s.defaultOptions).
+		SetDefaultOptions(s.defaultOptions).
 		SetBindings(s.bindingsList).
 		Render(); err != nil {
 		return nil, err

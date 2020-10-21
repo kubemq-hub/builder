@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"github.com/kubemq-hub/builder/connector/common"
 	"github.com/kubemq-hub/builder/pkg/utils"
 	"github.com/kubemq-hub/builder/survey"
 	"io"
@@ -44,6 +45,7 @@ func (cc *ConnectorsCatalog) loadFromUrl(url string) []byte {
 	if err != nil {
 		return nil
 	}
+
 	defer func() {
 		_ = resp.Body.Close()
 	}()
@@ -82,7 +84,7 @@ func (cc *ConnectorsCatalog) init() error {
 	if cc.SourcesManifest, err = cc.initResource(sourceLocalFile, sourceRemoteUrl, sourceRemoteHash); err != nil {
 		return fmt.Errorf("error loading sources connector catalog,%s", err.Error())
 	}
-	if cc.SourcesManifest, err = cc.initResource(targetLocalFile, targetRemoteUrl, targetRemoteHash); err != nil {
+	if cc.TargetsManifest, err = cc.initResource(targetLocalFile, targetRemoteUrl, targetRemoteHash); err != nil {
 		return fmt.Errorf("error loading targets connector catalog,%s", err.Error())
 	}
 
@@ -90,9 +92,52 @@ func (cc *ConnectorsCatalog) init() error {
 }
 
 func (cc *ConnectorsCatalog) browseTargets() error {
+	m, err := common.LoadManifest(cc.TargetsManifest)
+	if err != nil {
+		return fmt.Errorf("error loading targets manifest: %s", err.Error())
+	}
+	menu := survey.NewMenu("Browse Targets Connectors").
+		SetKeepFilter(true).
+		SetPageSize(15).
+		SetBackOption(true).
+		SetErrorHandler(survey.MenuShowErrorFn)
+
+	for _, con := range m.Targets {
+		str := con.ColoredYaml()
+		showFn := func() error {
+			utils.Println("%s\n", str)
+			utils.WaitForEnter()
+			return nil
+		}
+		menu.AddItem(con.Kind, showFn)
+	}
+	if err := menu.Render(); err != nil {
+		return err
+	}
 	return nil
 }
 func (cc *ConnectorsCatalog) browseSources() error {
+	m, err := common.LoadManifest(cc.SourcesManifest)
+	if err != nil {
+		return fmt.Errorf("error loading sources manifest: %s", err.Error())
+	}
+	menu := survey.NewMenu("Browse Sources Connectors").
+		SetKeepFilter(true).
+		SetPageSize(15).
+		SetBackOption(true)
+	for _, con := range m.Sources {
+		str := con.ColoredYaml()
+		showFn := func() error {
+			utils.Println("%s\n", str)
+			utils.WaitForEnter()
+			return nil
+		}
+		menu.AddItem(con.Kind, showFn)
+	}
+
+	if err := menu.Render(); err != nil {
+		return err
+	}
 	return nil
 }
 func (cc *ConnectorsCatalog) updateCatalog() error {
@@ -102,7 +147,7 @@ func (cc *ConnectorsCatalog) updateCatalog() error {
 		utils.Println(promptCatalogLoadingError, err.Error())
 		return err
 	}
-	utils.Println(promptCatalogLoadingCompleted)
+	utils.Println("%s\n", promptCatalogLoadingCompleted)
 	return nil
 }
 func (cc *ConnectorsCatalog) Render() error {
@@ -112,6 +157,7 @@ func (cc *ConnectorsCatalog) Render() error {
 		}
 	}
 	if err := survey.NewMenu("Connectors Catalog Management: Select operation").
+		SetErrorHandler(survey.MenuShowErrorFn).
 		AddItem("Browse Targets Catalog", cc.browseTargets).
 		AddItem("Browse Sources Catalog", cc.browseSources).
 		AddItem("Update Catalogs", cc.updateCatalog).
@@ -130,6 +176,6 @@ func hash(data []byte) string {
 		return ""
 	}
 	h := sha256.New()
-	h.Write(data)
+	_, _ = h.Write(data)
 	return hex.EncodeToString(h.Sum(nil))
 }

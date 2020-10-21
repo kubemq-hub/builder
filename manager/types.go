@@ -4,8 +4,10 @@ import "github.com/kubemq-hub/builder/connector"
 
 const (
 	promptCatalogLoadingStarted   = `<yellow>Loading Connectors catalog...</>`
-	promptCatalogLoadingCompleted = `<yellow>Loading Connectors catalog completed</>`
+	promptCatalogLoadingCompleted = `<yellow>Loading Connectors catalog completed.</>`
 	promptCatalogLoadingError     = `<red>Loading Connectors catalog error:%s</>`
+	promptConnectorDelete         = "<cyan>Connector %s deleted</>"
+	promptConnectorEdit           = "<cyan>Connector %s edited</>"
 )
 
 type ConnectorsHandler interface {
