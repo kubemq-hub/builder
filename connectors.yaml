@@ -1,0 +1,38 @@
+kubemq/asdasdasdasdasdasdad:
+  config: |
+    bindings:
+    - name: eqweqwe-binding-1
+      properties: null
+      sources:
+        connections:
+        - address: weq
+          channel: source.qwe.queues
+        kind: source.queue
+        name: qwe
+      targets:
+        connections:
+        - address: qwe
+          channels: target.eqweqwe-binding-1-target.queues
+        kind: target.queue
+        name: eqweqwe-binding-1-target
+    - name: dadasd
+      properties: {}
+      sources:
+        connections:
+        - address: d
+          channel: source.asdasdasdasdasdasdad-binding-2-source.queues
+        kind: source.queue
+        name: asdasdasdasdasdasdad-binding-2-source
+      targets:
+        connections:
+        - address: asd
+          channels: target.asdasdasdasdasdasdad-binding-2-target.queues
+        kind: target.queue
+        name: asdasdasdasdasdasdad-binding-2-target
+  image: ""
+  name: asdasdasdasdasdasdad
+  namespace: kubemq
+  node_port: 0
+  replicas: 1
+  service_type: ClusterIP
+  type: bridges
