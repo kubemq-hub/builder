@@ -8,12 +8,12 @@ import (
 )
 
 type ConnectorsManager struct {
-	handler    ConnectorsHandler
+	handler    connector.ConnectorsHandler
 	connectors []*connector.Connector
 	catalog    *ConnectorsCatalog
 }
 
-func NewConnectorsManager(handler ConnectorsHandler) *ConnectorsManager {
+func NewConnectorsManager(handler connector.ConnectorsHandler) *ConnectorsManager {
 	cm := &ConnectorsManager{
 		handler: handler,
 	}
@@ -21,21 +21,16 @@ func NewConnectorsManager(handler ConnectorsHandler) *ConnectorsManager {
 	return cm
 }
 func (cm *ConnectorsManager) updateConnectors() {
-	cm.connectors = cm.handler.List()
+	cm.connectors, _ = cm.handler.List()
 }
 func (cm *ConnectorsManager) addConnector() error {
-	if con, err := connector.NewConnector().
-		SetSourcesManifest(cm.catalog.SourcesManifest).
-		SetTargetsManifest(cm.catalog.TargetsManifest).
-		Render(); err != nil {
+	if _, err := connector.AddConnector(
+		cm.catalog.SourcesManifest,
+		cm.catalog.TargetsManifest,
+		cm.handler); err != nil {
 		return err
-	} else {
-		err := cm.handler.Add(con)
-		if err != nil {
-			return err
-		}
-		return nil
 	}
+	return nil
 }
 
 func (cm *ConnectorsManager) editConnector() error {
@@ -46,29 +41,45 @@ func (cm *ConnectorsManager) editConnector() error {
 		SetBackOption(true).
 		SetErrorHandler(survey.MenuShowErrorFn)
 	for _, con := range cm.connectors {
-		editFn := func() error {
-			edited := con.Clone().
-				SetEditMode()
-			edited, err := edited.Render()
-			if err != nil {
+		menu.AddItem(con.Key(), func() error {
+			if _, err := connector.EditConnector(con,
+				cm.catalog.SourcesManifest,
+				cm.catalog.TargetsManifest,
+				cm.handler); err != nil {
 				return err
 			}
-			err = cm.handler.Edit(edited)
-			if err != nil {
-				return err
-			}
-			utils.Println(promptConnectorEdit, edited.Key())
 			return nil
-		}
-		menu.AddItem(con.Key(), editFn)
+		})
 	}
-
 	if err := menu.Render(); err != nil {
 		return err
 	}
 	return nil
 }
+func (cm *ConnectorsManager) duplicateConnector() error {
+	cm.updateConnectors()
+	menu := survey.NewMenu("Select Connector to duplicate").
+		SetPageSize(10).
+		SetDisableLoop(true).
+		SetBackOption(true).
+		SetErrorHandler(survey.MenuShowErrorFn)
+	for _, con := range cm.connectors {
 
+		menu.AddItem(con.Key(), func() error {
+			if _, err := connector.DuplicateConnector(con,
+				cm.catalog.SourcesManifest,
+				cm.catalog.TargetsManifest,
+				cm.handler); err != nil {
+				return err
+			}
+			return nil
+		})
+	}
+	if err := menu.Render(); err != nil {
+		return err
+	}
+	return nil
+}
 func (cm *ConnectorsManager) deleteConnector() error {
 	cm.updateConnectors()
 	menu := survey.NewMenu("Select Connector to delete").
@@ -95,12 +106,10 @@ func (cm *ConnectorsManager) deleteConnector() error {
 				}
 				utils.Println(promptConnectorDelete, conName)
 			}
-
 			return nil
 		}
 		menu.AddItem(con.Key(), deleteFn)
 	}
-
 	if err := menu.Render(); err != nil {
 		return err
 	}
@@ -109,7 +118,7 @@ func (cm *ConnectorsManager) deleteConnector() error {
 
 func (cm *ConnectorsManager) listConnectors() error {
 	cm.updateConnectors()
-	menu := survey.NewMenu("Browse Connectors List").
+	menu := survey.NewMenu("Browse Connectors List, Select to show configuration:").
 		SetPageSize(10).
 		SetBackOption(true)
 	for _, con := range cm.connectors {
@@ -138,6 +147,7 @@ func (cm *ConnectorsManager) Render() error {
 	if err := survey.NewMenu("Connectors Manager: Please select").
 		AddItem("Add Connector", cm.addConnector).
 		AddItem("Edit Connector", cm.editConnector).
+		AddItem("Duplicate Connector", cm.duplicateConnector).
 		AddItem("Delete Connector", cm.deleteConnector).
 		AddItem("List Connectors", cm.listConnectors).
 		AddItem("Catalog Management", cm.connectorsManagement).

@@ -1,3 +1,51 @@
+ad/asdasdsa:
+  config: |
+    bindings:
+    - name: kubemq-bridges-binding-1
+      properties: {}
+      sources:
+        connections:
+        - address: asd
+          channel: source.kubemq-bridges-binding-1-source.queues
+        kind: source.queue
+        name: kubemq-bridges-binding-1-source
+      targets:
+        connections:
+        - address: asd
+          channels: target.kubemq-bridges-binding-1-target.queues
+        kind: target.queue
+        name: kubemq-bridges-binding-1-target
+  image: ""
+  name: asdasdsa
+  namespace: ad
+  node_port: 0
+  replicas: 4
+  service_type: ClusterIP
+  type: bridges
+kubemq/asdasd:
+  config: |
+    bindings:
+    - name: kubemq-bridges-binding-1
+      properties: {}
+      sources:
+        connections:
+        - address: asd
+          channel: source.kubemq-bridges-binding-1-source.queues
+        kind: source.queue
+        name: kubemq-bridges-binding-1-source
+      targets:
+        connections:
+        - address: asd
+          channels: target.kubemq-bridges-binding-1-target.queues
+        kind: target.queue
+        name: kubemq-bridges-binding-1-target
+  image: ""
+  name: asdasd
+  namespace: kubemq
+  node_port: 0
+  replicas: 1
+  service_type: ClusterIP
+  type: bridges
 kubemq/asdasdasdasdasdasdad:
   config: |
     bindings:
@@ -29,10 +77,34 @@ kubemq/asdasdasdasdasdasdad:
           channels: target.asdasdasdasdasdasdad-binding-2-target.queues
         kind: target.queue
         name: asdasdasdasdasdasdad-binding-2-target
-  image: ""
+  image: asdasd
   name: asdasdasdasdasdasdad
   namespace: kubemq
   node_port: 0
   replicas: 1
+  service_type: ClusterIP
+  type: bridges
+kubemq/kubemq-bridges:
+  config: |
+    bindings:
+    - name: kubemq-bridges-binding-1
+      properties: {}
+      sources:
+        connections:
+        - address: asd
+          channel: source.kubemq-bridges-binding-1-source.queues
+        kind: source.queue
+        name: kubemq-bridges-binding-1-source
+      targets:
+        connections:
+        - address: asd
+          channels: target.kubemq-bridges-binding-1-target.queues
+        kind: target.queue
+        name: kubemq-bridges-binding-1-target
+  image: ""
+  name: kubemq-bridges
+  namespace: kubemq
+  node_port: 0
+  replicas: 2
   service_type: ClusterIP
   type: bridges

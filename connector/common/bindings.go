@@ -213,3 +213,7 @@ func Unmarshal(data []byte) (*Bindings, error) {
 	}
 	return bnd, nil
 }
+func (b *Bindings) Validate() error {
+	return nil
+
+}

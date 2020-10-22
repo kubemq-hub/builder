@@ -18,6 +18,8 @@ Each link (Binding) consists of:</>
 <red>type:</> {{.Type}}
 <red>replicas:</> {{.Replicas}}
 <red>serviceType:</> {{.ServiceType}}
+<red>nodePort:</> {{.NodePort}}
+<red>image:</> {{.Image}}
 <red>config:</> |- 
 <yellow>{{ .Config | indent 2}}</>`
 
@@ -33,3 +35,11 @@ There are three types of connectors:</>
 <yellow>KubeMQ Sources -</> Provides integration of third-party services that ingest data into KubeMQ clusters such as REST API and Messaging services.
 `
 )
+
+type ConnectorsHandler interface {
+	Add(connector *Connector) error
+	Edit(connector *Connector) error
+	Delete(connector *Connector) error
+	Get(namespace, name string) (*Connector, error)
+	List() ([]*Connector, error)
+}

@@ -32,12 +32,13 @@ func (r *Replicas) checkValue(val interface{}) error {
 func NewReplicas() *Replicas {
 	return &Replicas{}
 }
-func (r *Replicas) Render() (int, error) {
+func (r *Replicas) Render(defaultVal int) (int, error) {
+
 	err := survey.NewInt().
 		SetKind("int").
 		SetName("replicas").
 		SetMessage("Set connector's replicas").
-		SetDefault("1").
+		SetDefault(fmt.Sprintf("%d", defaultVal)).
 		SetRange(0, math.MaxInt32).
 		SetHelp("Set how many replicas for the connector").
 		SetRequired(true).

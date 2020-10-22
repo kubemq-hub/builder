@@ -6,6 +6,7 @@ import (
 	"github.com/kubemq-hub/builder/connector"
 	"io/ioutil"
 	"sort"
+	"time"
 )
 
 type ConnectorsFileHandler struct {
@@ -49,31 +50,40 @@ func (c *ConnectorsFileHandler) save() error {
 	return nil
 }
 func (c *ConnectorsFileHandler) Add(connector *connector.Connector) error {
+	fmt.Println("add connector")
 	c.connectors[connector.Key()] = connector
+	time.Sleep(1 * time.Second)
 	return c.save()
 }
 
 func (c *ConnectorsFileHandler) Edit(connector *connector.Connector) error {
+	fmt.Println("edit connector")
 	c.connectors[connector.Key()] = connector
+	time.Sleep(1 * time.Second)
 	return c.save()
 }
 
 func (c *ConnectorsFileHandler) Delete(connector *connector.Connector) error {
+	fmt.Println("delete connector")
 	delete(c.connectors, connector.Key())
+	time.Sleep(1 * time.Second)
 	return c.save()
 }
 
 func (c *ConnectorsFileHandler) Get(namespace, name string) (*connector.Connector, error) {
+	fmt.Println("get connector")
 	key := fmt.Sprintf("%s/%s", namespace, name)
 	con, ok := c.connectors[key]
 	if !ok {
 		return nil, fmt.Errorf("connector not found")
 	}
+	time.Sleep(1 * time.Second)
 	return con, nil
 
 }
 
-func (c *ConnectorsFileHandler) List() []*connector.Connector {
+func (c *ConnectorsFileHandler) List() ([]*connector.Connector, error) {
+	fmt.Println("get list")
 	var list []*connector.Connector
 	for _, con := range c.connectors {
 		list = append(list, con)
@@ -81,5 +91,6 @@ func (c *ConnectorsFileHandler) List() []*connector.Connector {
 	sort.Slice(list, func(i, j int) bool {
 		return list[i].Key() < list[j].Key()
 	})
-	return list
+	time.Sleep(1 * time.Second)
+	return list, nil
 }
