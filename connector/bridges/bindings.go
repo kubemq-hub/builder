@@ -170,7 +170,6 @@ func (b *Bindings) deleteBinding() error {
 }
 
 func (b *Bindings) listBindings() error {
-	utils.Println(promptShowList)
 	menu := survey.NewMenu("Select Binding to show configuration").
 		SetBackOption(true).
 		SetErrorHandler(survey.MenuShowErrorFn)

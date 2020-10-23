@@ -187,42 +187,58 @@ func EditConnector(origin *Connector, sourceManifest, targetsManifests []byte, h
 		SetTargetsManifest(targetsManifests).
 		SetSourcesManifest(sourceManifest)
 	ftReplicas := new(string)
-	*ftReplicas = fmt.Sprintf("Edit Connector Replicas (%d)", cloned.Replicas)
+	*ftReplicas = fmt.Sprintf("<r> Edit Connector Replicas (%d)", cloned.Replicas)
 
 	ftServiceType := new(string)
-	*ftServiceType = fmt.Sprintf("Edit Connector Service Type (%s)", cloned.ServiceType)
+	*ftServiceType = fmt.Sprintf("<s> Edit Connector Service Type (%s)", cloned.ServiceType)
 
 	ftImage := new(string)
-	*ftImage = fmt.Sprintf("Edit Connector Docker Image (%s)", cloned.Image)
+	*ftImage = fmt.Sprintf("<d> Edit Connector Docker Image (%s)", cloned.Image)
 
-	form := survey.NewForm("Select Edit Connector Option:").
-		AddItem(fmt.Sprintf("Edit Connector Bindings (%s)", cloned.Type), func() error {
+	form := survey.NewForm(fmt.Sprintf("Select Edit %s Connector Option:", cloned.Key())).
+		AddItem(fmt.Sprintf("<m> Manage Connector Bindings (%s)", cloned.Type), func() error {
 			switch cloned.Type {
 			case "bridges":
-				bindings, err := bridges.Unmarshal([]byte(cloned.Config))
+				bindings, err := bridges.Unmarshal([]byte(origin.Config))
 				if err != nil {
 					return err
 				}
-				bindings.SetDefaultOptions(cloned.defaultOptions)
-				bindings.SetDefaultName(cloned.Name)
-				if newBindings, err := bindings.Render(); err != nil {
-					return err
-				} else {
-					cloned.Config = string(newBindings)
-				}
-			case "targets", "sources":
-				bindings, err := common.Unmarshal([]byte(cloned.Config))
+				cfg, err := bridges.NewBridges(cloned.Name).
+					SetDefaultOptions(cloned.defaultOptions).
+					SetBindings(bindings.Bindings).
+					Render()
 				if err != nil {
 					return err
 				}
-				bindings.SetDefaultOptions(cloned.defaultOptions)
-				bindings.SetDefaultName(cloned.Name)
-
-				if newBindings, err := bindings.Render(); err != nil {
+				cloned.Config = string(cfg)
+			case "targets":
+				bindings, err := common.Unmarshal([]byte(origin.Config))
+				if err != nil {
 					return err
-				} else {
-					cloned.Config = string(newBindings)
 				}
+				cfg, err := targets.NewTarget(cloned.Name).
+					SetManifest(cloned.targetManifest).
+					SetDefaultOptions(cloned.defaultOptions).
+					SetBindings(bindings.Bindings).
+					Render()
+				if err != nil {
+					return err
+				}
+				cloned.Config = string(cfg)
+			case "sources":
+				bindings, err := common.Unmarshal([]byte(origin.Config))
+				if err != nil {
+					return err
+				}
+				cfg, err := sources.NewSource(cloned.Name).
+					SetManifest(cloned.sourcesManifest).
+					SetDefaultOptions(cloned.defaultOptions).
+					SetBindings(bindings.Bindings).
+					Render()
+				if err != nil {
+					return err
+				}
+				cloned.Config = string(cfg)
 			}
 			utils.Println(promptConnectorContinue)
 			return nil
@@ -231,14 +247,14 @@ func EditConnector(origin *Connector, sourceManifest, targetsManifests []byte, h
 			if err := cloned.askReplicas(); err != nil {
 				return err
 			}
-			*ftReplicas = fmt.Sprintf("Edit Connector Replicas (%d)", cloned.Replicas)
+			*ftReplicas = fmt.Sprintf("<r> Edit Connector Replicas (%d)", cloned.Replicas)
 			return nil
 		}).
 		AddItem(ftServiceType, func() error {
 			if err := cloned.askService(); err != nil {
 				return err
 			}
-			*ftServiceType = fmt.Sprintf("Edit Connector Service Type (%s)", cloned.ServiceType)
+			*ftServiceType = fmt.Sprintf("<s> Edit Connector Service Type (%s)", cloned.ServiceType)
 			return nil
 		}).
 		AddItem(ftImage, func() error {
@@ -246,10 +262,10 @@ func EditConnector(origin *Connector, sourceManifest, targetsManifests []byte, h
 				return err
 
 			}
-			*ftImage = fmt.Sprintf("Edit Connector Docker Image (%s)", cloned.Image)
+			*ftImage = fmt.Sprintf("<d> Edit Connector Docker Image (%s)", cloned.Image)
 			return nil
 		}).
-		AddItem("Show Connector Configuration", func() error {
+		AddItem("<c> Show Connector Configuration", func() error {
 			utils.Println(cloned.ColoredYaml())
 			return nil
 		})
@@ -291,21 +307,21 @@ func AddConnector(sourceManifest, targetsManifests []byte, handler ConnectorsHan
 	added.Replicas = 1
 	added.ServiceType = "ClusterIP"
 	ftReplicas := new(string)
-	*ftReplicas = fmt.Sprintf("Set Connector Replicas (%d)", added.Replicas)
+	*ftReplicas = fmt.Sprintf("<r> Set Connector Replicas (%d)", added.Replicas)
 
 	ftServiceType := new(string)
-	*ftServiceType = fmt.Sprintf("Set Connector Service Type (%s)", added.ServiceType)
+	*ftServiceType = fmt.Sprintf("<s> Set Connector Service Type (%s)", added.ServiceType)
 
 	ftImage := new(string)
-	*ftImage = fmt.Sprintf("Set Connector Docker Image (%s)", added.Image)
+	*ftImage = fmt.Sprintf("<d> Set Connector Docker Image (%s)", added.Image)
 
 	form := survey.NewForm("Select Add Connector Option:").
-		AddItem("Set Connector Type and Bindings", func() error {
+		AddItem("<t> Set Connector Type and Bindings", func() error {
 			utils.Println(promptConnectorStart)
-			menu := survey.NewMenu("Select Connector type").
-				AddItem("KubeMQ Bridges", added.addBridges).
-				AddItem("KubeMQ Targets", added.addTargets).
-				AddItem("KubeMQ Sources", added.addSources).
+			menu := survey.NewMenu("Select Connector type to add:").
+				AddItem("<b> Bridges Connector", added.addBridges).
+				AddItem("<t> Targets Connector", added.addTargets).
+				AddItem("<s> Sources Connector", added.addSources).
 				SetDisableLoop(true).SetBackOption(true).
 				SetErrorHandler(survey.MenuShowErrorFn)
 			if err := menu.Render(); err != nil {
@@ -317,14 +333,14 @@ func AddConnector(sourceManifest, targetsManifests []byte, handler ConnectorsHan
 			if err := added.askReplicas(); err != nil {
 				return err
 			}
-			*ftReplicas = fmt.Sprintf("Edit Connector Replicas (%d)", added.Replicas)
+			*ftReplicas = fmt.Sprintf("<r> Edit Connector Replicas (%d)", added.Replicas)
 			return nil
 		}).
 		AddItem(ftServiceType, func() error {
 			if err := added.askService(); err != nil {
 				return err
 			}
-			*ftServiceType = fmt.Sprintf("Edit Connector Service Type (%s)", added.ServiceType)
+			*ftServiceType = fmt.Sprintf("<s> Edit Connector Service Type (%s)", added.ServiceType)
 			return nil
 		}).
 		AddItem(ftImage, func() error {
@@ -332,10 +348,10 @@ func AddConnector(sourceManifest, targetsManifests []byte, handler ConnectorsHan
 				return err
 
 			}
-			*ftImage = fmt.Sprintf("Edit Connector Docker Image (%s)", added.Image)
+			*ftImage = fmt.Sprintf("<d> Edit Connector Docker Image (%s)", added.Image)
 			return nil
 		}).
-		AddItem("Show Connector Configuration", func() error {
+		AddItem("<c> Show Connector Configuration", func() error {
 			utils.Println(added.ColoredYaml())
 			return nil
 		})
@@ -415,39 +431,42 @@ func (c *Connector) addSources() error {
 		return err
 	}
 	c.Config = string(cfg)
-	c.Type = "source"
+	c.Type = "sources"
 	return nil
 }
 
-func DuplicateConnector(origin *Connector, sourceManifest, targetsManifests []byte, handler ConnectorsHandler) (*Connector, error) {
-	duplicated := origin.Clone(handler).
+func CopyConnector(origin *Connector, sourceManifest, targetsManifests []byte, handler ConnectorsHandler) (*Connector, error) {
+	copied := origin.Clone(handler).
 		SetTargetsManifest(targetsManifests).
 		SetSourcesManifest(sourceManifest)
-	if err := duplicated.askName(duplicated.Name); err != nil {
+	if err := copied.askName(copied.Name); err != nil {
 		return nil, err
 	}
-	if err := duplicated.askNamespace(); err != nil {
+	if err := copied.askNamespace(); err != nil {
 		return nil, err
 	}
 
+	if copied.Name == origin.Name && copied.Namespace == origin.Namespace {
+		return nil, fmt.Errorf("copied connector must have diffrent name or namespace\n")
+	}
 	checkEdit := false
 	if err := survey.NewBool().
 		SetKind("bool").
-		SetMessage("Would you like to edit the duplicated connector before saving").
+		SetMessage("Would you like to edit the copied connector before saving").
 		SetRequired(true).
 		SetDefault("false").
 		Render(&checkEdit); err != nil {
 		return nil, err
 	}
 	if checkEdit {
-		return EditConnector(duplicated, sourceManifest, targetsManifests, handler)
+		return EditConnector(copied, sourceManifest, targetsManifests, handler)
 	}
-	if err := duplicated.Validate(); err != nil {
+	if err := copied.Validate(); err != nil {
 		return nil, err
 	}
-	err := duplicated.handler.Add(duplicated)
+	err := copied.handler.Add(copied)
 	if err != nil {
 		return nil, err
 	}
-	return duplicated, nil
+	return copied, nil
 }

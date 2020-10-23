@@ -91,6 +91,6 @@ func (c *ConnectorsFileHandler) List() ([]*connector.Connector, error) {
 	sort.Slice(list, func(i, j int) bool {
 		return list[i].Key() < list[j].Key()
 	})
-	time.Sleep(1 * time.Second)
+
 	return list, nil
 }

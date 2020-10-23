@@ -5,6 +5,7 @@ import (
 	"github.com/kubemq-hub/builder/connector"
 	"github.com/kubemq-hub/builder/pkg/utils"
 	"github.com/kubemq-hub/builder/survey"
+	"sort"
 )
 
 type ConnectorsManager struct {
@@ -22,6 +23,9 @@ func NewConnectorsManager(handler connector.ConnectorsHandler) *ConnectorsManage
 }
 func (cm *ConnectorsManager) updateConnectors() {
 	cm.connectors, _ = cm.handler.List()
+	sort.Slice(cm.connectors, func(i, j int) bool {
+		return cm.connectors[i].Key() < cm.connectors[j].Key()
+	})
 }
 func (cm *ConnectorsManager) addConnector() error {
 	if _, err := connector.AddConnector(
@@ -35,14 +39,15 @@ func (cm *ConnectorsManager) addConnector() error {
 
 func (cm *ConnectorsManager) editConnector() error {
 	cm.updateConnectors()
-	menu := survey.NewMenu("Select Connector to edit").
+	menu := survey.NewMenu("Select Connector to edit:").
 		SetPageSize(10).
 		SetDisableLoop(true).
 		SetBackOption(true).
 		SetErrorHandler(survey.MenuShowErrorFn)
 	for _, con := range cm.connectors {
-		menu.AddItem(con.Key(), func() error {
-			if _, err := connector.EditConnector(con,
+		editedCon := con.Clone(cm.handler)
+		menu.AddItem(fmt.Sprintf("%s (%s)", editedCon.Key(), editedCon.Type), func() error {
+			if _, err := connector.EditConnector(editedCon,
 				cm.catalog.SourcesManifest,
 				cm.catalog.TargetsManifest,
 				cm.handler); err != nil {
@@ -56,17 +61,17 @@ func (cm *ConnectorsManager) editConnector() error {
 	}
 	return nil
 }
-func (cm *ConnectorsManager) duplicateConnector() error {
+func (cm *ConnectorsManager) copyConnector() error {
 	cm.updateConnectors()
-	menu := survey.NewMenu("Select Connector to duplicate").
+	menu := survey.NewMenu("Select Connector to copy:").
 		SetPageSize(10).
 		SetDisableLoop(true).
 		SetBackOption(true).
 		SetErrorHandler(survey.MenuShowErrorFn)
 	for _, con := range cm.connectors {
-
-		menu.AddItem(con.Key(), func() error {
-			if _, err := connector.DuplicateConnector(con,
+		copiedCon := con.Clone(cm.handler)
+		menu.AddItem(fmt.Sprintf("%s (%s)", copiedCon.Key(), copiedCon.Type), func() error {
+			if _, err := connector.CopyConnector(copiedCon,
 				cm.catalog.SourcesManifest,
 				cm.catalog.TargetsManifest,
 				cm.handler); err != nil {
@@ -82,14 +87,15 @@ func (cm *ConnectorsManager) duplicateConnector() error {
 }
 func (cm *ConnectorsManager) deleteConnector() error {
 	cm.updateConnectors()
-	menu := survey.NewMenu("Select Connector to delete").
+	menu := survey.NewMenu("Select Connector to delete:").
 		SetPageSize(10).
 		SetDisableLoop(true).
 		SetBackOption(true).
 		SetErrorHandler(survey.MenuShowErrorFn)
 	for _, con := range cm.connectors {
+		deletedCon := con.Clone(cm.handler)
 		deleteFn := func() error {
-			conName := con.Key()
+			conName := deletedCon.Key()
 			val := false
 			if err := survey.NewBool().
 				SetName("confirm-delete").
@@ -100,7 +106,7 @@ func (cm *ConnectorsManager) deleteConnector() error {
 				return err
 			}
 			if val {
-				err := cm.handler.Delete(con)
+				err := cm.handler.Delete(deletedCon)
 				if err != nil {
 					return err
 				}
@@ -108,7 +114,7 @@ func (cm *ConnectorsManager) deleteConnector() error {
 			}
 			return nil
 		}
-		menu.AddItem(con.Key(), deleteFn)
+		menu.AddItem(fmt.Sprintf("%s (%s)", deletedCon.Key(), deletedCon.Type), deleteFn)
 	}
 	if err := menu.Render(); err != nil {
 		return err
@@ -128,7 +134,7 @@ func (cm *ConnectorsManager) listConnectors() error {
 			utils.WaitForEnter()
 			return nil
 		}
-		menu.AddItem(con.Key(), showFn)
+		menu.AddItem(fmt.Sprintf("%s (%s)", con.Key(), con.Type), showFn)
 	}
 
 	if err := menu.Render(); err != nil {
@@ -144,13 +150,13 @@ func (cm *ConnectorsManager) Render() error {
 	if err := cm.catalog.updateCatalog(); err != nil {
 		return err
 	}
-	if err := survey.NewMenu("Connectors Manager: Please select").
-		AddItem("Add Connector", cm.addConnector).
-		AddItem("Edit Connector", cm.editConnector).
-		AddItem("Duplicate Connector", cm.duplicateConnector).
-		AddItem("Delete Connector", cm.deleteConnector).
-		AddItem("List Connectors", cm.listConnectors).
-		AddItem("Catalog Management", cm.connectorsManagement).
+	if err := survey.NewMenu("Select Connectors Manager Options:").
+		AddItem("<a> Add Connector", cm.addConnector).
+		AddItem("<e> Edit Connector", cm.editConnector).
+		AddItem("<c> Copy Connector", cm.copyConnector).
+		AddItem("<d> Delete Connector", cm.deleteConnector).
+		AddItem("<l> List of Connectors", cm.listConnectors).
+		AddItem("<m> Catalog Management", cm.connectorsManagement).
 		SetBackOption(true).
 		Render(); err != nil {
 		return err

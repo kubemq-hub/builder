@@ -1,89 +1,3 @@
-ad/asdasdsa:
-  config: |
-    bindings:
-    - name: kubemq-bridges-binding-1
-      properties: {}
-      sources:
-        connections:
-        - address: asd
-          channel: source.kubemq-bridges-binding-1-source.queues
-        kind: source.queue
-        name: kubemq-bridges-binding-1-source
-      targets:
-        connections:
-        - address: asd
-          channels: target.kubemq-bridges-binding-1-target.queues
-        kind: target.queue
-        name: kubemq-bridges-binding-1-target
-  image: ""
-  name: asdasdsa
-  namespace: ad
-  node_port: 0
-  replicas: 4
-  service_type: ClusterIP
-  type: bridges
-kubemq/asdasd:
-  config: |
-    bindings:
-    - name: kubemq-bridges-binding-1
-      properties: {}
-      sources:
-        connections:
-        - address: asd
-          channel: source.kubemq-bridges-binding-1-source.queues
-        kind: source.queue
-        name: kubemq-bridges-binding-1-source
-      targets:
-        connections:
-        - address: asd
-          channels: target.kubemq-bridges-binding-1-target.queues
-        kind: target.queue
-        name: kubemq-bridges-binding-1-target
-  image: ""
-  name: asdasd
-  namespace: kubemq
-  node_port: 0
-  replicas: 1
-  service_type: ClusterIP
-  type: bridges
-kubemq/asdasdasdasdasdasdad:
-  config: |
-    bindings:
-    - name: eqweqwe-binding-1
-      properties: null
-      sources:
-        connections:
-        - address: weq
-          channel: source.qwe.queues
-        kind: source.queue
-        name: qwe
-      targets:
-        connections:
-        - address: qwe
-          channels: target.eqweqwe-binding-1-target.queues
-        kind: target.queue
-        name: eqweqwe-binding-1-target
-    - name: dadasd
-      properties: {}
-      sources:
-        connections:
-        - address: d
-          channel: source.asdasdasdasdasdasdad-binding-2-source.queues
-        kind: source.queue
-        name: asdasdasdasdasdasdad-binding-2-source
-      targets:
-        connections:
-        - address: asd
-          channels: target.asdasdasdasdasdasdad-binding-2-target.queues
-        kind: target.queue
-        name: asdasdasdasdasdasdad-binding-2-target
-  image: asdasd
-  name: asdasdasdasdasdasdad
-  namespace: kubemq
-  node_port: 0
-  replicas: 1
-  service_type: ClusterIP
-  type: bridges
 kubemq/kubemq-bridges:
   config: |
     bindings:
@@ -108,3 +22,87 @@ kubemq/kubemq-bridges:
   replicas: 2
   service_type: ClusterIP
   type: bridges
+kubemq/kubemq-sources:
+  config: |
+    bindings:
+    - name: b1
+      source:
+        name: kubemq-sources-binding-1-source
+        kind: source.http
+        properties:
+          methods: get
+          path: /
+      target:
+        name: kubemq-sources-binding-1-target
+        kind: target.queue
+        properties:
+          address: sdsf
+          auth_token: ""
+          channel: queues
+          delay_seconds: "0"
+          expiration_seconds: "0"
+          max_receive_count: "0"
+      properties: {}
+    - name: b2
+      source:
+        name: kubemq-sources-binding-1-source
+        kind: source.http
+        properties:
+          methods: get
+          path: /
+      target:
+        name: kubemq-sources-binding-1-target
+        kind: target.queue
+        properties:
+          address: sdsf
+          auth_token: ""
+          channel: queues
+          delay_seconds: "0"
+          expiration_seconds: "0"
+          max_receive_count: "0"
+      properties: {}
+  image: ""
+  name: kubemq-sources
+  namespace: kubemq
+  node_port: 0
+  replicas: 1
+  service_type: ClusterIP
+  type: sources
+kubemq/kubemq-targets:
+  config: |
+    bindings:
+    - name: b1
+      source:
+        name: b1-source
+        kind: source.queue
+        properties:
+          address: asdas
+          auth_token: ""
+          channel: queues
+      target:
+        name: b1-target
+        kind: target.cache.redis
+        properties:
+          url: redis://localhost:6379
+      properties: {}
+    - name: b1
+      source:
+        name: b1-source
+        kind: source.queue
+        properties:
+          address: asdas
+          auth_token: ""
+          channel: queues
+      target:
+        name: b1-target
+        kind: target.cache.redis
+        properties:
+          url: redis://localhost:6379
+      properties: {}
+  image: ""
+  name: kubemq-targets
+  namespace: kubemq
+  node_port: 0
+  replicas: 1
+  service_type: ClusterIP
+  type: targets

@@ -41,8 +41,9 @@ const (
 `
 	promptBindingStartMenu          = "<cyan>Lets configure the binding list:</>"
 	promptBindingComplete           = "<cyan>We have completed Source and Target binding configuration</>"
-	promptBindingDeleteConfirmation = "<red>Binding %s deleted successfully</>"
-	promptBindingEditedConfirmation = "<red>Binding %s edited successfully</>"
+	promptBindingDeleteConfirmation = "<cyanBinding %s deleted successfully</>"
+	promptBindingEditedConfirmation = "<cyan>Binding %s edited successfully</>"
+	promptBindingAddConfirmation    = "<cyan>Binding %s was added successfully</>"
 	promptBindingEditedNoSave       = "<red>Binding %s was not edited</>"
 	promptShowBinding               = "<cyan>Showing Binding %s configuration:</>"
 	promptShowSource                = "<cyan>Showing Source %s configuration:</>"
