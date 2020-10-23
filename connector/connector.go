@@ -90,13 +90,13 @@ func (c *Connector) Validate() error {
 		return fmt.Errorf("no valid connector type, %s", c.Type)
 	}
 	if c.Replicas < 0 {
-		return fmt.Errorf("conenctor replicas cannot be negative")
+		return fmt.Errorf("connector replicas cannot be negative")
 	}
 	if c.ServiceType == "" {
-		return fmt.Errorf("conenctor service type must have a value")
+		return fmt.Errorf("connector service type must have a value")
 	}
 	if c.NodePort < 0 {
-		return fmt.Errorf("conenctor node-port cannot be negative")
+		return fmt.Errorf("connector node-port cannot be negative")
 	}
 	return nil
 }
@@ -447,7 +447,7 @@ func CopyConnector(origin *Connector, sourceManifest, targetsManifests []byte, h
 	}
 
 	if copied.Name == origin.Name && copied.Namespace == origin.Namespace {
-		return nil, fmt.Errorf("copied connector must have diffrent name or namespace\n")
+		return nil, fmt.Errorf("copied connector must have different name or namespace\n")
 	}
 	checkEdit := false
 	if err := survey.NewBool().

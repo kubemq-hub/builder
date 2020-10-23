@@ -23,9 +23,6 @@ Each link (Binding) consists of:</>
 <red>config:</> |- 
 <yellow>{{ .Config | indent 2}}</>`
 
-	promptConnectorConfirm     = "<cyan>Here is the connector configuration:</>%s"
-	promptConnectorReconfigure = "<cyan>Lets reconfigure the connector:</>"
-
 	promptConnectorStart = `
 <cyan>In the next steps, we will configure a KubeMQ Connector.
 KubeMQ Connector is a component that integrates the KubeMQ clusters with other services.

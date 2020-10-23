@@ -20,7 +20,6 @@ type Binding struct {
 	takenBindingNames []string
 	defaultName       string
 	isEditMode        bool
-	wasEdited         bool
 }
 
 func NewBinding(defaultName string) *Binding {
@@ -117,56 +116,6 @@ func (b *Binding) askKind(connector string, kinds []string, currentKind string) 
 	return val, nil
 }
 
-func (b *Binding) confirmSource() bool {
-	utils.Println(fmt.Sprintf(promptSourceConfirm, b.Source.ColoredYaml(sourceSpecTemplate)))
-	val := true
-	err := survey.NewBool().
-		SetKind("bool").
-		SetName("confirm-connection").
-		SetMessage("Would you like save this configuration").
-		SetDefault("true").
-		SetRequired(true).
-		Render(&val)
-	if err != nil {
-		return false
-	}
-
-	return val
-}
-func (b *Binding) confirmTarget() bool {
-	utils.Println(fmt.Sprintf(promptTargetConfirm, b.Target.ColoredYaml(targetSpecTemplate)))
-	val := true
-	err := survey.NewBool().
-		SetKind("bool").
-		SetName("confirm-connection").
-		SetMessage("Would you like save this configuration").
-		SetDefault("true").
-		SetRequired(true).
-		Render(&val)
-	if err != nil {
-		return false
-	}
-
-	return val
-}
-func (b *Binding) confirmProperties(p *Properties) bool {
-	utils.Println(fmt.Sprintf(promptPropertiesConfirm, p.ColoredYaml()))
-	val := true
-	err := survey.NewBool().
-		SetKind("bool").
-		SetName("confirm-connection").
-		SetMessage("Would you like save this configuration").
-		SetDefault("true").
-		SetRequired(true).
-		Render(&val)
-	if err != nil {
-		return false
-	}
-	if !val {
-		utils.Println(promptPropertiesReconfigure)
-	}
-	return val
-}
 func (b *Binding) addSource(defaultName string) error {
 	utils.Println(promptSourceStart)
 	var err error
@@ -444,22 +393,12 @@ func (b *Binding) showConfiguration() error {
 }
 func (b *Binding) setProperties() error {
 	var err error
-	for {
-		p := NewProperties()
-		if b.Properties, err = p.
-			Render(); err != nil {
-			return err
-		}
-		if len(b.Properties) == 0 {
-			break
-		}
-		ok := b.confirmProperties(p)
-		if ok {
-			b.PropertiesSpec = p.ColoredYaml()
-			break
-		}
-
+	p := NewProperties()
+	if b.Properties, err = p.
+		Render(); err != nil {
+		return err
 	}
+	b.PropertiesSpec = p.ColoredYaml()
 	return nil
 }
 func (b *Binding) edit() (*Binding, error) {
@@ -539,21 +478,14 @@ func (b *Binding) add() (*Binding, error) {
 
 	utils.Println(promptBindingComplete)
 	var err error
-	for {
-		p := NewProperties()
-		if b.Properties, err = p.
-			Render(); err != nil {
-			return nil, err
-		}
-		if len(b.Properties) == 0 {
-			break
-		}
-		ok := b.confirmProperties(p)
-		if ok {
-			b.PropertiesSpec = p.ColoredYaml()
-			break
-		}
+
+	p := NewProperties()
+	if b.Properties, err = p.
+		Render(); err != nil {
+		return nil, err
 	}
+	b.PropertiesSpec = p.ColoredYaml()
+
 	return b, nil
 }
 

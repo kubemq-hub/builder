@@ -50,22 +50,7 @@ func (b *Bindings) SetDefaultName(value string) *Bindings {
 	b.defaultName = value
 	return b
 }
-func (b *Bindings) confirmBinding(bnd *Binding) bool {
-	utils.Println(fmt.Sprintf(promptBindingConfirm, bnd.ColoredYaml()))
-	val := true
-	err := survey.NewBool().
-		SetKind("bool").
-		SetName("confirm-connection").
-		SetMessage("Would you like save this configuration").
-		SetDefault("true").
-		SetRequired(true).
-		Render(&val)
-	if err != nil {
-		return false
-	}
 
-	return val
-}
 func (b *Bindings) sort() {
 	sort.Slice(b.Bindings, func(i, j int) bool {
 		return b.Bindings[i].Name < b.Bindings[j].Name
