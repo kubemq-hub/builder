@@ -83,12 +83,7 @@ func (b *Binding) SetTakenBindingNames(value []string) *Binding {
 	b.takenBindingNames = value
 	return b
 }
-func (b *Binding) SourceName() string {
-	return b.Source.Name
-}
-func (b *Binding) TargetName() string {
-	return b.Target.Name
-}
+
 func (b *Binding) askKind(connector string, kinds []string, currentKind string) (string, error) {
 	defaultKind := ""
 	if b.isEditMode {

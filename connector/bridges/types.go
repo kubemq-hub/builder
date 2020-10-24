@@ -13,7 +13,7 @@ We will set:</>
 <yellow>Connections -</> A list of connections properties based on the selected kind
 
 <cyan>Lets start binding source configuration:</>`
-
+	promptBindingAddConfirmation    = "<cyan>Binding %s was added successfully</>"
 	promptSourceConfirm = `<cyan>Here is the binding's Source configuration:</>%s\n`
 
 	promptSourceReconfigure = `<cyan>Lets reconfigure the binding Source:</>`

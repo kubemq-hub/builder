@@ -93,7 +93,6 @@ func (b *Bindings) switchOrRemove(old, new *Binding) {
 		newTakenBindingNames = append(newTakenBindingNames, new.Name)
 	}
 	b.Bindings = newBindingList
-	b.takenBindingNames = newTakenBindingNames
 	b.sort()
 }
 

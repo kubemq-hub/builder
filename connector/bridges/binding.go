@@ -76,75 +76,8 @@ func (b *Binding) SetTakenBindingNames(value []string) *Binding {
 	b.takenBindingNames = value
 	return b
 }
-func (b *Binding) SourceName() string {
-	if b.Sources != nil {
-		return b.Sources.Name
-	}
-	return ""
-}
-func (b *Binding) TargetName() string {
-	if b.Targets != nil {
-		return b.Targets.Name
-	}
-	return ""
-}
-func (b *Binding) BindingName() string {
-	return b.Name
-}
-func (b *Binding) confirmSource() bool {
-	utils.Println(fmt.Sprintf(promptSourceConfirm, b.Sources.ColoredYaml()))
-	val := true
-	err := survey.NewBool().
-		SetKind("bool").
-		SetName("confirm-connection").
-		SetMessage("Would you like save this configuration").
-		SetDefault("true").
-		SetRequired(true).
-		Render(&val)
-	if err != nil {
-		return false
-	}
-	if !val {
-		utils.Println(promptSourceReconfigure)
-	}
-	return val
-}
-func (b *Binding) confirmTarget() bool {
-	utils.Println(fmt.Sprintf(promptTargetConfirm, b.Targets.ColoredYaml()))
-	val := true
-	err := survey.NewBool().
-		SetKind("bool").
-		SetName("confirm-connection").
-		SetMessage("Would you like save this configuration").
-		SetDefault("true").
-		SetRequired(true).
-		Render(&val)
-	if err != nil {
-		return false
-	}
-	if !val {
-		utils.Println(promptTargetReconfigure)
-	}
-	return val
-}
-func (b *Binding) confirmProperties(p *common.Properties) bool {
-	utils.Println(fmt.Sprintf(promptPropertiesConfirm, p.ColoredYaml()))
-	val := true
-	err := survey.NewBool().
-		SetKind("bool").
-		SetName("confirm-connection").
-		SetMessage("Would you like save this configuration").
-		SetDefault("true").
-		SetRequired(true).
-		Render(&val)
-	if err != nil {
-		return false
-	}
-	if !val {
-		utils.Println(promptPropertiesReconfigure)
-	}
-	return val
-}
+
+
 func (b *Binding) setSource() error {
 	if !b.isEditMode {
 		utils.Println(promptSourceStart)
@@ -152,7 +85,6 @@ func (b *Binding) setSource() error {
 	}
 
 	var err error
-	for {
 		if b.Sources, err = b.Sources.
 			SetAddress(b.addressOptions).
 			SetIsEdit(b.isEditMode).
@@ -160,26 +92,14 @@ func (b *Binding) setSource() error {
 			Render(); err != nil {
 			return err
 		}
-		if !b.Sources.WasEdited {
-			return nil
-		}
-		ok := b.confirmSource()
-		if ok {
-			b.SourcesSpec = b.Sources.ColoredYaml()
-			break
-		}
-	}
-	b.wasEdited = b.Sources.WasEdited
 	return nil
 }
 func (b *Binding) setTarget() error {
-
 	if !b.isEditMode {
 		utils.Println(promptTargetStart)
 		b.Targets = target.NewTarget(fmt.Sprintf("%s-target", b.defaultName))
 	}
 	var err error
-	for {
 		if b.Targets, err = b.Targets.
 			SetAddress(b.addressOptions).
 			SetIsEdit(b.isEditMode).
@@ -187,36 +107,17 @@ func (b *Binding) setTarget() error {
 			Render(); err != nil {
 			return err
 		}
-		if !b.Targets.WasEdited {
-			return nil
-		}
-		ok := b.confirmTarget()
-		if ok {
-			b.TargetsSpec = b.Targets.ColoredYaml()
-			break
-		}
-	}
-	b.wasEdited = b.Targets.WasEdited
 	return nil
 }
+
 func (b *Binding) setProperties() error {
 	var err error
-	for {
 		p := common.NewProperties()
 		if b.Properties, err = p.
 			Render(); err != nil {
 			return err
 		}
-		if len(b.Properties) == 0 {
-			break
-		}
-		ok := b.confirmProperties(p)
-		if ok {
-			b.PropertiesSpec = p.ColoredYaml()
-			break
-		}
-
-	}
+	b.PropertiesSpec = p.ColoredYaml()
 	return nil
 }
 func (b *Binding) showConfiguration() error {
@@ -254,19 +155,65 @@ func (b *Binding) add() (*Binding, error) {
 }
 
 func (b *Binding) edit() (*Binding, error) {
+	var result *Binding
+	edited := b.Clone().
+		SetEditMode(true)
 
-	menu := survey.NewMenu("Select Edit Binding Options").
-		SetBackOption(true).
-		SetErrorHandler(survey.MenuShowErrorFn)
-	menu.AddItem("Edit Binding Name", b.setName)
-	menu.AddItem("Edit Binding Sources", b.setSource)
-	menu.AddItem("Edit Binding Targets", b.setTarget)
-	menu.AddItem("Edit Binding Middlewares", b.setProperties)
-	menu.AddItem("Show Binding Configuration", b.showConfiguration)
-	if err := menu.Render(); err != nil {
+	form := survey.NewForm(fmt.Sprintf("Select Edit %s Binding Option:", edited.Name))
+
+	ftName := new(string)
+	*ftName = fmt.Sprintf("<n> Edit Binding's Name (%s)", edited.Name)
+	form.AddItem(ftName, func() error {
+		if err := edited.setName(); err != nil {
+			return err
+		}
+		*ftName = fmt.Sprintf("<n> Edit Binding's Name (%s)", edited.Name)
+		return nil
+	})
+
+	ftSource := new(string)
+	*ftSource = fmt.Sprintf("<s> Edit Binding's Source (%s)", edited.Source.Kind)
+	form.AddItem(ftSource, func() error {
+		var err error
+		if edited.Source, err = edited.editSource(); err != nil {
+			return err
+		}
+		*ftSource = fmt.Sprintf("<s> Edit Binding's Source (%s)", edited.Source.Kind)
+		return nil
+	})
+
+	ftTarget := new(string)
+	*ftTarget = fmt.Sprintf("<t> Edit Binding's Target (%s)", edited.Target.Kind)
+	form.AddItem(ftTarget, func() error {
+		var err error
+		if edited.Target, err = edited.editTarget(); err != nil {
+			return err
+		}
+		*ftTarget = fmt.Sprintf("<t> Edit Binding's Target (%s)", edited.Target.Kind)
+		return nil
+	})
+
+	form.AddItem("<m> Edit Binding's Middlewares", edited.setProperties)
+
+	form.AddItem("<c> Show Binding Configuration", edited.showConfiguration)
+
+	form.SetOnSaveFn(func() error {
+		if err := edited.Validate(); err != nil {
+			return err
+		}
+		result = edited
+		return nil
+	})
+
+	form.SetOnCancelFn(func() error {
+		result = b
+		return nil
+	})
+	if err := form.Render(); err != nil {
 		return nil, err
 	}
-	return b, nil
+
+	return result, nil
 
 }
 func (b *Binding) Render() (*Binding, error) {
