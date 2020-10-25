@@ -50,7 +50,7 @@ func (cm *ConnectorsManager) editConnector() error {
 			if _, err := connector.EditConnector(editedCon,
 				cm.catalog.SourcesManifest,
 				cm.catalog.TargetsManifest,
-				cm.handler); err != nil {
+				cm.handler, false); err != nil {
 				return err
 			}
 			return nil
@@ -150,7 +150,7 @@ func (cm *ConnectorsManager) Render() error {
 	if err := cm.catalog.updateCatalog(); err != nil {
 		return err
 	}
-	if err := survey.NewMenu("Select Connectors Manager Options:").
+	if err := survey.NewMenu(fmt.Sprintf("Select Connectors Manager Option (Context: %s):", cm.handler.Name())).
 		AddItem("<a> Add Connector", cm.addConnector).
 		AddItem("<e> Edit Connector", cm.editConnector).
 		AddItem("<c> Copy Connector", cm.copyConnector).

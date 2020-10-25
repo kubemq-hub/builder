@@ -20,7 +20,18 @@ type Store struct {
 func NewStore() *Store {
 	return &Store{}
 }
-
+func (s *Store) Clone() *Store {
+	return &Store{
+		Clean:                    s.Clean,
+		Path:                     s.Path,
+		MaxChannels:              s.MaxChannels,
+		MaxSubscribers:           s.MaxSubscribers,
+		MaxMessages:              s.MaxMessages,
+		MaxChannelSize:           s.MaxChannels,
+		MessagesRetentionMinutes: s.MessagesRetentionMinutes,
+		PurgeInactiveMinutes:     s.PurgeInactiveMinutes,
+	}
+}
 func (s *Store) askClean() error {
 	err := survey.NewBool().
 		SetKind("bool").

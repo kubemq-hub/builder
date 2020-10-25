@@ -6,6 +6,14 @@ import (
 	"math"
 )
 
+const authorizationTml = `
+<red>authorization:</>
+  <yellow>enable:</> <white>{{ .Enable }}</>  
+  <yellow>policy:</> |-<white>{{ .Policy | indent 4}}</>
+  <yellow>url:</> <white>{{ .Url}}</>
+  <yellow>autoReload:</> <white>{{ .AutoReload}}</>
+`
+
 type Authorization struct {
 	Policy     string `json:"policy"`
 	Url        string `json:"url"`
@@ -14,6 +22,13 @@ type Authorization struct {
 
 func NewAuthorization() *Authorization {
 	return &Authorization{}
+}
+func (a *Authorization) Clone() *Authorization {
+	return &Authorization{
+		Policy:     a.Policy,
+		Url:        a.Url,
+		AutoReload: a.AutoReload,
+	}
 }
 func (a *Authorization) askPolicy() error {
 	err := survey.NewMultiline().
@@ -78,6 +93,14 @@ func (a *Authorization) Render() (*Authorization, error) {
 		return nil, err
 	}
 	return a, nil
+}
+func (a *Authorization) ColoredYaml() (string, error) {
+	t := NewTemplate(authorizationTml, a)
+	b, err := t.Get()
+	if err != nil {
+		return fmt.Sprintf("error rendring authentication spec,%s", err.Error()), nil
+	}
+	return string(b), nil
 }
 
 var _ Validator = NewAuthorization()

@@ -16,6 +16,13 @@ type Volume struct {
 func NewVolume() *Volume {
 	return &Volume{}
 }
+func (v *Volume) Clone() *Volume {
+	return &Volume{
+		Size:           v.Size,
+		StorageClass:   v.StorageClass,
+		storageClasses: v.storageClasses,
+	}
+}
 func (v *Volume) Validate() error {
 	if err := v.checkSize(v.Size); err != nil {
 		return err

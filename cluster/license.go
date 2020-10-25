@@ -12,6 +12,11 @@ type License struct {
 func NewLicense() *License {
 	return &License{}
 }
+func (l *License) Clone() *License {
+	return &License{
+		data: l.data,
+	}
+}
 func (l *License) Validate() error {
 	if l.data == "" {
 		return fmt.Errorf("license data cannot be empty")

@@ -16,6 +16,13 @@ type Tls struct {
 func NewTls() *Tls {
 	return &Tls{}
 }
+func (t *Tls) Clone() *Tls {
+	return &Tls{
+		Cert: t.Cert,
+		Key:  t.Key,
+		Ca:   t.Ca,
+	}
+}
 func (t *Tls) askCert() error {
 	err := survey.NewMultiline().
 		SetKind("multiline").

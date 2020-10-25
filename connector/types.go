@@ -34,6 +34,7 @@ There are three types of connectors:</>
 )
 
 type ConnectorsHandler interface {
+	Name() string
 	Add(connector *Connector) error
 	Edit(connector *Connector) error
 	Delete(connector *Connector) error

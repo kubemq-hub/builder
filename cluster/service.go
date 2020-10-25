@@ -17,6 +17,15 @@ type Service struct {
 func NewService() *Service {
 	return &Service{}
 }
+func (s *Service) Clone() *Service {
+	return &Service{
+		NodePort:   s.NodePort,
+		Expose:     s.Expose,
+		BufferSize: s.BufferSize,
+		BodyLimit:  s.BodyLimit,
+		kind:       s.kind,
+	}
+}
 func (s *Service) Validate() error {
 	switch s.Expose {
 	case "ClusterIP", "LoadBalancer":

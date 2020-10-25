@@ -13,6 +13,12 @@ type Name struct {
 func NewName() *Name {
 	return &Name{}
 }
+func (n *Name) Clone() *Name {
+	return &Name{
+		Name:       n.Name,
+		takenNames: n.takenNames,
+	}
+}
 func (n *Name) SetTakenNames(value []string) *Name {
 	n.takenNames = value
 	return n
@@ -31,12 +37,12 @@ func (n *Name) checkNonEmptyName(val interface{}) error {
 	}
 	return nil
 }
-func (n *Name) Render() (*Name, error) {
+func (n *Name) Render(defaultName string) (*Name, error) {
 	err := survey.NewString().
 		SetKind("string").
 		SetName("name").
 		SetMessage("Set Cluster name").
-		SetDefault("kubemq-cluster").
+		SetDefault(defaultName).
 		SetHelp("Set cluster name").
 		SetRequired(true).
 		SetInvalidOptions(n.takenNames).

@@ -13,7 +13,12 @@ type Log struct {
 func NewLog() *Log {
 	return &Log{}
 }
-
+func (l *Log) Clone() *Log {
+	return &Log{
+		Level:       l.Level,
+		levelString: l.levelString,
+	}
+}
 func (l *Log) askLog() error {
 	err := survey.NewString().
 		SetKind("string").

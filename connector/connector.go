@@ -181,7 +181,7 @@ func (c *Connector) ColoredYaml() string {
 	return string(b)
 }
 
-func EditConnector(origin *Connector, sourceManifest, targetsManifests []byte, handler ConnectorsHandler) (*Connector, error) {
+func EditConnector(origin *Connector, sourceManifest, targetsManifests []byte, handler ConnectorsHandler, isCopyMode bool) (*Connector, error) {
 	var result *Connector
 	cloned := origin.Clone(handler).
 		SetTargetsManifest(targetsManifests).
@@ -459,7 +459,11 @@ func CopyConnector(origin *Connector, sourceManifest, targetsManifests []byte, h
 		return nil, err
 	}
 	if checkEdit {
-		return EditConnector(copied, sourceManifest, targetsManifests, handler)
+		var err error
+		copied, err = EditConnector(copied, sourceManifest, targetsManifests, handler, true)
+		if err != nil {
+			return nil, err
+		}
 	}
 	if err := copied.Validate(); err != nil {
 		return nil, err

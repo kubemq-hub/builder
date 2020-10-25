@@ -15,6 +15,13 @@ type Routing struct {
 func NewRouting() *Routing {
 	return &Routing{}
 }
+func (r *Routing) Clone() *Routing {
+	return &Routing{
+		Data:       r.Data,
+		Url:        r.Url,
+		AutoReload: r.AutoReload,
+	}
+}
 func (r *Routing) askData() error {
 	err := survey.NewMultiline().
 		SetKind("multiline").

@@ -17,6 +17,14 @@ type Resource struct {
 func NewResource() *Resource {
 	return &Resource{}
 }
+func (r *Resource) Clone() *Resource {
+	return &Resource{
+		LimitsCpu:      r.LimitsCpu,
+		LimitsMemory:   r.LimitsMemory,
+		RequestsCpu:    r.RequestsCpu,
+		RequestsMemory: r.RequestsMemory,
+	}
+}
 func (r *Resource) Validate() error {
 	if err := r.checkCPU(r.LimitsCpu); err != nil {
 		return err

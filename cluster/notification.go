@@ -12,7 +12,12 @@ type Notification struct {
 func NewNotification() *Notification {
 	return &Notification{}
 }
-
+func (n *Notification) Clone() *Notification {
+	return &Notification{
+		Prefix:  n.Prefix,
+		Enabled: n.Enabled,
+	}
+}
 func (n *Notification) askPrefix() error {
 	err := survey.NewString().
 		SetKind("string").

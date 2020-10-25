@@ -18,6 +18,12 @@ var jWTSignMethods = map[string]jwt.SigningMethod{
 	"ES512": jwt.SigningMethodES512,
 }
 
+const authenticationTml = `
+<red>authentication:</>
+  <yellow>key:</> |-<white>{{ .Key | indent 4}}</>
+  <yellow>type:</> <white>{{ .Type}}</>
+`
+
 type Authentication struct {
 	Key  string `json:"key"`
 	Type string `json:"type"`
@@ -25,6 +31,12 @@ type Authentication struct {
 
 func NewAuthentication() *Authentication {
 	return &Authentication{}
+}
+func (a *Authentication) Clone() *Authentication {
+	return &Authentication{
+		Key:  a.Key,
+		Type: a.Type,
+	}
 }
 func (a *Authentication) askKey() error {
 	err := survey.NewMultiline().
@@ -88,6 +100,14 @@ func (a *Authentication) Render() (*Authentication, error) {
 		return nil, err
 	}
 	return a, nil
+}
+func (a *Authentication) ColoredYaml() (string, error) {
+	t := NewTemplate(authenticationTml, a)
+	b, err := t.Get()
+	if err != nil {
+		return fmt.Sprintf("error rendring authentication spec,%s", err.Error()), nil
+	}
+	return string(b), nil
 }
 
 var _ Validator = NewAuthentication()

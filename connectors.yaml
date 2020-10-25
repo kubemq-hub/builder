@@ -19,7 +19,7 @@ kubemq/kubemq-bridges:
   name: kubemq-bridges
   namespace: kubemq
   node_port: 0
-  replicas: 2
+  replicas: 1
   service_type: ClusterIP
   type: bridges
 kubemq/kubemq-sources:

@@ -12,7 +12,15 @@ type NodeSelector struct {
 func NewNodeSelector() *NodeSelector {
 	return &NodeSelector{}
 }
-
+func (n *NodeSelector) Clone() *NodeSelector {
+	newValues := map[string]string{}
+	for key, val := range n.values {
+		newValues[key] = val
+	}
+	return &NodeSelector{
+		values: newValues,
+	}
+}
 func (n *NodeSelector) Validate() error {
 	return nil
 }

@@ -13,6 +13,12 @@ type Namespace struct {
 func NewNamespace() *Namespace {
 	return &Namespace{}
 }
+func (n *Namespace) Clone() *Namespace {
+	return &Namespace{
+		Namespace:  n.Namespace,
+		namespaces: n.namespaces,
+	}
+}
 func (n *Namespace) Validate() error {
 	if n.Namespace == "" {
 		return fmt.Errorf("namespace cannot be empty")
@@ -30,13 +36,13 @@ func (n *Namespace) checkNonEmptyNamespace(val interface{}) error {
 	}
 	return nil
 }
-func (n *Namespace) Render() (*Namespace, error) {
+func (n *Namespace) Render(defaultNamespace string) (*Namespace, error) {
 
 	err := survey.NewString().
 		SetKind("string").
 		SetName("namespace").
 		SetMessage("Set Cluster namespace").
-		SetDefault("kubemq").
+		SetDefault(defaultNamespace).
 		SetHelp("Set cluster namespace").
 		SetRequired(true).
 		SetValidator(n.checkNonEmptyNamespace).

@@ -5,6 +5,12 @@ import (
 	"github.com/kubemq-hub/builder/survey"
 )
 
+const imageTml = `
+<red>image:</>
+  {{ if .Image -}}<yellow>image:</> <white>{{ .Image }}{{- end}}</>
+  {{ if .PullPolicy -}}<yellow>pullPolicy:</> <white>{{.PullPolicy}}{{- end}}</>
+`
+
 type Image struct {
 	Image      string `json:"image"`
 	PullPolicy string `json:"pull_policy"`
@@ -13,7 +19,12 @@ type Image struct {
 func NewImage() *Image {
 	return &Image{}
 }
-
+func (i *Image) Clone() *Image {
+	return &Image{
+		Image:      i.Image,
+		PullPolicy: i.PullPolicy,
+	}
+}
 func (i *Image) askImage() error {
 	err := survey.NewString().
 		SetKind("string").
@@ -63,6 +74,14 @@ func (i *Image) Render() (*Image, error) {
 		return nil, err
 	}
 	return i, nil
+}
+func (i *Image) ColoredYaml() (string, error) {
+	t := NewTemplate(imageTml, i)
+	b, err := t.Get()
+	if err != nil {
+		return fmt.Sprintf("error rendring authentication spec,%s", err.Error()), nil
+	}
+	return string(b), nil
 }
 
 var _ Validator = NewImage()

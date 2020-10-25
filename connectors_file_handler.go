@@ -26,6 +26,9 @@ func NewConnectorsFileHandler(filename string) (*ConnectorsFileHandler, error) {
 	}
 	return c, nil
 }
+func (c *ConnectorsFileHandler) Name() string {
+	return fmt.Sprintf("file://%s", c.filename)
+}
 func (c *ConnectorsFileHandler) load() error {
 	data, err := ioutil.ReadFile(c.filename)
 	if err != nil {

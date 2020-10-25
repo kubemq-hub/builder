@@ -18,7 +18,16 @@ type Health struct {
 func NewHealth() *Health {
 	return &Health{}
 }
-
+func (h *Health) Clone() *Health {
+	return &Health{
+		Enabled:             h.Enabled,
+		InitialDelaySeconds: h.InitialDelaySeconds,
+		PeriodSeconds:       h.PeriodSeconds,
+		TimeoutSeconds:      h.TimeoutSeconds,
+		SuccessThreshold:    h.SuccessThreshold,
+		FailureThreshold:    h.FailureThreshold,
+	}
+}
 func (h *Health) askInitialDelaySeconds() error {
 	err := survey.NewInt().
 		SetKind("int").

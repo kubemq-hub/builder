@@ -20,7 +20,18 @@ type Queue struct {
 func NewQueue() *Queue {
 	return &Queue{}
 }
-
+func (q *Queue) Clone() *Queue {
+	return &Queue{
+		MaxReceiveMessagesRequest: q.MaxReceiveMessagesRequest,
+		MaxWaitTimeoutSeconds:     q.MaxWaitTimeoutSeconds,
+		MaxExpirationSeconds:      q.MaxExpirationSeconds,
+		MaxDelaySeconds:           q.MaxDelaySeconds,
+		MaxReQueues:               q.MaxReQueues,
+		MaxVisibilitySeconds:      q.MaxVisibilitySeconds,
+		DefaultVisibilitySeconds:  q.DefaultVisibilitySeconds,
+		DefaultWaitTimeoutSeconds: q.DefaultWaitTimeoutSeconds,
+	}
+}
 func (q *Queue) askMaxReceiveMessagesRequest() error {
 	err := survey.NewInt().
 		SetKind("int").
