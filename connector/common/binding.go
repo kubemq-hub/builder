@@ -7,36 +7,34 @@ import (
 )
 
 type Binding struct {
-	Name              string            `json:"name" yaml:"name"`
-	Source            *Spec             `json:"source" yaml:"source"`
-	Target            *Spec             `json:"target" yaml:"target"`
-	Properties        map[string]string `json:"properties" yaml:"properties"`
-	SourceSpec        string            `json:"-" yaml:"-"`
-	TargetSpec        string            `json:"-" yaml:"-"`
-	PropertiesSpec    string            `json:"-" yaml:"-"`
-	loadedOptions     DefaultOptions
-	targetsList       Connectors
-	sourcesList       Connectors
-	takenBindingNames []string
-	defaultName       string
-	isEditMode        bool
+	Name           string            `json:"name" yaml:"name"`
+	Source         *Spec             `json:"source" yaml:"source"`
+	Target         *Spec             `json:"target" yaml:"target"`
+	Properties     map[string]string `json:"properties" yaml:"properties"`
+	SourceSpec     string            `json:"-" yaml:"-"`
+	TargetSpec     string            `json:"-" yaml:"-"`
+	PropertiesSpec string            `json:"-" yaml:"-"`
+	loadedOptions  DefaultOptions
+	targetsList    Connectors
+	sourcesList    Connectors
+	defaultName    string
+	isEditMode     bool
 }
 
 func NewBinding(defaultName string) *Binding {
 	return &Binding{
-		Name:              "",
-		Source:            NewSpec(),
-		Target:            NewSpec(),
-		Properties:        map[string]string{},
-		SourceSpec:        "",
-		TargetSpec:        "",
-		PropertiesSpec:    "",
-		loadedOptions:     nil,
-		targetsList:       nil,
-		sourcesList:       nil,
-		takenBindingNames: nil,
-		defaultName:       defaultName,
-		isEditMode:        false,
+		Name:           "",
+		Source:         NewSpec(),
+		Target:         NewSpec(),
+		Properties:     map[string]string{},
+		SourceSpec:     "",
+		TargetSpec:     "",
+		PropertiesSpec: "",
+		loadedOptions:  nil,
+		targetsList:    nil,
+		sourcesList:    nil,
+		defaultName:    defaultName,
+		isEditMode:     false,
 	}
 }
 func (b *Binding) SetDefaultOptions(value DefaultOptions) *Binding {
@@ -45,19 +43,18 @@ func (b *Binding) SetDefaultOptions(value DefaultOptions) *Binding {
 }
 func (b *Binding) Clone() *Binding {
 	newBinding := &Binding{
-		Name:              b.Name,
-		Source:            b.Source.Clone(),
-		Target:            b.Target.Clone(),
-		Properties:        map[string]string{},
-		SourceSpec:        b.SourceSpec,
-		TargetSpec:        b.TargetSpec,
-		PropertiesSpec:    b.PropertiesSpec,
-		loadedOptions:     b.loadedOptions,
-		targetsList:       b.targetsList,
-		sourcesList:       b.sourcesList,
-		takenBindingNames: b.takenBindingNames,
-		defaultName:       b.defaultName,
-		isEditMode:        false,
+		Name:           b.Name,
+		Source:         b.Source.Clone(),
+		Target:         b.Target.Clone(),
+		Properties:     map[string]string{},
+		SourceSpec:     b.SourceSpec,
+		TargetSpec:     b.TargetSpec,
+		PropertiesSpec: b.PropertiesSpec,
+		loadedOptions:  b.loadedOptions,
+		targetsList:    b.targetsList,
+		sourcesList:    b.sourcesList,
+		defaultName:    b.defaultName,
+		isEditMode:     false,
 	}
 	for key, val := range b.Properties {
 		newBinding.Properties[key] = val
@@ -77,10 +74,6 @@ func (b *Binding) SetSourcesList(value Connectors) *Binding {
 }
 func (b *Binding) SetEditMode(value bool) *Binding {
 	b.isEditMode = value
-	return b
-}
-func (b *Binding) SetTakenBindingNames(value []string) *Binding {
-	b.takenBindingNames = value
 	return b
 }
 
@@ -374,7 +367,6 @@ func (b *Binding) editTarget() (*Spec, error) {
 func (b *Binding) setName() error {
 	var err error
 	if b.Name, err = NewName(b.defaultName).
-		SetTakenNames(b.takenBindingNames).
 		RenderBinding(); err != nil {
 		return err
 	}

@@ -10,13 +10,9 @@ import (
 )
 
 type Bindings struct {
-	Bindings          []*Binding `json:"bindings"`
-	defaultOptions    common.DefaultOptions
-	takenBindingNames []string
-	takenSourceNames  []string
-	takenTargetNames  []string
-	addressOptions    []string
-	defaultName       string
+	Bindings       []*Binding `json:"bindings"`
+	defaultOptions common.DefaultOptions
+	defaultName    string
 }
 
 func NewBindings(defaultName string) *Bindings {
@@ -26,13 +22,9 @@ func NewBindings(defaultName string) *Bindings {
 }
 func (b *Bindings) Clone() *Bindings {
 	cloned := &Bindings{
-		Bindings:          nil,
-		defaultOptions:    b.defaultOptions,
-		takenBindingNames: b.takenBindingNames,
-		takenSourceNames:  b.takenSourceNames,
-		takenTargetNames:  b.takenTargetNames,
-		addressOptions:    b.addressOptions,
-		defaultName:       b.defaultName,
+		Bindings:       nil,
+		defaultOptions: b.defaultOptions,
+		defaultName:    b.defaultName,
 	}
 	for _, binding := range b.Bindings {
 		cloned.Bindings = append(cloned.Bindings, binding.Clone())
@@ -58,16 +50,11 @@ func (b *Bindings) sort() {
 	})
 }
 
-
 func (b *Bindings) addBinding() error {
 
 	bnd := NewBinding(fmt.Sprintf("binding-%d", len(b.Bindings)+1))
 	var err error
 	if bnd, err = bnd.
-		SetAddress(b.addressOptions).
-		SetTakenBindingNames(b.takenBindingNames).
-		SetTakenSourceNames(b.takenSourceNames).
-		SetTakenTargetsNames(b.takenTargetNames).
 		Render(); err != nil {
 		return err
 	}
@@ -84,17 +71,14 @@ func (b *Bindings) addBinding() error {
 }
 func (b *Bindings) switchOrRemove(old, new *Binding) {
 	var newBindingList []*Binding
-	var newTakenBindingNames []string
 
 	for _, binding := range b.Bindings {
 		if old.Name != binding.Name {
 			newBindingList = append(newBindingList, binding)
-			newTakenBindingNames = append(newTakenBindingNames, binding.Name)
 		}
 	}
 	if new != nil {
 		newBindingList = append(newBindingList, new)
-		newTakenBindingNames = append(newTakenBindingNames, new.Name)
 	}
 	b.Bindings = newBindingList
 	b.sort()
@@ -112,10 +96,6 @@ func (b *Bindings) editBinding() error {
 			var err error
 			if edited, err = edited.
 				SetEditMode(true).
-				SetAddress(b.addressOptions).
-				SetTakenBindingNames(b.takenBindingNames).
-				SetTakenSourceNames(b.takenSourceNames).
-				SetTakenTargetsNames(b.takenTargetNames).
 				Render(); err != nil {
 				return err
 			}
@@ -285,4 +265,3 @@ func (b *Bindings) Validate() error {
 	}
 	return nil
 }
-

@@ -10,20 +10,16 @@ import (
 )
 
 type Binding struct {
-	Name              string            `json:"name"`
-	Sources           *source.Source    `json:"sources"`
-	Targets           *target.Target    `json:"targets"`
-	Properties        map[string]string `json:"properties"`
-	SourcesSpec       string            `json:"-" yaml:"-"`
-	TargetsSpec       string            `json:"-" yaml:"-"`
-	PropertiesSpec    string            `json:"-" yaml:"-"`
-	addressOptions    []string
-	takenSourceNames  []string
-	takenTargetsNames []string
-	takenBindingNames []string
-	defaultName       string
-	isEditMode        bool
-	wasEdited         bool
+	Name           string            `json:"name"`
+	Sources        *source.Source    `json:"sources"`
+	Targets        *target.Target    `json:"targets"`
+	Properties     map[string]string `json:"properties"`
+	SourcesSpec    string            `json:"-" yaml:"-"`
+	TargetsSpec    string            `json:"-" yaml:"-"`
+	PropertiesSpec string            `json:"-" yaml:"-"`
+	defaultName    string
+	isEditMode     bool
+	wasEdited      bool
 }
 
 func NewBinding(defaultName string) *Binding {
@@ -33,18 +29,16 @@ func NewBinding(defaultName string) *Binding {
 }
 func (b *Binding) Clone() *Binding {
 	newBnd := &Binding{
-		Name:              b.Name,
-		Sources:           b.Sources.Clone(),
-		Targets:           b.Targets.Clone(),
-		Properties:        map[string]string{},
-		SourcesSpec:       b.SourcesSpec,
-		TargetsSpec:       b.TargetsSpec,
-		PropertiesSpec:    b.PropertiesSpec,
-		addressOptions:    b.addressOptions,
-		takenSourceNames:  b.takenSourceNames,
-		takenTargetsNames: b.takenTargetsNames,
-		takenBindingNames: b.takenBindingNames,
-		defaultName:       b.Name,
+		Name:           b.Name,
+		Sources:        b.Sources.Clone(),
+		Targets:        b.Targets.Clone(),
+		Properties:     map[string]string{},
+		SourcesSpec:    b.SourcesSpec,
+		TargetsSpec:    b.TargetsSpec,
+		PropertiesSpec: b.PropertiesSpec,
+		defaultName:    b.Name,
+		isEditMode:     false,
+		wasEdited:      false,
 	}
 	for key, val := range b.Properties {
 		newBnd.Properties[key] = val
@@ -52,31 +46,17 @@ func (b *Binding) Clone() *Binding {
 
 	return newBnd
 }
-func (b *Binding) SetAddress(value []string) *Binding {
-	b.addressOptions = value
-	return b
-}
+
 func (b *Binding) SetEditMode(value bool) *Binding {
 	b.isEditMode = value
+	b.Sources.SetIsEdit(value)
+	b.Targets.SetIsEdit(value)
 	return b
 }
 func (b *Binding) SetDefaultName(value string) *Binding {
 	b.defaultName = value
 	return b
 }
-func (b *Binding) SetTakenSourceNames(value []string) *Binding {
-	b.takenSourceNames = value
-	return b
-}
-func (b *Binding) SetTakenTargetsNames(value []string) *Binding {
-	b.takenTargetsNames = value
-	return b
-}
-func (b *Binding) SetTakenBindingNames(value []string) *Binding {
-	b.takenBindingNames = value
-	return b
-}
-
 
 func (b *Binding) setSource() error {
 	if !b.isEditMode {
@@ -85,13 +65,11 @@ func (b *Binding) setSource() error {
 	}
 
 	var err error
-		if b.Sources, err = b.Sources.
-			SetAddress(b.addressOptions).
-			SetIsEdit(b.isEditMode).
-			SetTakenNames(b.takenSourceNames).
-			Render(); err != nil {
-			return err
-		}
+	if b.Sources, err = b.Sources.
+		SetIsEdit(b.isEditMode).
+		Render(); err != nil {
+		return err
+	}
 	return nil
 }
 func (b *Binding) setTarget() error {
@@ -100,23 +78,21 @@ func (b *Binding) setTarget() error {
 		b.Targets = target.NewTarget(fmt.Sprintf("%s-target", b.defaultName))
 	}
 	var err error
-		if b.Targets, err = b.Targets.
-			SetAddress(b.addressOptions).
-			SetIsEdit(b.isEditMode).
-			SetTakenNames(b.takenSourceNames).
-			Render(); err != nil {
-			return err
-		}
+	if b.Targets, err = b.Targets.
+		SetIsEdit(b.isEditMode).
+		Render(); err != nil {
+		return err
+	}
 	return nil
 }
 
 func (b *Binding) setProperties() error {
 	var err error
-		p := common.NewProperties()
-		if b.Properties, err = p.
-			Render(); err != nil {
-			return err
-		}
+	p := common.NewProperties()
+	if b.Properties, err = p.
+		Render(); err != nil {
+		return err
+	}
 	b.PropertiesSpec = p.ColoredYaml()
 	return nil
 }
@@ -128,7 +104,6 @@ func (b *Binding) showConfiguration() error {
 func (b *Binding) setName() error {
 	var err error
 	if b.Name, err = NewName(b.defaultName).
-		SetTakenNames(b.takenBindingNames).
 		Render(); err != nil {
 		return err
 	}
@@ -172,24 +147,24 @@ func (b *Binding) edit() (*Binding, error) {
 	})
 
 	ftSource := new(string)
-	*ftSource = fmt.Sprintf("<s> Edit Binding's Source (%s)", edited.Source.Kind)
+	*ftSource = fmt.Sprintf("<s> Edit Binding's Source (%s)", edited.Sources.Kind)
 	form.AddItem(ftSource, func() error {
 		var err error
-		if edited.Source, err = edited.editSource(); err != nil {
+		if edited.Sources, err = edited.Sources.Render(); err != nil {
 			return err
 		}
-		*ftSource = fmt.Sprintf("<s> Edit Binding's Source (%s)", edited.Source.Kind)
+		*ftSource = fmt.Sprintf("<s> Edit Binding's Source (%s)", edited.Sources.Kind)
 		return nil
 	})
 
 	ftTarget := new(string)
-	*ftTarget = fmt.Sprintf("<t> Edit Binding's Target (%s)", edited.Target.Kind)
+	*ftTarget = fmt.Sprintf("<t> Edit Binding's Target (%s)", edited.Targets.Kind)
 	form.AddItem(ftTarget, func() error {
 		var err error
-		if edited.Target, err = edited.editTarget(); err != nil {
+		if edited.Targets, err = edited.Targets.Render(); err != nil {
 			return err
 		}
-		*ftTarget = fmt.Sprintf("<t> Edit Binding's Target (%s)", edited.Target.Kind)
+		*ftTarget = fmt.Sprintf("<t> Edit Binding's Target (%s)", edited.Targets.Kind)
 		return nil
 	})
 
@@ -233,4 +208,8 @@ func (b *Binding) ColoredYaml() string {
 		return fmt.Sprintf("error rendring binding spec,%s", err.Error())
 	}
 	return string(bnd)
+}
+
+func (b *Binding) Validate() error {
+	return nil
 }

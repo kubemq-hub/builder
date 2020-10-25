@@ -9,11 +9,10 @@ import (
 )
 
 type Bindings struct {
-	Bindings          []*Binding `json:"bindings" yaml:"bindings"`
-	manifest          *Manifest
-	loadedOptions     DefaultOptions
-	takenBindingNames []string
-	defaultName       string
+	Bindings      []*Binding `json:"bindings" yaml:"bindings"`
+	manifest      *Manifest
+	loadedOptions DefaultOptions
+	defaultName   string
 }
 
 func NewBindings(defaultName string) *Bindings {
@@ -23,11 +22,10 @@ func NewBindings(defaultName string) *Bindings {
 }
 func (b *Bindings) Clone() *Bindings {
 	cloned := &Bindings{
-		Bindings:          nil,
-		manifest:          b.manifest,
-		loadedOptions:     b.loadedOptions,
-		takenBindingNames: b.takenBindingNames,
-		defaultName:       b.defaultName,
+		Bindings:      nil,
+		manifest:      b.manifest,
+		loadedOptions: b.loadedOptions,
+		defaultName:   b.defaultName,
 	}
 	for _, binding := range b.Bindings {
 		cloned.Bindings = append(cloned.Bindings, binding.Clone())
@@ -63,7 +61,6 @@ func (b *Bindings) addBinding() error {
 		SetDefaultOptions(b.loadedOptions).
 		SetSourcesList(b.manifest.Sources).
 		SetTargetsList(b.manifest.Targets).
-		SetTakenBindingNames(b.takenBindingNames).
 		Render(); err != nil {
 		return err
 	}
@@ -80,17 +77,14 @@ func (b *Bindings) addBinding() error {
 
 func (b *Bindings) switchOrRemove(old, new *Binding) {
 	var newBindingList []*Binding
-	var newTakenBindingNames []string
 
 	for _, binding := range b.Bindings {
 		if old.Name != binding.Name {
 			newBindingList = append(newBindingList, binding)
-			newTakenBindingNames = append(newTakenBindingNames, binding.Name)
 		}
 	}
 	if new != nil {
 		newBindingList = append(newBindingList, new)
-		newTakenBindingNames = append(newTakenBindingNames, new.Name)
 	}
 	b.Bindings = newBindingList
 	b.sort()
@@ -111,7 +105,6 @@ func (b *Bindings) editBinding() error {
 				SetDefaultOptions(b.loadedOptions).
 				SetSourcesList(b.manifest.Sources).
 				SetTargetsList(b.manifest.Targets).
-				SetTakenBindingNames(b.takenBindingNames).
 				Render(); err != nil {
 				return err
 			}
