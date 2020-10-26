@@ -7,33 +7,23 @@ import (
 )
 
 type Source struct {
-	manifestData   []byte
-	defaultOptions common.DefaultOptions
-	defaultName    string
-	bindingsList   []*common.Binding
+	manifestData  []byte
+	loadedOptions common.DefaultOptions
+	defaultName   string
+	bindings      []*common.Binding
 }
 
-func NewSource(defaultName string) *Source {
+func NewSource(defaultName string, bindings []*common.Binding, loadedOptions common.DefaultOptions, manifestData []byte) *Source {
 	return &Source{
-		defaultName: defaultName,
+		manifestData:  manifestData,
+		loadedOptions: loadedOptions,
+		defaultName:   defaultName,
+		bindings:      bindings,
 	}
 }
 
-func (s *Source) SetManifest(value []byte) *Source {
-	s.manifestData = value
-	return s
-}
 func (s *Source) SetManifestFile(filename string) *Source {
 	s.manifestData, _ = ioutil.ReadFile(filename)
-	return s
-}
-func (s *Source) SetBindings(value []*common.Binding) *Source {
-	s.bindingsList = value
-	return s
-}
-
-func (s *Source) SetDefaultOptions(value common.DefaultOptions) *Source {
-	s.defaultOptions = value
 	return s
 }
 
@@ -48,10 +38,7 @@ func (s *Source) Render() ([]byte, error) {
 	if m.Schema != "sources" {
 		return nil, fmt.Errorf("invalid scheme")
 	}
-	if b, err := common.NewBindings(s.defaultName).
-		SetManifest(m).
-		SetDefaultOptions(s.defaultOptions).
-		SetBindings(s.bindingsList).
+	if b, err := common.NewBindings(s.defaultName, s.bindings, "sources", s.loadedOptions, m).
 		Render(); err != nil {
 		return nil, err
 	} else {

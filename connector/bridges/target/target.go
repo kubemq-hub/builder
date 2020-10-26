@@ -182,7 +182,7 @@ func (t *Target) edit() (*Target, error) {
 		return nil
 	})
 
-	form.AddItem("Show Target Configuration", func() error {
+	form.AddItem("<s> Show Target Configuration", func() error {
 		utils.Println(promptShowTarget, edited.Name)
 		utils.Println("%s\n", edited.ColoredYaml())
 		return nil

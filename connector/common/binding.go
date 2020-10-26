@@ -14,6 +14,7 @@ type Binding struct {
 	SourceSpec     string            `json:"-" yaml:"-"`
 	TargetSpec     string            `json:"-" yaml:"-"`
 	PropertiesSpec string            `json:"-" yaml:"-"`
+	Side           string            `json:"-" yaml:"-"`
 	loadedOptions  DefaultOptions
 	targetsList    Connectors
 	sourcesList    Connectors
@@ -21,7 +22,7 @@ type Binding struct {
 	isEditMode     bool
 }
 
-func NewBinding(defaultName string) *Binding {
+func NewBinding(defaultName string, side string, loadedOptions DefaultOptions, targetList, sourcesList Connectors) *Binding {
 	return &Binding{
 		Name:           "",
 		Source:         NewSpec(),
@@ -30,17 +31,15 @@ func NewBinding(defaultName string) *Binding {
 		SourceSpec:     "",
 		TargetSpec:     "",
 		PropertiesSpec: "",
-		loadedOptions:  nil,
-		targetsList:    nil,
-		sourcesList:    nil,
+		loadedOptions:  loadedOptions,
+		targetsList:    targetList,
+		sourcesList:    sourcesList,
 		defaultName:    defaultName,
 		isEditMode:     false,
+		Side:           side,
 	}
 }
-func (b *Binding) SetDefaultOptions(value DefaultOptions) *Binding {
-	b.loadedOptions = value
-	return b
-}
+
 func (b *Binding) Clone() *Binding {
 	newBinding := &Binding{
 		Name:           b.Name,
@@ -55,6 +54,7 @@ func (b *Binding) Clone() *Binding {
 		sourcesList:    b.sourcesList,
 		defaultName:    b.defaultName,
 		isEditMode:     false,
+		Side:           b.Side,
 	}
 	for key, val := range b.Properties {
 		newBinding.Properties[key] = val
@@ -64,13 +64,8 @@ func (b *Binding) Clone() *Binding {
 func (b *Binding) Validate() error {
 	return nil
 }
-func (b *Binding) SetTargetsList(value Connectors) *Binding {
-	b.targetsList = value
-	return b
-}
-func (b *Binding) SetSourcesList(value Connectors) *Binding {
-	b.sourcesList = value
-	return b
+func (b *Binding) Print() {
+	fmt.Println(b.Name, len(b.targetsList))
 }
 func (b *Binding) SetEditMode(value bool) *Binding {
 	b.isEditMode = value
@@ -211,7 +206,7 @@ func (b *Binding) editSource() (*Spec, error) {
 		return nil
 	})
 
-	form.AddItem("Show Source Configuration", func() error {
+	form.AddItem("<s> Show Source Configuration", func() error {
 		utils.Println(promptShowSource, edited.Source.Name)
 		utils.Println("%s\n", edited.Source.ColoredYaml(sourceSpecTemplate))
 		return nil
@@ -268,7 +263,6 @@ func (b *Binding) addTarget(defaultName string) error {
 }
 func (b *Binding) editTarget() (*Spec, error) {
 	var result *Spec
-
 	edited := b.Clone()
 	form := survey.NewForm(fmt.Sprintf("Select Edit %s Target Option", edited.Target.Name))
 
@@ -341,7 +335,7 @@ func (b *Binding) editTarget() (*Spec, error) {
 		return nil
 	})
 
-	form.AddItem("Show Target Configuration", func() error {
+	form.AddItem("<s> Show Target Configuration", func() error {
 		utils.Println(promptShowTarget, edited.Target.Name)
 		utils.Println("%s\n", edited.Target.ColoredYaml(targetSpecTemplate))
 		return nil
@@ -392,7 +386,6 @@ func (b *Binding) edit() (*Binding, error) {
 	var result *Binding
 	edited := b.Clone().
 		SetEditMode(true)
-
 	form := survey.NewForm(fmt.Sprintf("Select Edit %s Binding Option:", edited.Name))
 
 	ftName := new(string)
@@ -503,4 +496,15 @@ func (b *Binding) TableRowShort() []interface{} {
 	}
 	list = append(list, b.Name, b.Source.TableItemShort(), b.Target.TableItemShort(), ms)
 	return list
+}
+func (b *Binding) BelongToClusterAddress(address string) bool {
+	switch b.Side {
+	case "sources":
+		return b.Target.IsKubemqAddress(address)
+	case "targets":
+		return b.Source.IsKubemqAddress(address)
+	default:
+		fmt.Println(address, b.Side)
+		return false
+	}
 }

@@ -76,6 +76,8 @@ type Cluster struct {
 	LogSpec            string
 	NodeSelectorsSpec  string
 	LicenseSpec        string
+
+	grpcEndPoints string
 }
 
 func NewCluster(handler ClustersHandler) *Cluster {
@@ -202,7 +204,10 @@ func (c *Cluster) SetNamespaces(value []string) *Cluster {
 	c.namespaces = value
 	return c
 }
-
+func (c *Cluster) SetGrpcEndPoints(value string) *Cluster {
+	c.grpcEndPoints = value
+	return c
+}
 func (c *Cluster) askName(defaultName string) error {
 	if name, err := NewName().
 		SetTakenNames(c.takenNames).
@@ -654,6 +659,12 @@ func CopyCluster(origin *Cluster, handler ClustersHandler) (*Cluster, error) {
 	return copied, nil
 }
 
+//TODO - add parsing grpc end points
+func (c *Cluster) EndPoints() []string {
+	var list []string
+	list = append(list, fmt.Sprintf("%s-grpc.%s", c.Name, c.Namespace))
+	return list
+}
 func (c *Cluster) ColoredYaml() (string, error) {
 	if c.Image != nil {
 		if spec, err := c.Image.ColoredYaml(); err != nil {

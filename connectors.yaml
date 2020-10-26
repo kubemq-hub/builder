@@ -25,36 +25,41 @@ kubemq/kubemq-bridges:
 kubemq/kubemq-sources:
   config: |
     bindings:
-    - name: b1
-      source:
-        name: kubemq-sources-binding-1-source
-        kind: source.http
-        properties:
-          methods: get
-          path: /
-      target:
-        name: kubemq-sources-binding-1-target
-        kind: target.queue
-        properties:
-          address: sdsf
-          auth_token: ""
-          channel: queues
-          delay_seconds: "0"
-          expiration_seconds: "0"
-          max_receive_count: "0"
-      properties: {}
     - name: b2
       source:
-        name: kubemq-sources-binding-1-source
-        kind: source.http
+        name: b2-s
+        kind: source.messaging.mqtt
         properties:
-          methods: get
-          path: /
+          client_id: asd
+          host: asdasd
+          password: asd
+          qos: "0"
+          topic: asd
+          username: asd
       target:
-        name: kubemq-sources-binding-1-target
+        name: t1
+        kind: target.events-store
+        properties:
+          address: asd
+          auth_token: ""
+          channel: events-store
+      properties: {}
+    - name: b3
+      source:
+        name: s1
+        kind: source.messaging.rabbitmq
+        properties:
+          auto_ack: "false"
+          consumer: asd
+          exclusive: "false"
+          queue: asd
+          requeue_on_error: "false"
+          url: asd
+      target:
+        name: t1
         kind: target.queue
         properties:
-          address: sdsf
+          address: kubemq-cluster-grpc.kubemq:50000
           auth_token: ""
           channel: queues
           delay_seconds: "0"
@@ -76,7 +81,7 @@ kubemq/kubemq-targets:
         name: b1-source
         kind: source.queue
         properties:
-          address: asdas
+          address: kubemq-cluster-grpc.kubemq:50000
           auth_token: ""
           channel: queues
       target:
@@ -85,12 +90,12 @@ kubemq/kubemq-targets:
         properties:
           url: redis://localhost:6379
       properties: {}
-    - name: b1
+    - name: b2
       source:
-        name: b1-source
+        name: b2-source
         kind: source.queue
         properties:
-          address: asdas
+          address: kubemq-cluster-grpc.kubemq-2:50000
           auth_token: ""
           channel: queues
       target:

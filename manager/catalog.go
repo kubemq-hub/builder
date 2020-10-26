@@ -39,6 +39,20 @@ func (cc *ConnectorsCatalog) loadFromFile(filename string) []byte {
 func (cc *ConnectorsCatalog) saveToFile(filename string, data []byte) error {
 	return ioutil.WriteFile(filename, data, 0600)
 }
+func (cc *ConnectorsCatalog) ToSourcesManifest() *common.Manifest {
+	m, err := common.LoadManifest(cc.SourcesManifest)
+	if err != nil {
+		return nil
+	}
+	return m
+}
+func (cc *ConnectorsCatalog) ToTargetManifest() *common.Manifest {
+	m, err := common.LoadManifest(cc.TargetsManifest)
+	if err != nil {
+		return nil
+	}
+	return m
+}
 
 func (cc *ConnectorsCatalog) loadFromUrl(url string) []byte {
 	resp, err := http.Get(url)
@@ -140,7 +154,7 @@ func (cc *ConnectorsCatalog) browseSources() error {
 	}
 	return nil
 }
-func (cc *ConnectorsCatalog) updateCatalog() error {
+func (cc *ConnectorsCatalog) UpdateCatalog() error {
 	utils.Println(promptCatalogLoadingStarted)
 	err := cc.init()
 	if err != nil {
@@ -160,8 +174,8 @@ func (cc *ConnectorsCatalog) Render() error {
 		SetErrorHandler(survey.MenuShowErrorFn).
 		AddItem("Browse Targets Catalog", cc.browseTargets).
 		AddItem("Browse Sources Catalog", cc.browseSources).
-		AddItem("Update Catalogs", cc.updateCatalog).
-		AddItem("<-back", nil).
+		AddItem("Update Catalogs", cc.UpdateCatalog).
+		SetBackOption(true).
 		Render(); err != nil {
 		return err
 	}

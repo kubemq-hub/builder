@@ -19,18 +19,29 @@ type Connector struct {
 	NodePort        int    `json:"node_port"`
 	ServiceType     string `json:"service_type"`
 	Image           string `json:"image"`
-	defaultOptions  common.DefaultOptions
+	loadedOptions   common.DefaultOptions
 	targetManifest  []byte
 	sourcesManifest []byte
 	handler         ConnectorsHandler
 }
 
-func NewConnector(handler ConnectorsHandler) *Connector {
+func NewConnector(handler ConnectorsHandler, loadedOptions common.DefaultOptions, targetManifest, sourceManifest []byte) *Connector {
 	return &Connector{
-		handler: handler,
+		Name:            "",
+		Namespace:       "",
+		Type:            "",
+		Replicas:        0,
+		Config:          "",
+		NodePort:        0,
+		ServiceType:     "",
+		Image:           "",
+		loadedOptions:   loadedOptions,
+		targetManifest:  targetManifest,
+		sourcesManifest: sourceManifest,
+		handler:         handler,
 	}
 }
-func (c *Connector) Clone(handler ConnectorsHandler) *Connector {
+func (c *Connector) Clone() *Connector {
 	return &Connector{
 		Name:            c.Name,
 		Namespace:       c.Namespace,
@@ -40,26 +51,63 @@ func (c *Connector) Clone(handler ConnectorsHandler) *Connector {
 		NodePort:        c.NodePort,
 		ServiceType:     c.ServiceType,
 		Image:           c.Image,
-		defaultOptions:  c.defaultOptions,
+		loadedOptions:   c.loadedOptions,
 		targetManifest:  c.targetManifest,
 		sourcesManifest: c.sourcesManifest,
-		handler:         handler,
+		handler:         c.handler,
 	}
 }
-func (c *Connector) SetDefaultOptions(value common.DefaultOptions) *Connector {
-	c.defaultOptions = value
-	return c
-}
-func (c *Connector) SetTargetsManifest(value []byte) *Connector {
-	c.targetManifest = value
-	return c
-}
-func (c *Connector) SetSourcesManifest(value []byte) *Connector {
-	c.sourcesManifest = value
-	return c
-}
+
 func (c *Connector) Key() string {
 	return fmt.Sprintf("%s/%s", c.Namespace, c.Name)
+}
+func (c *Connector) GetManifest() *common.Manifest {
+	var err error
+	var m *common.Manifest
+	switch c.Type {
+	case "targets":
+		m, err = common.LoadManifest(c.targetManifest)
+	case "sources":
+		m, err = common.LoadManifest(c.sourcesManifest)
+	}
+	if err != nil {
+		return nil
+	}
+	return m
+}
+func (c *Connector) SetManifests(targets, sources []byte) *Connector {
+	c.targetManifest = targets
+	c.sourcesManifest = sources
+
+	return c
+}
+
+func (c *Connector) UpdateBindings() error {
+	switch c.Type {
+	case "targets":
+		bindings, err := common.Unmarshal([]byte(c.Config))
+		if err != nil {
+			return err
+		}
+		bindings.Side = "targets"
+		bindings.Update(c.GetManifest(), c.loadedOptions)
+	case "sources":
+		bindings, err := common.Unmarshal([]byte(c.Config))
+		if err != nil {
+			return err
+		}
+		bindings.Side = "sources"
+		bindings.Update(c.GetManifest(), c.loadedOptions)
+	}
+	return nil
+}
+func (c *Connector) SetLoadedOptions(value common.DefaultOptions) *Connector {
+	c.loadedOptions = value
+	return c
+}
+func (c *Connector) SetHandler(value ConnectorsHandler) *Connector {
+	c.handler = value
+	return c
 }
 
 func (c *Connector) Validate() error {
@@ -156,7 +204,7 @@ func (c *Connector) askService() error {
 }
 func (c *Connector) askNamespace() error {
 	if n, err := NewNamespace().
-		SetNamespaces(c.defaultOptions["namespaces"]).
+		SetNamespaces(c.loadedOptions["namespaces"]).
 		Render(); err != nil {
 		return err
 	} else {
@@ -181,11 +229,9 @@ func (c *Connector) ColoredYaml() string {
 	return string(b)
 }
 
-func EditConnector(origin *Connector, sourceManifest, targetsManifests []byte, handler ConnectorsHandler, isCopyMode bool) (*Connector, error) {
+func EditConnector(origin *Connector, isCopyMode bool) (*Connector, error) {
 	var result *Connector
-	cloned := origin.Clone(handler).
-		SetTargetsManifest(targetsManifests).
-		SetSourcesManifest(sourceManifest)
+	cloned := origin.Clone()
 	ftReplicas := new(string)
 	*ftReplicas = fmt.Sprintf("<r> Edit Connector Replicas (%d)", cloned.Replicas)
 
@@ -204,7 +250,7 @@ func EditConnector(origin *Connector, sourceManifest, targetsManifests []byte, h
 					return err
 				}
 				cfg, err := bridges.NewBridges(cloned.Name).
-					SetDefaultOptions(cloned.defaultOptions).
+					SetDefaultOptions(cloned.loadedOptions).
 					SetBindings(bindings.Bindings).
 					Render()
 				if err != nil {
@@ -216,10 +262,7 @@ func EditConnector(origin *Connector, sourceManifest, targetsManifests []byte, h
 				if err != nil {
 					return err
 				}
-				cfg, err := targets.NewTarget(cloned.Name).
-					SetManifest(cloned.targetManifest).
-					SetDefaultOptions(cloned.defaultOptions).
-					SetBindings(bindings.Bindings).
+				cfg, err := targets.NewTarget(cloned.Name, bindings.Bindings, cloned.loadedOptions, cloned.targetManifest).
 					Render()
 				if err != nil {
 					return err
@@ -230,10 +273,7 @@ func EditConnector(origin *Connector, sourceManifest, targetsManifests []byte, h
 				if err != nil {
 					return err
 				}
-				cfg, err := sources.NewSource(cloned.Name).
-					SetManifest(cloned.sourcesManifest).
-					SetDefaultOptions(cloned.defaultOptions).
-					SetBindings(bindings.Bindings).
+				cfg, err := sources.NewSource(cloned.Name, bindings.Bindings, cloned.loadedOptions, cloned.sourcesManifest).
 					Render()
 				if err != nil {
 					return err
@@ -271,6 +311,10 @@ func EditConnector(origin *Connector, sourceManifest, targetsManifests []byte, h
 		})
 
 	form.SetOnSaveFn(func() error {
+		if isCopyMode {
+			result = cloned
+			return nil
+		}
 		if !(origin.ColoredYaml() == cloned.ColoredYaml()) {
 			if err := cloned.Validate(); err != nil {
 				return err
@@ -298,12 +342,9 @@ func EditConnector(origin *Connector, sourceManifest, targetsManifests []byte, h
 	return result, nil
 }
 
-func AddConnector(sourceManifest, targetsManifests []byte, handler ConnectorsHandler) (*Connector, error) {
+func AddConnector(handler ConnectorsHandler, loadedOptions common.DefaultOptions, targetsManifests, sourceManifest []byte) (*Connector, error) {
 	var result *Connector
-	added := NewConnector(handler).
-		SetTargetsManifest(targetsManifests).
-		SetSourcesManifest(sourceManifest)
-
+	added := NewConnector(handler, loadedOptions, targetsManifests, sourceManifest)
 	added.Replicas = 1
 	added.ServiceType = "ClusterIP"
 	ftReplicas := new(string)
@@ -387,7 +428,7 @@ func (c *Connector) addBridges() error {
 	}
 	utils.Println(promptBindingStart, c.Name)
 	cfg, err := bridges.NewBridges(c.Name).
-		SetDefaultOptions(c.defaultOptions).
+		SetDefaultOptions(c.loadedOptions).
 		Render()
 	if err != nil {
 		return err
@@ -404,9 +445,7 @@ func (c *Connector) addTargets() error {
 		return err
 	}
 	utils.Println(promptBindingStart, c.Name)
-	cfg, err := targets.NewTarget(c.Name).
-		SetManifest(c.targetManifest).
-		SetDefaultOptions(c.defaultOptions).
+	cfg, err := targets.NewTarget(c.Name, nil, c.loadedOptions, c.targetManifest).
 		Render()
 	if err != nil {
 		return err
@@ -423,9 +462,7 @@ func (c *Connector) addSources() error {
 		return err
 	}
 	utils.Println(promptBindingStart, c.Name)
-	cfg, err := sources.NewSource(c.Name).
-		SetManifest(c.sourcesManifest).
-		SetDefaultOptions(c.defaultOptions).
+	cfg, err := sources.NewSource(c.Name, nil, c.loadedOptions, c.sourcesManifest).
 		Render()
 	if err != nil {
 		return err
@@ -435,10 +472,8 @@ func (c *Connector) addSources() error {
 	return nil
 }
 
-func CopyConnector(origin *Connector, sourceManifest, targetsManifests []byte, handler ConnectorsHandler) (*Connector, error) {
-	copied := origin.Clone(handler).
-		SetTargetsManifest(targetsManifests).
-		SetSourcesManifest(sourceManifest)
+func CopyConnector(origin *Connector) (*Connector, error) {
+	copied := origin.Clone()
 	if err := copied.askName(copied.Name); err != nil {
 		return nil, err
 	}
@@ -460,7 +495,7 @@ func CopyConnector(origin *Connector, sourceManifest, targetsManifests []byte, h
 	}
 	if checkEdit {
 		var err error
-		copied, err = EditConnector(copied, sourceManifest, targetsManifests, handler, true)
+		copied, err = EditConnector(copied, true)
 		if err != nil {
 			return nil, err
 		}
@@ -473,4 +508,14 @@ func CopyConnector(origin *Connector, sourceManifest, targetsManifests []byte, h
 		return nil, err
 	}
 	return copied, nil
+}
+
+func (c *Connector) GetBindingsForCluster(address string) []*common.Binding {
+	bindings, err := common.Unmarshal([]byte(c.Config))
+	if err != nil {
+		return nil
+	}
+	bindings.Side = c.Type
+
+	return bindings.GetBindingsForCluster(address)
 }

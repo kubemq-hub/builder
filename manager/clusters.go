@@ -3,24 +3,36 @@ package manager
 import (
 	"fmt"
 	"github.com/kubemq-hub/builder/cluster"
+	"github.com/kubemq-hub/builder/connector/common"
 	"github.com/kubemq-hub/builder/pkg/utils"
 	"github.com/kubemq-hub/builder/survey"
 	"sort"
 )
 
 type ClustersManager struct {
-	handler  cluster.ClustersHandler
-	clusters []*cluster.Cluster
+	handler           cluster.ClustersHandler
+	clusters          []*cluster.Cluster
+	connectorsManager *ConnectorsManager
+	loadedOptions     common.DefaultOptions
 }
 
-func NewClustersManager(handler cluster.ClustersHandler) *ClustersManager {
+func NewClustersManager(handler cluster.ClustersHandler, connectorsManager *ConnectorsManager, loadedOptions common.DefaultOptions) *ClustersManager {
 	cm := &ClustersManager{
-		handler: handler,
+		handler:           handler,
+		clusters:          nil,
+		connectorsManager: connectorsManager,
+		loadedOptions:     loadedOptions,
 	}
+
 	return cm
 }
 func (cm *ClustersManager) updateClusters() {
 	cm.clusters, _ = cm.handler.List()
+	var kubemqAddress []string
+	for _, c := range cm.clusters {
+		kubemqAddress = append(kubemqAddress, c.EndPoints()...)
+	}
+	cm.loadedOptions.Add("kubemq-address", kubemqAddress)
 	sort.Slice(cm.clusters, func(i, j int) bool {
 		return cm.clusters[i].Key() < cm.clusters[j].Key()
 	})
@@ -135,10 +147,25 @@ func (cm *ClustersManager) listClusters() error {
 	return nil
 }
 
-func (cm *ClustersManager) targetIntegrations() error {
-	return nil
-}
-func (cm *ClustersManager) sourceIntegrations() error {
+func (cm *ClustersManager) manageIntegrations() error {
+	cm.updateClusters()
+	menu := survey.NewMenu("Select Cluster to manage:").
+		SetPageSize(10).
+		SetDisableLoop(true).
+		SetBackOption(true).
+		SetErrorHandler(survey.MenuShowErrorFn)
+	for _, c := range cm.clusters {
+		clonedCluster := c.Clone(cm.handler)
+		menu.AddItem(clonedCluster.Key(), func() error {
+			if err := NewIntegrations(clonedCluster, cm.connectorsManager).Render(); err != nil {
+				return err
+			}
+			return nil
+		})
+	}
+	if err := menu.Render(); err != nil {
+		return err
+	}
 	return nil
 }
 func (cm *ClustersManager) Render() error {
@@ -147,8 +174,7 @@ func (cm *ClustersManager) Render() error {
 		AddItem("<e> Edit Cluster", cm.editCluster).
 		AddItem("<c> Copy Cluster", cm.copyCluster).
 		AddItem("<d> Delete Cluster", cm.deleteCluster).
-		AddItem("<t> Manage Cluster Targets Integrations", cm.targetIntegrations).
-		AddItem("<s> Manage Cluster Sources Integrations", cm.sourceIntegrations).
+		AddItem("<m> Manage Cluster Integrations", cm.manageIntegrations).
 		AddItem("<l> List of Clusters", cm.listClusters).
 		SetBackOption(true).
 		SetPageSize(10).

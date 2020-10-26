@@ -99,9 +99,11 @@ func (b *Bindings) editBinding() error {
 				Render(); err != nil {
 				return err
 			}
-			for _, binding := range b.Bindings {
-				if edited.Name == binding.Name {
-					return fmt.Errorf("binding name %s is not unique, binding %s was not edited", edited.Name, origin.Name)
+			if origin.Name != edited.Name {
+				for _, binding := range b.Bindings {
+					if edited.Name == binding.Name {
+						return fmt.Errorf("binding name %s is not unique, binding %s was not edited", edited.Name, origin.Name)
+					}
 				}
 			}
 			b.switchOrRemove(origin, edited)
@@ -179,11 +181,14 @@ func (b *Bindings) copyBinding() error {
 					return err
 				}
 			}
-			for _, binding := range b.Bindings {
-				if cloned.Name == binding.Name {
-					return fmt.Errorf("binding name %s is not unique, binding %s was not edited", cloned.Name, origin.Name)
+			if origin.Name != cloned.Name {
+				for _, binding := range b.Bindings {
+					if cloned.Name == binding.Name {
+						return fmt.Errorf("binding name %s is not unique, binding %s was not edited", cloned.Name, origin.Name)
+					}
 				}
 			}
+
 			b.Bindings = append(b.Bindings, cloned)
 			return nil
 		}

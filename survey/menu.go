@@ -97,6 +97,6 @@ func (m *Menu) Render() error {
 }
 
 func MenuShowErrorFn(err error) error {
-	utils.Println("<red>%s</>", err.Error())
+	utils.Println("<red>%s</>\n", err.Error())
 	return nil
 }

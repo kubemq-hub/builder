@@ -184,7 +184,7 @@ func (s *Source) edit() (*Source, error) {
 		return nil
 	})
 
-	form.AddItem("Show Source Configuration", func() error {
+	form.AddItem("<s> Show Source Configuration", func() error {
 		utils.Println(promptShowSource, edited.Name)
 		utils.Println("%s\n", edited.ColoredYaml())
 		return nil

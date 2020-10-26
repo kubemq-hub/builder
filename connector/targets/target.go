@@ -7,32 +7,23 @@ import (
 )
 
 type Target struct {
-	manifestData   []byte
-	defaultOptions common.DefaultOptions
-	defaultName    string
-	bindingsList   []*common.Binding
+	manifestData  []byte
+	loadedOptions common.DefaultOptions
+	defaultName   string
+	bindings      []*common.Binding
 }
 
-func NewTarget(defaultName string) *Target {
+func NewTarget(defaultName string, bindings []*common.Binding, loadedOptions common.DefaultOptions, manifestData []byte) *Target {
 	return &Target{
-		defaultName: defaultName,
+		manifestData:  manifestData,
+		loadedOptions: loadedOptions,
+		defaultName:   defaultName,
+		bindings:      bindings,
 	}
 }
 
-func (t *Target) SetManifest(value []byte) *Target {
-	t.manifestData = value
-	return t
-}
 func (t *Target) SetManifestFile(filename string) *Target {
 	t.manifestData, _ = ioutil.ReadFile(filename)
-	return t
-}
-func (t *Target) SetDefaultOptions(value common.DefaultOptions) *Target {
-	t.defaultOptions = value
-	return t
-}
-func (t *Target) SetBindings(value []*common.Binding) *Target {
-	t.bindingsList = value
 	return t
 }
 
@@ -47,10 +38,7 @@ func (t *Target) Render() ([]byte, error) {
 	if m.Schema != "targets" {
 		return nil, fmt.Errorf("invalid scheme, %s", m.Schema)
 	}
-	if b, err := common.NewBindings(t.defaultName).
-		SetManifest(m).
-		SetDefaultOptions(t.defaultOptions).
-		SetBindings(t.bindingsList).
+	if b, err := common.NewBindings(t.defaultName, t.bindings, "targets", t.loadedOptions, m).
 		Render(); err != nil {
 		return nil, err
 	} else {

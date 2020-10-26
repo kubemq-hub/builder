@@ -3,35 +3,54 @@ package manager
 import (
 	"fmt"
 	"github.com/kubemq-hub/builder/connector"
+	"github.com/kubemq-hub/builder/connector/common"
 	"github.com/kubemq-hub/builder/pkg/utils"
 	"github.com/kubemq-hub/builder/survey"
 	"sort"
 )
 
 type ConnectorsManager struct {
-	handler    connector.ConnectorsHandler
-	connectors []*connector.Connector
-	catalog    *ConnectorsCatalog
+	handler       connector.ConnectorsHandler
+	connectors    []*connector.Connector
+	catalog       *ConnectorsCatalog
+	loadedOptions common.DefaultOptions
 }
 
-func NewConnectorsManager(handler connector.ConnectorsHandler) *ConnectorsManager {
+func NewConnectorsManager(handler connector.ConnectorsHandler, catalog *ConnectorsCatalog, loadedOptions common.DefaultOptions) *ConnectorsManager {
 	cm := &ConnectorsManager{
-		handler: handler,
+		handler:       handler,
+		catalog:       catalog,
+		loadedOptions: loadedOptions,
 	}
-	cm.catalog = NewConnectorCatalog()
 	return cm
+}
+func (cm *ConnectorsManager) SetLoadedOptions(value common.DefaultOptions) *ConnectorsManager {
+	cm.loadedOptions = value
+	return cm
+}
+func (cm *ConnectorsManager) GetConnectors() []*connector.Connector {
+	cm.updateConnectors()
+	return cm.connectors
 }
 func (cm *ConnectorsManager) updateConnectors() {
 	cm.connectors, _ = cm.handler.List()
+	for _, c := range cm.connectors {
+		c.SetLoadedOptions(cm.loadedOptions).
+			SetManifests(cm.catalog.TargetsManifest, cm.catalog.SourcesManifest).
+			SetHandler(cm.handler)
+		_ = c.UpdateBindings()
+	}
 	sort.Slice(cm.connectors, func(i, j int) bool {
 		return cm.connectors[i].Key() < cm.connectors[j].Key()
 	})
 }
 func (cm *ConnectorsManager) addConnector() error {
 	if _, err := connector.AddConnector(
-		cm.catalog.SourcesManifest,
+		cm.handler,
+		cm.loadedOptions,
 		cm.catalog.TargetsManifest,
-		cm.handler); err != nil {
+		cm.catalog.SourcesManifest,
+	); err != nil {
 		return err
 	}
 	return nil
@@ -45,12 +64,9 @@ func (cm *ConnectorsManager) editConnector() error {
 		SetBackOption(true).
 		SetErrorHandler(survey.MenuShowErrorFn)
 	for _, con := range cm.connectors {
-		editedCon := con.Clone(cm.handler)
+		editedCon := con.Clone()
 		menu.AddItem(fmt.Sprintf("%s (%s)", editedCon.Key(), editedCon.Type), func() error {
-			if _, err := connector.EditConnector(editedCon,
-				cm.catalog.SourcesManifest,
-				cm.catalog.TargetsManifest,
-				cm.handler, false); err != nil {
+			if _, err := connector.EditConnector(editedCon, false); err != nil {
 				return err
 			}
 			return nil
@@ -69,12 +85,9 @@ func (cm *ConnectorsManager) copyConnector() error {
 		SetBackOption(true).
 		SetErrorHandler(survey.MenuShowErrorFn)
 	for _, con := range cm.connectors {
-		copiedCon := con.Clone(cm.handler)
+		copiedCon := con.Clone()
 		menu.AddItem(fmt.Sprintf("%s (%s)", copiedCon.Key(), copiedCon.Type), func() error {
-			if _, err := connector.CopyConnector(copiedCon,
-				cm.catalog.SourcesManifest,
-				cm.catalog.TargetsManifest,
-				cm.handler); err != nil {
+			if _, err := connector.CopyConnector(copiedCon); err != nil {
 				return err
 			}
 			return nil
@@ -93,7 +106,7 @@ func (cm *ConnectorsManager) deleteConnector() error {
 		SetBackOption(true).
 		SetErrorHandler(survey.MenuShowErrorFn)
 	for _, con := range cm.connectors {
-		deletedCon := con.Clone(cm.handler)
+		deletedCon := con.Clone()
 		deleteFn := func() error {
 			conName := deletedCon.Key()
 			val := false
@@ -147,9 +160,6 @@ func (cm *ConnectorsManager) connectorsManagement() error {
 	return cm.catalog.Render()
 }
 func (cm *ConnectorsManager) Render() error {
-	if err := cm.catalog.updateCatalog(); err != nil {
-		return err
-	}
 	if err := survey.NewMenu(fmt.Sprintf("Select Connectors Manager Option (Context: %s):", cm.handler.Name())).
 		AddItem("<a> Add Connector", cm.addConnector).
 		AddItem("<e> Edit Connector", cm.editConnector).
