@@ -35,10 +35,8 @@ func (cm *ConnectorsManager) GetConnectors() []*connector.Connector {
 func (cm *ConnectorsManager) updateConnectors() {
 	cm.connectors, _ = cm.handler.List()
 	for _, c := range cm.connectors {
-		c.SetLoadedOptions(cm.loadedOptions).
-			SetManifests(cm.catalog.TargetsManifest, cm.catalog.SourcesManifest).
+		c.Update(cm.loadedOptions, cm.catalog.TargetsManifest, cm.catalog.SourcesManifest).
 			SetHandler(cm.handler)
-		_ = c.UpdateBindings()
 	}
 	sort.Slice(cm.connectors, func(i, j int) bool {
 		return cm.connectors[i].Key() < cm.connectors[j].Key()

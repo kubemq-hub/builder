@@ -11,14 +11,16 @@ import (
 )
 
 type Connector struct {
-	Name            string `json:"name"`
-	Namespace       string `json:"namespace"`
-	Type            string `json:"type"`
-	Replicas        int    `json:"replicas"`
-	Config          string `json:"config"`
-	NodePort        int    `json:"node_port"`
-	ServiceType     string `json:"service_type"`
-	Image           string `json:"image"`
+	Name            string            `json:"name"`
+	Namespace       string            `json:"namespace"`
+	Type            string            `json:"type"`
+	Replicas        int               `json:"replicas"`
+	Config          string            `json:"config"`
+	NodePort        int               `json:"node_port"`
+	ServiceType     string            `json:"service_type"`
+	Image           string            `json:"image"`
+	Integrations    *common.Bindings  `json:"-" yaml:"-"`
+	Bridges         *bridges.Bindings `json:"-" yaml:"-"`
 	loadedOptions   common.DefaultOptions
 	targetManifest  []byte
 	sourcesManifest []byte
@@ -39,10 +41,12 @@ func NewConnector(handler ConnectorsHandler, loadedOptions common.DefaultOptions
 		targetManifest:  targetManifest,
 		sourcesManifest: sourceManifest,
 		handler:         handler,
+		Integrations:    nil,
+		Bridges:         nil,
 	}
 }
 func (c *Connector) Clone() *Connector {
-	return &Connector{
+	con := &Connector{
 		Name:            c.Name,
 		Namespace:       c.Namespace,
 		Type:            c.Type,
@@ -51,11 +55,49 @@ func (c *Connector) Clone() *Connector {
 		NodePort:        c.NodePort,
 		ServiceType:     c.ServiceType,
 		Image:           c.Image,
+		Integrations:    nil,
+		Bridges:         nil,
 		loadedOptions:   c.loadedOptions,
 		targetManifest:  c.targetManifest,
 		sourcesManifest: c.sourcesManifest,
 		handler:         c.handler,
 	}
+	switch con.Type {
+	case "targets", "sources":
+		var err error
+		con.Integrations, err = common.Unmarshal([]byte(c.Config))
+		if err != nil {
+			con.Integrations = nil
+		}
+	case "bridges":
+		var err error
+		con.Bridges, err = bridges.Unmarshal([]byte(c.Config))
+		if err != nil {
+			con.Bridges = nil
+		}
+
+	}
+	return con
+}
+
+func (c *Connector) Update(loadedOptions common.DefaultOptions, targets, sources []byte) *Connector {
+	c.loadedOptions = loadedOptions
+	c.targetManifest = targets
+	c.sourcesManifest = sources
+	switch c.Type {
+	case "targets":
+		m, _ := common.LoadManifest(c.targetManifest)
+		c.Integrations.Side = "targets"
+		c.Integrations.Update(m, c.loadedOptions)
+	case "sources":
+		m, _ := common.LoadManifest(c.sourcesManifest)
+		c.Integrations.Side = "sources"
+		c.Integrations.Update(m, c.loadedOptions)
+	case "bridges":
+		c.Bridges.SetDefaultOptions(c.loadedOptions)
+	}
+
+	return c
 }
 
 func (c *Connector) Key() string {
@@ -75,32 +117,7 @@ func (c *Connector) GetManifest() *common.Manifest {
 	}
 	return m
 }
-func (c *Connector) SetManifests(targets, sources []byte) *Connector {
-	c.targetManifest = targets
-	c.sourcesManifest = sources
 
-	return c
-}
-
-func (c *Connector) UpdateBindings() error {
-	switch c.Type {
-	case "targets":
-		bindings, err := common.Unmarshal([]byte(c.Config))
-		if err != nil {
-			return err
-		}
-		bindings.Side = "targets"
-		bindings.Update(c.GetManifest(), c.loadedOptions)
-	case "sources":
-		bindings, err := common.Unmarshal([]byte(c.Config))
-		if err != nil {
-			return err
-		}
-		bindings.Side = "sources"
-		bindings.Update(c.GetManifest(), c.loadedOptions)
-	}
-	return nil
-}
 func (c *Connector) SetLoadedOptions(value common.DefaultOptions) *Connector {
 	c.loadedOptions = value
 	return c
