@@ -60,7 +60,7 @@ kubemq/kubemq-cluster-sources:
 kubemq/kubemq-cluster-targets:
   config: |
     bindings:
-    - name: i3
+    - name: i8
       source:
         name: integration-1-source
         kind: kubemq.queue
@@ -74,16 +74,16 @@ kubemq/kubemq-cluster-targets:
         properties:
           url: redis://localhost:6379
       properties: {}
-    - name: i8
+    - name: integration-2
       source:
-        name: integration-1-source
+        name: integration-2-source
         kind: kubemq.queue
         properties:
           address: kubemq-cluster-grpc.kubemq:50000
           auth_token: ""
           channel: queues
       target:
-        name: integration-1-target
+        name: integration-2-target
         kind: cache.redis
         properties:
           url: redis://localhost:6379

@@ -101,9 +101,15 @@ func (i *Integrations) addIntegrationWithKind(kind string) error {
 	c.Config = string(data)
 
 	if isNew {
-		return i.connectorManger.handler.Add(c)
+		err = i.connectorManger.handler.Add(c)
+	} else {
+		err = i.connectorManger.handler.Edit(c)
 	}
-	return i.connectorManger.handler.Edit(c)
+	if err != nil {
+		return fmt.Errorf("error adding %s integration: %w", integration.Name, err)
+	}
+	utils.Println(promptIntegrationAddedConfirmation, integration.Name)
+	return nil
 }
 func (i *Integrations) addIntegration() error {
 	menu := survey.NewMenu("Select Add Integration Type:").
@@ -138,7 +144,7 @@ func (i *Integrations) editIntegration() error {
 		editFunc := func() error {
 			edited, err := EditIntegration(cloned, i.connectorManger)
 			if err != nil {
-				return err
+				return fmt.Errorf("error editing %s integration: %w", *integrationName, err)
 			}
 			*integrationName = edited.Name()
 			utils.Println(promptIntegrationEditedConfirmation, *integrationName)
@@ -176,7 +182,7 @@ func (i *Integrations) deleteIntegration() error {
 			}
 			if val {
 				if err := DeleteIntegration(cloned, i.connectorManger); err != nil {
-					return err
+					return fmt.Errorf("error deleting %s integration: %w", cloned.Name(), err)
 				}
 				utils.Println(promptIntegrationDeleteConfirmation, cloned.Name())
 			}
@@ -203,8 +209,9 @@ func (i *Integrations) copyIntegration() error {
 		cloned := integration
 		copyFn := func() error {
 			if err := CopyIntegration(cloned, i.connectorManger); err != nil {
-				return err
+				return fmt.Errorf("error copying %s integration: %w", cloned.Name(), err)
 			}
+			utils.Println(promptIntegrationCopiedConfirmation, cloned.Name())
 			return nil
 		}
 		menu.AddItem(cloned.Name(), copyFn)

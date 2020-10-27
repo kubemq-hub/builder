@@ -7,5 +7,7 @@ const (
 	promptConnectorDelete               = "<cyan>Connector %s deleted successfully'\n>"
 	promptClusterDelete                 = "<cyan>Cluster %s deleted successfully\n</>"
 	promptIntegrationEditedConfirmation = "<cyan>Integration %s edited successfully\n</>"
+	promptIntegrationAddedConfirmation  = "<cyan>Integration %s added successfully\n</>"
 	promptIntegrationDeleteConfirmation = "<cyan>Integration %s deleted successfully\n</>"
+	promptIntegrationCopiedConfirmation = "<cyan>Integration %s copied successfully\n</>"
 )

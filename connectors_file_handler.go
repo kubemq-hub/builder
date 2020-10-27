@@ -52,6 +52,7 @@ func (c *ConnectorsFileHandler) save() error {
 	return nil
 }
 func (c *ConnectorsFileHandler) Add(connector *connector.Connector) error {
+	return fmt.Errorf("error on Addd")
 	fmt.Println("add connector")
 	c.connectors[connector.Key()] = connector
 	time.Sleep(1 * time.Second)
@@ -59,6 +60,7 @@ func (c *ConnectorsFileHandler) Add(connector *connector.Connector) error {
 }
 
 func (c *ConnectorsFileHandler) Edit(connector *connector.Connector) error {
+	return fmt.Errorf("error on edit")
 	fmt.Println("edit connector")
 	c.connectors[connector.Key()] = connector
 	time.Sleep(1 * time.Second)
@@ -66,6 +68,7 @@ func (c *ConnectorsFileHandler) Edit(connector *connector.Connector) error {
 }
 
 func (c *ConnectorsFileHandler) Delete(connector *connector.Connector) error {
+	return fmt.Errorf("error on delete")
 	fmt.Println("delete connector")
 	delete(c.connectors, connector.Key())
 	time.Sleep(1 * time.Second)
