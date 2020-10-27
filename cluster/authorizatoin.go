@@ -8,7 +8,6 @@ import (
 
 const authorizationTml = `
 <red>authorization:</>
-  <yellow>enable:</> <white>{{ .Enable }}</>  
   <yellow>policy:</> |-<white>{{ .Policy | indent 4}}</>
   <yellow>url:</> <white>{{ .Url}}</>
   <yellow>autoReload:</> <white>{{ .AutoReload}}</>

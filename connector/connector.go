@@ -8,6 +8,7 @@ import (
 	"github.com/kubemq-hub/builder/connector/targets"
 	"github.com/kubemq-hub/builder/pkg/utils"
 	"github.com/kubemq-hub/builder/survey"
+	"sort"
 )
 
 type Connector struct {
@@ -55,45 +56,64 @@ func (c *Connector) Clone() *Connector {
 		NodePort:        c.NodePort,
 		ServiceType:     c.ServiceType,
 		Image:           c.Image,
-		Integrations:    nil,
-		Bridges:         nil,
+		Integrations:    c.Integrations.Clone(),
+		Bridges:         c.Bridges.Clone(),
 		loadedOptions:   c.loadedOptions,
 		targetManifest:  c.targetManifest,
 		sourcesManifest: c.sourcesManifest,
 		handler:         c.handler,
 	}
-	switch con.Type {
-	case "targets", "sources":
-		var err error
-		con.Integrations, err = common.Unmarshal([]byte(c.Config))
-		if err != nil {
-			con.Integrations = nil
-		}
-	case "bridges":
-		var err error
-		con.Bridges, err = bridges.Unmarshal([]byte(c.Config))
-		if err != nil {
-			con.Bridges = nil
-		}
-
-	}
 	return con
 }
-
+func (c *Connector) GetBindingNames() []string {
+	var list []string
+	if c.Integrations != nil {
+		for _, binding := range c.Integrations.Bindings {
+			list = append(list, binding.Name)
+		}
+		return list
+	}
+	if c.Bridges != nil {
+		for _, binding := range c.Bridges.Bindings {
+			list = append(list, binding.Name)
+		}
+		return list
+	}
+	return nil
+}
 func (c *Connector) Update(loadedOptions common.DefaultOptions, targets, sources []byte) *Connector {
 	c.loadedOptions = loadedOptions
 	c.targetManifest = targets
 	c.sourcesManifest = sources
+	var err error
 	switch c.Type {
 	case "targets":
 		m, _ := common.LoadManifest(c.targetManifest)
+		c.Integrations, err = common.Unmarshal([]byte(c.Config))
+		if err != nil {
+			c.Integrations = &common.Bindings{
+				Bindings: []*common.Binding{},
+				Side:     "targets",
+			}
+		}
 		c.Integrations.Side = "targets"
 		c.Integrations.Update(m, c.loadedOptions)
 	case "sources":
 		m, _ := common.LoadManifest(c.sourcesManifest)
+		c.Integrations, err = common.Unmarshal([]byte(c.Config))
+		if err != nil {
+			c.Integrations = &common.Bindings{
+				Bindings: []*common.Binding{},
+				Side:     "sources",
+			}
+		}
 		c.Integrations.Side = "sources"
 		c.Integrations.Update(m, c.loadedOptions)
 	case "bridges":
+		c.Bridges, err = bridges.Unmarshal([]byte(c.Config))
+		if err != nil {
+			c.Bridges = &bridges.Bindings{}
+		}
 		c.Bridges.SetDefaultOptions(c.loadedOptions)
 	}
 
@@ -527,12 +547,16 @@ func CopyConnector(origin *Connector) (*Connector, error) {
 	return copied, nil
 }
 
-func (c *Connector) GetBindingsForCluster(address string) []*common.Binding {
-	bindings, err := common.Unmarshal([]byte(c.Config))
-	if err != nil {
+func (c *Connector) GetIntegrationsForCluster(endPoints []string) []*common.Binding {
+	if c.Integrations == nil {
 		return nil
 	}
-	bindings.Side = c.Type
-
-	return bindings.GetBindingsForCluster(address)
+	var list []*common.Binding
+	for _, address := range endPoints {
+		list = append(list, c.Integrations.GetBindingsForCluster(address)...)
+	}
+	sort.Slice(list, func(i, j int) bool {
+		return list[i].Name < list[j].Name
+	})
+	return list
 }

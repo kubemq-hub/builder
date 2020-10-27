@@ -88,7 +88,7 @@ func (b *Binding) setTarget() error {
 
 func (b *Binding) setProperties() error {
 	var err error
-	p := common.NewProperties()
+	p := common.NewProperties(b.Properties)
 	if b.Properties, err = p.
 		Render(); err != nil {
 		return err

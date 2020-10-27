@@ -5,6 +5,11 @@ import (
 	"github.com/kubemq-hub/builder/survey"
 )
 
+const logTml = `
+<red>log:</>
+  <yellow>level:</> <white>{{ .Level}}</>
+`
+
 type Log struct {
 	Level       int `json:"level"`
 	levelString string
@@ -62,6 +67,14 @@ func (l *Log) Render() (*Log, error) {
 		l.Level = -1
 	}
 	return l, nil
+}
+func (l *Log) ColoredYaml() (string, error) {
+	t := NewTemplate(logTml, l)
+	b, err := t.Get()
+	if err != nil {
+		return fmt.Sprintf("error rendring log spec,%s", err.Error()), nil
+	}
+	return string(b), nil
 }
 
 var _ Validator = NewLog()

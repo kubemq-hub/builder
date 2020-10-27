@@ -7,6 +7,12 @@ import (
 	"strings"
 )
 
+const volumeTml = `
+<red>volume:</>
+  <yellow>size:</> <white>{{ .Size }}</>
+  <yellow>storageClass:</> <white>{{ .StorageClass}}</>
+`
+
 type Volume struct {
 	Size           string `json:"size"`
 	StorageClass   string `json:"storage_class"`
@@ -95,6 +101,14 @@ func (v *Volume) Render() (*Volume, error) {
 		return nil, err
 	}
 	return v, nil
+}
+func (v *Volume) ColoredYaml() (string, error) {
+	t := NewTemplate(volumeTml, v)
+	b, err := t.Get()
+	if err != nil {
+		return fmt.Sprintf("error rendring volume spec,%s", err.Error()), nil
+	}
+	return string(b), nil
 }
 
 var _ Validator = NewVolume()

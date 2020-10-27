@@ -7,6 +7,13 @@ import (
 	"github.com/kubemq-hub/builder/survey"
 )
 
+const tlsTml = `
+<red>tls:</>
+  <yellow>cert:</> |-<white>{{ .Cert | indent 4}}</>
+  <yellow>key:</> |-<white>{{ .Key | indent 4}}</>
+  <yellow>ca:</> |-<white>{{ .Ca | indent 4}}</>
+`
+
 type Tls struct {
 	Cert string `json:"cert"`
 	Key  string `json:"key"`
@@ -108,4 +115,12 @@ func (t *Tls) Render() (*Tls, error) {
 		return nil, err
 	}
 	return t, nil
+}
+func (t *Tls) ColoredYaml() (string, error) {
+	tmpl := NewTemplate(tlsTml, t)
+	b, err := tmpl.Get()
+	if err != nil {
+		return fmt.Sprintf("error rendring tls spec,%s", err.Error()), nil
+	}
+	return string(b), nil
 }

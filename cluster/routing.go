@@ -6,6 +6,13 @@ import (
 	"math"
 )
 
+const routingTml = `
+<red>routing:</>
+  <yellow>data:</> |-<white>{{ .Data | indent 4}}</>
+  <yellow>url:</> <white>{{ .Url}}</>
+  <yellow>autoReload:</> <white>{{ .AutoReload}}</>
+`
+
 type Routing struct {
 	Data       string `json:"data"`
 	Url        string `json:"url"`
@@ -85,6 +92,14 @@ func (r *Routing) Render() (*Routing, error) {
 		return nil, err
 	}
 	return r, nil
+}
+func (r *Routing) ColoredYaml() (string, error) {
+	t := NewTemplate(routingTml, r)
+	b, err := t.Get()
+	if err != nil {
+		return fmt.Sprintf("error rendring routing spec,%s", err.Error()), nil
+	}
+	return string(b), nil
 }
 
 var _ Validator = NewRouting()

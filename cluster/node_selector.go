@@ -1,9 +1,15 @@
 package cluster
 
 import (
+	"fmt"
 	"github.com/kubemq-hub/builder/survey"
 	"strings"
 )
+
+const nodeSelectorTml = `
+<red>nodeSelectors:{{ range $key, $value := . }}
+  {{ $key -}}: {{ $value -}}{{ end }}</>
+`
 
 type NodeSelector struct {
 	values map[string]string
@@ -45,6 +51,14 @@ func (n *NodeSelector) Render() (map[string]string, error) {
 		}
 	}
 	return n.values, nil
+}
+func (n *NodeSelector) ColoredYaml() (string, error) {
+	t := NewTemplate(nodeSelectorTml, n)
+	b, err := t.Get()
+	if err != nil {
+		return fmt.Sprintf("error rendring node selectors spec,%s", err.Error()), nil
+	}
+	return string(b), nil
 }
 
 var _ Validator = NewNodeSelector()

@@ -7,6 +7,14 @@ import (
 	"strings"
 )
 
+const resourcesTml = `
+<red>resources:</>
+  <yellow>limitsCpu:</> <white>{{ .LimitsCpu }}</>
+  <yellow>limitsMemory:</> <white>{{ .LimitsMemory}}</>
+  <yellow>requestsCpu:</> <white>{{ .RequestsCpu }}</>
+  <yellow>requestsMemory:</> <white>{{ .RequestsMemory}}</>
+`
+
 type Resource struct {
 	LimitsCpu      string `json:"limits_cpu"`
 	LimitsMemory   string `json:"limits_memory"`
@@ -143,6 +151,14 @@ func (r *Resource) Render() (*Resource, error) {
 		return nil, err
 	}
 	return r, nil
+}
+func (r *Resource) ColoredYaml() (string, error) {
+	t := NewTemplate(resourcesTml, r)
+	b, err := t.Get()
+	if err != nil {
+		return fmt.Sprintf("error rendring resource spec,%s", err.Error()), nil
+	}
+	return string(b), nil
 }
 
 var _ Validator = NewResource()

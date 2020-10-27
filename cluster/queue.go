@@ -6,6 +6,18 @@ import (
 	"math"
 )
 
+const queueTml = `
+<red>queue:</>
+  <yellow>maxReceiveMessagesRequest:</> <white>{{ .MaxReceiveMessagesRequest}}</>
+  <yellow>maxWaitTimeoutSeconds:</> <white>{{ .MaxWaitTimeoutSeconds}}</>
+  <yellow>maxExpirationSeconds:</> <white>{{ .MaxExpirationSeconds}}</>
+  <yellow>maxDelaySeconds:</> <white>{{ .MaxDelaySeconds}}</>
+  <yellow>maxReQueues:</> <white>{{ .MaxReQueues}}</>
+  <yellow>maxVisibilitySeconds:</> <white>{{ .MaxVisibilitySeconds}}</>
+  <yellow>defaultVisibilitySeconds:</> <white>{{ .DefaultVisibilitySeconds}}</>
+  <yellow>defaultWaitTimeoutSeconds:</> <white>{{ .DefaultWaitTimeoutSeconds}}</>
+`
+
 type Queue struct {
 	MaxReceiveMessagesRequest int `json:"max_receive_messages_request"`
 	MaxWaitTimeoutSeconds     int `json:"max_wait_timeout_seconds"`
@@ -210,6 +222,14 @@ func (q *Queue) Render() (*Queue, error) {
 		return nil, err
 	}
 	return q, nil
+}
+func (q *Queue) ColoredYaml() (string, error) {
+	t := NewTemplate(queueTml, q)
+	b, err := t.Get()
+	if err != nil {
+		return fmt.Sprintf("error rendring queue spec,%s", err.Error()), nil
+	}
+	return string(b), nil
 }
 
 var _ Validator = NewQueue()

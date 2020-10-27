@@ -76,8 +76,9 @@ type Cluster struct {
 	LogSpec            string
 	NodeSelectorsSpec  string
 	LicenseSpec        string
-
-	grpcEndPoints string
+	license            *License
+	nodeSelectors      *NodeSelector
+	grpcEndPoints      string
 }
 
 func NewCluster(handler ClustersHandler) *Cluster {
@@ -662,7 +663,7 @@ func CopyCluster(origin *Cluster, handler ClustersHandler) (*Cluster, error) {
 //TODO - add parsing grpc end points
 func (c *Cluster) EndPoints() []string {
 	var list []string
-	list = append(list, fmt.Sprintf("%s-grpc.%s", c.Name, c.Namespace))
+	list = append(list, fmt.Sprintf("%s-grpc.%s:50000", c.Name, c.Namespace))
 	return list
 }
 func (c *Cluster) ColoredYaml() (string, error) {
@@ -687,104 +688,104 @@ func (c *Cluster) ColoredYaml() (string, error) {
 			c.AuthorizationSpec = spec
 		}
 	}
-	//if c.Health != nil {
-	//	if spec, err := c.Health.ColoredYaml(); err != nil {
-	//		return "", err
-	//	} else {
-	//		c.HealthSpec = spec
-	//	}
-	//}
-	//if c.license != nil {
-	//	if spec, err := c.license.Render(); err != nil {
-	//		return "", err
-	//	} else {
-	//		c.LicenseSpec = spec
-	//	}
-	//}
-	//if c.Notification != nil {
-	//	if spec, err := c.Notification.ColoredYaml(); err != nil {
-	//		return "", err
-	//	} else {
-	//		c.NotificationSpec = spec
-	//	}
-	//}
-	//if c.Queue != nil {
-	//	if spec, err := c.Queue.ColoredYaml(); err != nil {
-	//		return "", err
-	//	} else {
-	//		c.QueueSpec = spec
-	//	}
-	//}
-	//if c.Store != nil {
-	//	if spec, err := c.Store.ColoredYaml(); err != nil {
-	//		return "", err
-	//	} else {
-	//		c.StoreSpec = spec
-	//	}
-	//}
-	//if c.Api != nil {
-	//	if spec, err := c.Api.ColoredYaml(); err != nil {
-	//		return "", err
-	//	} else {
-	//		c.ApiServiceSpec = spec
-	//	}
-	//}
-	//if c.Grpc != nil {
-	//	if spec, err := c.Grpc.ColoredYaml(); err != nil {
-	//		return "", err
-	//	} else {
-	//		c.GrpcServiceSpec = spec
-	//	}
-	//}
-	//if c.Rest != nil {
-	//	if spec, err := c.Rest.ColoredYaml(); err != nil {
-	//		return "", err
-	//	} else {
-	//		c.RestServiceSpec = spec
-	//	}
-	//}
-	//if c.Tls != nil {
-	//	if spec, err := c.Tls.ColoredYaml(); err != nil {
-	//		return "", err
-	//	} else {
-	//		c.TlsSpec = spec
-	//	}
-	//}
-	//if c.Volume != nil {
-	//	if spec, err := c.Volume.ColoredYaml(); err != nil {
-	//		return "", err
-	//	} else {
-	//		c.VolumeSpec = spec
-	//	}
-	//}
-	//if c.Resource != nil {
-	//	if spec, err := c.Resource.ColoredYaml(); err != nil {
-	//		return "", err
-	//	} else {
-	//		c.ResourcesSpec = spec
-	//	}
-	//}
-	//if c.Routing != nil {
-	//	if spec, err := c.Routing.ColoredYaml(); err != nil {
-	//		return "", err
-	//	} else {
-	//		c.RoutingSpec = spec
-	//	}
-	//}
-	//if c.Log != nil {
-	//	if spec, err := c.Log.ColoredYaml(); err != nil {
-	//		return "", err
-	//	} else {
-	//		c.LogSpec = spec
-	//	}
-	//}
-	//if c.nodeSelectors != nil {
-	//	if spec, err := c.nodeSelectors.Render(); err != nil {
-	//		return "", err
-	//	} else {
-	//		c.NodeSelectorsSpec = spec
-	//	}
-	//}
+	if c.Health != nil {
+		if spec, err := c.Health.ColoredYaml(); err != nil {
+			return "", err
+		} else {
+			c.HealthSpec = spec
+		}
+	}
+	if c.license != nil {
+		if spec, err := c.license.ColoredYaml(); err != nil {
+			return "", err
+		} else {
+			c.LicenseSpec = spec
+		}
+	}
+	if c.Notification != nil {
+		if spec, err := c.Notification.ColoredYaml(); err != nil {
+			return "", err
+		} else {
+			c.NotificationSpec = spec
+		}
+	}
+	if c.Queue != nil {
+		if spec, err := c.Queue.ColoredYaml(); err != nil {
+			return "", err
+		} else {
+			c.QueueSpec = spec
+		}
+	}
+	if c.Store != nil {
+		if spec, err := c.Store.ColoredYaml(); err != nil {
+			return "", err
+		} else {
+			c.StoreSpec = spec
+		}
+	}
+	if c.Api != nil {
+		if spec, err := c.Api.ColoredYaml(); err != nil {
+			return "", err
+		} else {
+			c.ApiServiceSpec = spec
+		}
+	}
+	if c.Grpc != nil {
+		if spec, err := c.Grpc.ColoredYaml(); err != nil {
+			return "", err
+		} else {
+			c.GrpcServiceSpec = spec
+		}
+	}
+	if c.Rest != nil {
+		if spec, err := c.Rest.ColoredYaml(); err != nil {
+			return "", err
+		} else {
+			c.RestServiceSpec = spec
+		}
+	}
+	if c.Tls != nil {
+		if spec, err := c.Tls.ColoredYaml(); err != nil {
+			return "", err
+		} else {
+			c.TlsSpec = spec
+		}
+	}
+	if c.Volume != nil {
+		if spec, err := c.Volume.ColoredYaml(); err != nil {
+			return "", err
+		} else {
+			c.VolumeSpec = spec
+		}
+	}
+	if c.Resource != nil {
+		if spec, err := c.Resource.ColoredYaml(); err != nil {
+			return "", err
+		} else {
+			c.ResourcesSpec = spec
+		}
+	}
+	if c.Routing != nil {
+		if spec, err := c.Routing.ColoredYaml(); err != nil {
+			return "", err
+		} else {
+			c.RoutingSpec = spec
+		}
+	}
+	if c.Log != nil {
+		if spec, err := c.Log.ColoredYaml(); err != nil {
+			return "", err
+		} else {
+			c.LogSpec = spec
+		}
+	}
+	if c.nodeSelectors != nil {
+		if spec, err := c.nodeSelectors.ColoredYaml(); err != nil {
+			return "", err
+		} else {
+			c.NodeSelectorsSpec = spec
+		}
+	}
 	t := NewTemplate(clusterTmpl, c)
 	b, err := t.Get()
 	if err != nil {

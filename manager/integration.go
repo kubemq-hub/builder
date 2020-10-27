@@ -5,6 +5,7 @@ import (
 	"github.com/kubemq-hub/builder/cluster"
 	"github.com/kubemq-hub/builder/connector"
 	"github.com/kubemq-hub/builder/connector/common"
+	"github.com/kubemq-hub/builder/pkg/utils"
 )
 
 type Integration struct {
@@ -91,4 +92,59 @@ func EditIntegration(origin *Integration, connectorManager *ConnectorsManager) (
 		return nil, err
 	}
 	return cloned, nil
+}
+func DeleteIntegration(origin *Integration, connectorManager *ConnectorsManager) error {
+	bindings, err := common.Unmarshal([]byte(origin.Connector.Config))
+	if err != nil {
+		return err
+	}
+
+	bindings.SwitchOrRemove(origin.Binding, nil)
+	data, err := bindings.Yaml()
+	if err != nil {
+		return err
+	}
+	origin.Connector.Config = string(data)
+	if err := connectorManager.handler.Edit(origin.Connector); err != nil {
+		return err
+	}
+	return nil
+}
+func generateUniqueIntegrationName(takenNames []string) string {
+	for i := len(takenNames) + 1; i < 10000000; i++ {
+		name := fmt.Sprintf("integration-%d", i)
+		found := false
+		for _, taken := range takenNames {
+			if taken == name {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return name
+		}
+	}
+	return ""
+}
+func CopyIntegration(origin *Integration, connectorManager *ConnectorsManager) error {
+	bindings, err := common.Unmarshal([]byte(origin.Connector.Config))
+	if err != nil {
+		return err
+	}
+	cloned := origin.Clone()
+	cloned.Binding.Name = generateUniqueIntegrationName(cloned.Connector.GetBindingNames())
+	bindings.Bindings = append(bindings.Bindings, cloned.Binding)
+	if err := bindings.Validate(); err != nil {
+		return err
+	}
+	data, err := bindings.Yaml()
+	if err != nil {
+		return err
+	}
+	origin.Connector.Config = string(data)
+	if err := connectorManager.handler.Edit(origin.Connector); err != nil {
+		return err
+	}
+	utils.Println("<cyan>New Integration %s was added\n</>", cloned.Name())
+	return nil
 }

@@ -64,9 +64,7 @@ func (b *Binding) Clone() *Binding {
 func (b *Binding) Validate() error {
 	return nil
 }
-func (b *Binding) Print() {
-	fmt.Println(b.Name, len(b.targetsList))
-}
+
 func (b *Binding) SetEditMode(value bool) *Binding {
 	b.isEditMode = value
 	return b
@@ -374,7 +372,7 @@ func (b *Binding) showConfiguration() error {
 }
 func (b *Binding) setProperties() error {
 	var err error
-	p := NewProperties()
+	p := NewProperties(b.Properties)
 	if b.Properties, err = p.
 		Render(); err != nil {
 		return err
@@ -459,7 +457,7 @@ func (b *Binding) add() (*Binding, error) {
 	utils.Println(promptBindingComplete)
 	var err error
 
-	p := NewProperties()
+	p := NewProperties(b.Properties)
 	if b.Properties, err = p.
 		Render(); err != nil {
 		return nil, err
@@ -497,14 +495,292 @@ func (b *Binding) TableRowShort() []interface{} {
 	list = append(list, b.Name, b.Source.TableItemShort(), b.Target.TableItemShort(), ms)
 	return list
 }
-func (b *Binding) BelongToClusterAddress(address string) bool {
-	switch b.Side {
+func (b *Binding) BelongToClusterAddress(address string, side string) bool {
+	switch side {
 	case "sources":
 		return b.Target.IsKubemqAddress(address)
 	case "targets":
 		return b.Source.IsKubemqAddress(address)
 	default:
-		fmt.Println(address, b.Side)
 		return false
 	}
+}
+func generateUniqueIntegrationName(takenNames []string) string {
+	for i := len(takenNames) + 1; i < 10000000; i++ {
+		name := fmt.Sprintf("integration-%d", i)
+		found := false
+		for _, taken := range takenNames {
+			if taken == name {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return name
+		}
+	}
+	return ""
+}
+func AddSourceIntegration(takenNames []string, connectorsManifest []byte, loadedOptions DefaultOptions) (*Binding, error) {
+
+	b := &Binding{
+		Name:           "",
+		Source:         nil,
+		Target:         nil,
+		Properties:     nil,
+		SourceSpec:     "",
+		TargetSpec:     "",
+		PropertiesSpec: "",
+		Side:           "sources",
+		loadedOptions:  loadedOptions,
+		targetsList:    nil,
+		sourcesList:    nil,
+		defaultName:    "",
+		isEditMode:     false,
+	}
+	m, err := LoadManifest(connectorsManifest)
+	if err != nil {
+		return nil, err
+	}
+	b.targetsList = m.Targets
+	b.sourcesList = m.Sources
+	// Setting Name
+	err = survey.NewString().
+		SetKind("string").
+		SetName("name").
+		SetMessage("Set Unique Integration Name:").
+		SetDefault(generateUniqueIntegrationName(takenNames)).
+		SetRequired(true).
+		SetInvalidOptions(takenNames).
+		SetValidator(survey.ValidateNoneSpace).
+		SetInvalidOptionsMessage("Integration name must be unique").
+		Render(&b.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	// Configuring Source Kinds
+	b.Source = &Spec{
+		Name:       fmt.Sprintf("%s-source", b.Name),
+		Kind:       "",
+		Properties: nil,
+	}
+
+	var sourcesKinds []string
+	sources := make(map[string]*Connector)
+	for _, con := range b.sourcesList {
+		sourcesKinds = append(sourcesKinds, con.Kind)
+		sources[con.Kind] = con
+	}
+
+	if len(sourcesKinds) == 0 {
+		return nil, fmt.Errorf("no source connectors available")
+	}
+
+	err = survey.NewString().
+		SetKind("string").
+		SetName("kind").
+		SetMessage("Select Source Kind:").
+		SetDefault(sourcesKinds[0]).
+		SetOptions(sourcesKinds).
+		SetRequired(true).
+		SetPageSize(15).
+		Render(&b.Source.Kind)
+	if err != nil {
+		return nil, err
+	}
+
+	if b.Source.Properties, err = sources[b.Source.Kind].Render(b.loadedOptions); err != nil {
+		return nil, err
+	}
+
+	// Configuring Targets Kinds
+	b.Target = &Spec{
+		Name:       fmt.Sprintf("%s-target", b.Name),
+		Kind:       "",
+		Properties: nil,
+	}
+
+	var targetsKinds []string
+	targets := make(map[string]*Connector)
+	for _, con := range b.targetsList {
+		targetsKinds = append(targetsKinds, con.Kind)
+		targets[con.Kind] = con
+	}
+
+	if len(targetsKinds) == 0 {
+		return nil, fmt.Errorf("no target connectors available")
+	}
+
+	err = survey.NewString().
+		SetKind("string").
+		SetName("kind").
+		SetMessage("Select Kubemq Target Kind:").
+		SetDefault(targetsKinds[0]).
+		SetOptions(targetsKinds).
+		SetRequired(true).
+		SetPageSize(15).
+		Render(&b.Target.Kind)
+	if err != nil {
+		return nil, err
+	}
+
+	if b.Target.Properties, err = targets[b.Target.Kind].Render(b.loadedOptions); err != nil {
+		return nil, err
+	}
+
+	// Configuring Middlewares
+	p := NewProperties(b.Properties)
+	if b.Properties, err = p.
+		Render(); err != nil {
+		return nil, err
+	}
+
+	utils.Println("<cyan>Here is the configuration of %s Integration:</>%s", b.Name, b.ColoredYaml())
+	val := true
+	err = survey.NewBool().
+		SetKind("bool").
+		SetName("confirmation").
+		SetMessage("Would you like to save this Integration").
+		SetDefault("true").
+		Render(&val)
+	if err != nil {
+		return nil, err
+	}
+	if val {
+		return b, nil
+	}
+	return nil, nil
+}
+
+func AddTargetIntegration(takenNames []string, connectorsManifest []byte, loadedOptions DefaultOptions) (*Binding, error) {
+
+	b := &Binding{
+		Name:           "",
+		Source:         nil,
+		Target:         nil,
+		Properties:     nil,
+		SourceSpec:     "",
+		TargetSpec:     "",
+		PropertiesSpec: "",
+		Side:           "targets",
+		loadedOptions:  loadedOptions,
+		targetsList:    nil,
+		sourcesList:    nil,
+		defaultName:    "",
+		isEditMode:     false,
+	}
+	m, err := LoadManifest(connectorsManifest)
+	if err != nil {
+		return nil, err
+	}
+	b.targetsList = m.Targets
+	b.sourcesList = m.Sources
+	// Setting Name
+	err = survey.NewString().
+		SetKind("string").
+		SetName("name").
+		SetMessage("Set Unique Integration Name:").
+		SetDefault(generateUniqueIntegrationName(takenNames)).
+		SetRequired(true).
+		SetInvalidOptions(takenNames).
+		SetValidator(survey.ValidateNoneSpace).
+		SetInvalidOptionsMessage("Integration name must be unique").
+		Render(&b.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	// Configuring Targets Kinds
+	b.Target = &Spec{
+		Name:       fmt.Sprintf("%s-target", b.Name),
+		Kind:       "",
+		Properties: nil,
+	}
+
+	var targetsKinds []string
+	targets := make(map[string]*Connector)
+	for _, con := range b.targetsList {
+		targetsKinds = append(targetsKinds, con.Kind)
+		targets[con.Kind] = con
+	}
+
+	if len(targetsKinds) == 0 {
+		return nil, fmt.Errorf("no target connectors available")
+	}
+
+	err = survey.NewString().
+		SetKind("string").
+		SetName("kind").
+		SetMessage("Select Target Kind (Scroll down for more):").
+		SetDefault(targetsKinds[0]).
+		SetOptions(targetsKinds).
+		SetRequired(true).
+		SetPageSize(15).
+		Render(&b.Target.Kind)
+	if err != nil {
+		return nil, err
+	}
+
+	if b.Target.Properties, err = targets[b.Target.Kind].Render(b.loadedOptions); err != nil {
+		return nil, err
+	}
+
+	// Configuring Source Kinds
+	b.Source = &Spec{
+		Name:       fmt.Sprintf("%s-source", b.Name),
+		Kind:       "",
+		Properties: nil,
+	}
+
+	var sourcesKinds []string
+	sources := make(map[string]*Connector)
+	for _, con := range b.sourcesList {
+		sourcesKinds = append(sourcesKinds, con.Kind)
+		sources[con.Kind] = con
+	}
+
+	if len(sourcesKinds) == 0 {
+		return nil, fmt.Errorf("no source connectors available")
+	}
+
+	err = survey.NewString().
+		SetKind("string").
+		SetName("kind").
+		SetMessage("Select Kubemq Source Kind:").
+		SetDefault(sourcesKinds[0]).
+		SetOptions(sourcesKinds).
+		SetRequired(true).
+		SetPageSize(15).
+		Render(&b.Source.Kind)
+	if err != nil {
+		return nil, err
+	}
+
+	if b.Source.Properties, err = sources[b.Source.Kind].Render(b.loadedOptions); err != nil {
+		return nil, err
+	}
+
+	// Configuring Middlewares
+	p := NewProperties(b.Properties)
+	if b.Properties, err = p.
+		Render(); err != nil {
+		return nil, err
+	}
+
+	utils.Println("<cyan>Here is the configuration of %s Integration:</>%s", b.Name, b.ColoredYaml())
+	val := true
+	err = survey.NewBool().
+		SetKind("bool").
+		SetName("confirmation").
+		SetMessage("Would you like to save this Integration").
+		SetDefault("true").
+		Render(&val)
+	if err != nil {
+		return nil, err
+	}
+	if val {
+		return b, nil
+	}
+	return nil, nil
 }

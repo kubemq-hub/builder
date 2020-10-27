@@ -48,7 +48,7 @@ func (b *Bindings) Update(manifest *Manifest, loadedOptions DefaultOptions) *Bin
 	}
 	return b
 }
-func (b *Bindings) sort() {
+func (b *Bindings) Sort() {
 	sort.Slice(b.Bindings, func(i, j int) bool {
 		return b.Bindings[i].Name < b.Bindings[j].Name
 	})
@@ -67,13 +67,12 @@ func (b *Bindings) addBinding() error {
 	}
 	utils.Println(promptBindingAddConfirmation, bnd.Name)
 	b.Bindings = append(b.Bindings, bnd)
-	b.sort()
+	b.Sort()
 	return nil
 }
 
 func (b *Bindings) SwitchOrRemove(old, new *Binding) {
 	var newBindingList []*Binding
-
 	for _, binding := range b.Bindings {
 		if old.Name != binding.Name {
 			newBindingList = append(newBindingList, binding)
@@ -83,7 +82,7 @@ func (b *Bindings) SwitchOrRemove(old, new *Binding) {
 		newBindingList = append(newBindingList, new)
 	}
 	b.Bindings = newBindingList
-	b.sort()
+	b.Sort()
 }
 
 func (b *Bindings) editBinding() error {
@@ -150,7 +149,7 @@ func (b *Bindings) deleteBinding() error {
 	if err := menu.Render(); err != nil {
 		return err
 	}
-	b.sort()
+	b.Sort()
 	return nil
 }
 
@@ -203,7 +202,7 @@ func (b *Bindings) copyBinding() error {
 	if err := menu.Render(); err != nil {
 		return err
 	}
-	b.sort()
+	b.Sort()
 	return nil
 }
 func (b *Bindings) listBindings() error {
@@ -259,7 +258,7 @@ func (b *Bindings) Render() ([]byte, error) {
 	if err := form.Render(); err != nil {
 		return nil, err
 	}
-	result.sort()
+	result.Sort()
 	return yaml.Marshal(result)
 }
 
@@ -277,17 +276,27 @@ func Unmarshal(data []byte) (*Bindings, error) {
 }
 
 func (b *Bindings) Validate() error {
-	if len(b.Bindings) == 0 {
-		return fmt.Errorf("at least one binding must be configured")
-	}
+
 	return nil
+}
+func (b *Bindings) AddIntegration(integration *Binding) error {
+	if err := integration.Validate(); err != nil {
+		return err
+	}
+	b.Bindings = append(b.Bindings, integration)
+	return b.Validate()
+}
+func (b *Bindings) RemoveIntegration(integration *Binding) {
+	b.SwitchOrRemove(integration, nil)
+	return
 }
 
 func (b *Bindings) GetBindingsForCluster(address string) []*Binding {
 	var list []*Binding
+
 	for _, binding := range b.Bindings {
 		binding.Side = b.Side
-		if binding.BelongToClusterAddress(address) {
+		if binding.BelongToClusterAddress(address, b.Side) {
 			list = append(list, binding)
 		}
 	}

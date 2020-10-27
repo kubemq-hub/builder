@@ -49,7 +49,6 @@ func (c *ConnectorsFileHandler) save() error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 func (c *ConnectorsFileHandler) Add(connector *connector.Connector) error {

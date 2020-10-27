@@ -22,44 +22,28 @@ kubemq/kubemq-bridges:
   replicas: 1
   service_type: ClusterIP
   type: bridges
-kubemq/kubemq-sources:
+kubemq/kubemq-cluster-sources:
   config: |
     bindings:
-    - name: b2
+    - name: integration-1
       source:
-        name: b2-s
-        kind: source.messaging.mqtt
+        name: integration-1-source
+        kind: aws.sqs
         properties:
-          client_id: asd
-          host: asdasd
-          password: asd
-          qos: "0"
-          topic: asd
-          username: asd
-      target:
-        name: t1
-        kind: target.events-store
-        properties:
-          address: asd
-          auth_token: ""
-          channel: events-store
-      properties: {}
-    - name: b3
-      source:
-        name: s1
-        kind: source.messaging.rabbitmq
-        properties:
-          auto_ack: "false"
-          consumer: asd
-          exclusive: "false"
+          aws_secret_key: asd
+          awsKey: sdas
+          max_number_of_messages: "1"
+          pull_delay: "5"
           queue: asd
-          requeue_on_error: "false"
-          url: asd
+          region: da
+          token: asda
+          visibility_timeout: "0"
+          wait_time_seconds: "0"
       target:
-        name: t1
-        kind: target.queue
+        name: integration-1-target
+        kind: kubemq.queue
         properties:
-          address: kubemq-cluster-grpc.kubemq:50000
+          address: kubemq-cluster-grpc.kubemq-2:50000
           auth_token: ""
           channel: queues
           delay_seconds: "0"
@@ -67,45 +51,45 @@ kubemq/kubemq-sources:
           max_receive_count: "0"
       properties: {}
   image: ""
-  name: kubemq-sources
+  name: kubemq-cluster-sources
   namespace: kubemq
   node_port: 0
   replicas: 1
   service_type: ClusterIP
   type: sources
-kubemq/kubemq-targets:
+kubemq/kubemq-cluster-targets:
   config: |
     bindings:
-    - name: b1
+    - name: i3
       source:
-        name: b1-source
-        kind: source.queue
+        name: integration-1-source
+        kind: kubemq.queue
         properties:
           address: kubemq-cluster-grpc.kubemq:50000
           auth_token: ""
           channel: queues
       target:
-        name: b1-target
-        kind: target.cache.redis
+        name: integration-1-target
+        kind: cache.redis
         properties:
           url: redis://localhost:6379
       properties: {}
-    - name: b2
+    - name: i8
       source:
-        name: b2-source
-        kind: source.queue
+        name: integration-1-source
+        kind: kubemq.queue
         properties:
-          address: kubemq-cluster-grpc.kubemq-2:50000
+          address: kubemq-cluster-grpc.kubemq:50000
           auth_token: ""
           channel: queues
       target:
-        name: b1-target
-        kind: target.cache.redis
+        name: integration-1-target
+        kind: cache.redis
         properties:
           url: redis://localhost:6379
       properties: {}
   image: ""
-  name: kubemq-targets
+  name: kubemq-cluster-targets
   namespace: kubemq
   node_port: 0
   replicas: 1

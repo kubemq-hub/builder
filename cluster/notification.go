@@ -1,8 +1,15 @@
 package cluster
 
 import (
+	"fmt"
 	"github.com/kubemq-hub/builder/survey"
 )
+
+const notificationTmpl = `
+<red>notification:</>
+  <yellow>enabled:</> <white>{{ .Enable }}</>
+  <yellow>prefix:</> <white>{{ .Prefix}}</>
+`
 
 type Notification struct {
 	Prefix  string `json:"prefix"`
@@ -44,6 +51,14 @@ func (n *Notification) Render() (*Notification, error) {
 		n.Enabled = true
 	}
 	return n, nil
+}
+func (n *Notification) ColoredYaml() (string, error) {
+	t := NewTemplate(notificationTmpl, n)
+	b, err := t.Get()
+	if err != nil {
+		return fmt.Sprintf("error rendring notification selectors spec,%s", err.Error()), nil
+	}
+	return string(b), nil
 }
 
 var _ Validator = NewNotification()

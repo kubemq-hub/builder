@@ -79,7 +79,7 @@ func (i *Image) ColoredYaml() (string, error) {
 	t := NewTemplate(imageTml, i)
 	b, err := t.Get()
 	if err != nil {
-		return fmt.Sprintf("error rendring authentication spec,%s", err.Error()), nil
+		return fmt.Sprintf("error rendring image spec,%s", err.Error()), nil
 	}
 	return string(b), nil
 }

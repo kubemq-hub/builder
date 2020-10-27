@@ -6,6 +6,16 @@ import (
 	"math"
 )
 
+const healthTml = `
+<red>health:</>
+  <yellow>enabled:</> <white>{{ .Enable }}</>  
+  <yellow>initialDelaySeconds:</> <white>{{ .InitialDelaySeconds}}</>
+  <yellow>periodSeconds:</> <white>{{ .PeriodSeconds}}</>
+  <yellow>timeoutSeconds:</> <white>{{ .TimeoutSeconds}}</>
+  <yellow>successThreshold:</> <white>{{ .SuccessThreshold}}</>
+  <yellow>failureThreshold:</> <white>{{ .FailureThreshold}}</>
+`
+
 type Health struct {
 	Enabled             bool `json:"enabled"`
 	InitialDelaySeconds int  `json:"initial_delay_seconds"`
@@ -147,6 +157,14 @@ func (h *Health) Render() (*Health, error) {
 		return nil, err
 	}
 	return h, nil
+}
+func (h *Health) ColoredYaml() (string, error) {
+	t := NewTemplate(healthTml, h)
+	b, err := t.Get()
+	if err != nil {
+		return fmt.Sprintf("error rending health spec,%s", err.Error()), nil
+	}
+	return string(b), nil
 }
 
 var _ Validator = NewHealth()

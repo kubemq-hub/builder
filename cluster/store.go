@@ -6,6 +6,18 @@ import (
 	"math"
 )
 
+const storeTml = `
+<red>store:</>
+  <yellow>clean:</> <white>{{ .Clean}}</>
+  <yellow>path:</> <white>{{ .Path}}</>
+  <yellow>maxChannels:</> <white>{{ .MaxChannels}}</>
+  <yellow>maxSubscribers:</> <white>{{ .MaxSubscribers}}</>
+  <yellow>maxMessages:</> <white>{{ .MaxMessages}}</>
+  <yellow>maxChannelSize:</> <white>{{ .MaxChannelSize}}</>
+  <yellow>messagesRetentionMinutes:</> <white>{{ .MessagesRetentionMinutes}}</>
+  <yellow>purgeInactiveMinutes:</> <white>{{ .PurgeInactiveMinutes}}</>
+`
+
 type Store struct {
 	Clean                    bool   `json:"clean"`
 	Path                     string `json:"path"`
@@ -212,6 +224,14 @@ func (s *Store) Render() (*Store, error) {
 		return nil, err
 	}
 	return s, nil
+}
+func (s *Store) ColoredYaml() (string, error) {
+	t := NewTemplate(storeTml, s)
+	b, err := t.Get()
+	if err != nil {
+		return fmt.Sprintf("error rendring store spec,%s", err.Error()), nil
+	}
+	return string(b), nil
 }
 
 var _ Validator = NewStore()

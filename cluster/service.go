@@ -6,6 +6,26 @@ import (
 	"math"
 )
 
+const grpcServiceTml = `
+<red>grpc:</>
+  <yellow>Expose:</> <white>{{ .Expose}}</>
+  <yellow>NodePort:</> <white>{{ .NodePort}}</>
+  <yellow>bufferSize:</> <white>{{ .BufferSize}}</>
+  <yellow>bodyLimit:</> <white>{{ .BodyLimit}}</>
+`
+const apiServiceTml = `
+<red>api:</>
+  <yellow>Expose:</> <white>{{ .Expose}}</>
+  <yellow>NodePort:</> <white>{{ .NodePort}}</>
+`
+const restServiceTml = `
+<red>rest:</>
+  <yellow>Expose:</> <white>{{ .Expose}}</>
+  <yellow>NodePort:</> <white>{{ .NodePort}}</>
+  <yellow>bufferSize:</> <white>{{ .BufferSize}}</>
+  <yellow>bodyLimit:</> <white>{{ .BodyLimit}}</>
+`
+
 type Service struct {
 	NodePort   int    `json:"node_port"`
 	Expose     string `json:"expose"`
@@ -127,6 +147,23 @@ func (s *Service) Render() (*Service, error) {
 		}
 	}
 	return s, nil
+}
+func (s *Service) ColoredYaml() (string, error) {
+	tmpl := ""
+	switch s.kind {
+	case "api":
+		tmpl = apiServiceTml
+	case "grpc":
+		tmpl = grpcServiceTml
+	case "rest":
+		tmpl = restServiceTml
+	}
+	t := NewTemplate(tmpl, s)
+	b, err := t.Get()
+	if err != nil {
+		return fmt.Sprintf("error rendring service spec,%s", err.Error()), nil
+	}
+	return string(b), nil
 }
 
 var _ Validator = NewService()
