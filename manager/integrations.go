@@ -141,6 +141,7 @@ func (i *Integrations) editIntegration() error {
 				return err
 			}
 			*integrationName = edited.Name()
+			utils.Println(promptIntegrationEditedConfirmation, *integrationName)
 			return nil
 		}
 		menu.AddItem(*integrationName, editFunc)
@@ -177,6 +178,7 @@ func (i *Integrations) deleteIntegration() error {
 				if err := DeleteIntegration(cloned, i.connectorManger); err != nil {
 					return err
 				}
+				utils.Println(promptIntegrationDeleteConfirmation, cloned.Name())
 			}
 			return nil
 		}

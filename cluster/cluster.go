@@ -553,7 +553,7 @@ func AddCluster(handler ClustersHandler) (*Cluster, error) {
 	}
 	err = handler.Add(added)
 	if err != nil {
-
+		return nil, err
 	}
 	return added, nil
 }

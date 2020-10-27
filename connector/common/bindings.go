@@ -288,7 +288,6 @@ func (b *Bindings) AddIntegration(integration *Binding) error {
 }
 func (b *Bindings) RemoveIntegration(integration *Binding) {
 	b.SwitchOrRemove(integration, nil)
-	return
 }
 
 func (b *Bindings) GetBindingsForCluster(address string) []*Binding {

@@ -149,7 +149,7 @@ func (cm *ClustersManager) listClusters() error {
 
 func (cm *ClustersManager) manageIntegrations() error {
 	cm.updateClusters()
-	menu := survey.NewMenu("Select Cluster to manage:").
+	menu := survey.NewMenu("Select Cluster to manage integrations:").
 		SetPageSize(10).
 		SetDisableLoop(true).
 		SetBackOption(true).
