@@ -23,30 +23,30 @@ const (
 	targetRemoteHash = "https://raw.githubusercontent.com/kubemq-hub/kubemq-targets/master/targets-manifest-hash.txt"
 )
 
-type ConnectorsCatalog struct {
+type CatalogManager struct {
 	SourcesManifest []byte
 	TargetsManifest []byte
 }
 
-func NewConnectorCatalog() *ConnectorsCatalog {
-	return &ConnectorsCatalog{}
+func NewCatalogManager() *CatalogManager {
+	return &CatalogManager{}
 }
 
-func (cc *ConnectorsCatalog) loadFromFile(filename string) []byte {
+func (cc *CatalogManager) loadFromFile(filename string) []byte {
 	data, _ := ioutil.ReadFile(filename)
 	return data
 }
-func (cc *ConnectorsCatalog) saveToFile(filename string, data []byte) error {
+func (cc *CatalogManager) saveToFile(filename string, data []byte) error {
 	return ioutil.WriteFile(filename, data, 0600)
 }
-func (cc *ConnectorsCatalog) ToSourcesManifest() *common.Manifest {
+func (cc *CatalogManager) ToSourcesManifest() *common.Manifest {
 	m, err := common.LoadManifest(cc.SourcesManifest)
 	if err != nil {
 		return nil
 	}
 	return m
 }
-func (cc *ConnectorsCatalog) ToTargetManifest() *common.Manifest {
+func (cc *CatalogManager) ToTargetManifest() *common.Manifest {
 	m, err := common.LoadManifest(cc.TargetsManifest)
 	if err != nil {
 		return nil
@@ -54,7 +54,7 @@ func (cc *ConnectorsCatalog) ToTargetManifest() *common.Manifest {
 	return m
 }
 
-func (cc *ConnectorsCatalog) loadFromUrl(url string) []byte {
+func (cc *CatalogManager) loadFromUrl(url string) []byte {
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil
@@ -71,7 +71,7 @@ func (cc *ConnectorsCatalog) loadFromUrl(url string) []byte {
 	}
 	return buff.Bytes()
 }
-func (cc *ConnectorsCatalog) initResource(localFile, remoteUrl, remoteHash string) ([]byte, error) {
+func (cc *CatalogManager) initResource(localFile, remoteUrl, remoteHash string) ([]byte, error) {
 	localData := cc.loadFromFile(localFile)
 	remoteHashStringData := cc.loadFromUrl(remoteHash)
 	var remoteHashData []byte
@@ -92,7 +92,7 @@ func (cc *ConnectorsCatalog) initResource(localFile, remoteUrl, remoteHash strin
 	}
 	return localData, nil
 }
-func (cc *ConnectorsCatalog) init() error {
+func (cc *CatalogManager) init() error {
 
 	var err error
 	if cc.SourcesManifest, err = cc.initResource(sourceLocalFile, sourceRemoteUrl, sourceRemoteHash); err != nil {
@@ -105,7 +105,7 @@ func (cc *ConnectorsCatalog) init() error {
 	return nil
 }
 
-func (cc *ConnectorsCatalog) browseTargets() error {
+func (cc *CatalogManager) browseTargets() error {
 	m, err := common.LoadManifest(cc.TargetsManifest)
 	if err != nil {
 		return fmt.Errorf("error loading targets manifest: %s", err.Error())
@@ -130,7 +130,7 @@ func (cc *ConnectorsCatalog) browseTargets() error {
 	}
 	return nil
 }
-func (cc *ConnectorsCatalog) browseSources() error {
+func (cc *CatalogManager) browseSources() error {
 	m, err := common.LoadManifest(cc.SourcesManifest)
 	if err != nil {
 		return fmt.Errorf("error loading sources manifest: %s", err.Error())
@@ -154,7 +154,7 @@ func (cc *ConnectorsCatalog) browseSources() error {
 	}
 	return nil
 }
-func (cc *ConnectorsCatalog) UpdateCatalog() error {
+func (cc *CatalogManager) Init() error {
 	utils.Println(promptCatalogLoadingStarted)
 	err := cc.init()
 	if err != nil {
@@ -164,7 +164,7 @@ func (cc *ConnectorsCatalog) UpdateCatalog() error {
 	utils.Println("%s\n", promptCatalogLoadingCompleted)
 	return nil
 }
-func (cc *ConnectorsCatalog) Render() error {
+func (cc *CatalogManager) Render() error {
 	if cc.SourcesManifest == nil || cc.TargetsManifest == nil {
 		if err := cc.init(); err != nil {
 			return err
@@ -174,7 +174,7 @@ func (cc *ConnectorsCatalog) Render() error {
 		SetErrorHandler(survey.MenuShowErrorFn).
 		AddItem("Browse Targets Catalog", cc.browseTargets).
 		AddItem("Browse Sources Catalog", cc.browseSources).
-		AddItem("Update Catalogs", cc.UpdateCatalog).
+		AddItem("Update Catalogs", cc.Init).
 		SetBackOption(true).
 		Render(); err != nil {
 		return err

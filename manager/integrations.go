@@ -28,7 +28,11 @@ func (i *Integrations) populate() error {
 	i.items = nil
 	i.itemsMap = map[string]*Integration{}
 	clusterAddress := i.cluster.EndPoints()
-	for _, con := range i.connectorManger.GetConnectors() {
+	connectorsList, err := i.connectorManger.GetConnectors()
+	if err != nil {
+		return err
+	}
+	for _, con := range connectorsList {
 		bindings := con.GetIntegrationsForCluster(clusterAddress)
 		for _, binding := range bindings {
 			integration := NewIntegration().
@@ -43,7 +47,10 @@ func (i *Integrations) populate() error {
 }
 
 func (i *Integrations) getOrCreateConnector(kind string) (*connector.Connector, bool, error) {
-	connectors := i.connectorManger.GetConnectors()
+	connectors, err := i.connectorManger.GetConnectors()
+	if err != nil {
+		return nil, false, err
+	}
 	for _, c := range connectors {
 		if c.Namespace == i.cluster.Namespace && c.Type == kind {
 			return c, false, nil
@@ -251,7 +258,7 @@ func (i *Integrations) Render() error {
 		AddItem("<e> Edit Integration", i.editIntegration).
 		AddItem("<c> Copy Integration", i.copyIntegration).
 		AddItem("<d> Delete Integration", i.deleteIntegration).
-		AddItem("<l> List of Integrations", i.listIntegrations).
+		AddItem("<l> List Integrations", i.listIntegrations).
 		SetBackOption(true).
 		SetErrorHandler(survey.MenuShowErrorFn).
 		Render(); err != nil {

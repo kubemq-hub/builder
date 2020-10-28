@@ -54,6 +54,7 @@ type Cluster struct {
 	Store              *Store            `json:"store"`
 	Tls                *Tls              `json:"tls"`
 	Volume             *Volume           `json:"volume"`
+	Status             *Status           `json:"-" yaml:"-"`
 	takenNames         []string
 	namespaces         []string
 	questionsMap       map[string]func() error

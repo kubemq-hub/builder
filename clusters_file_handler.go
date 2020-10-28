@@ -93,9 +93,21 @@ func (c *ClustersFileHandler) ConnectorsHandler() connector.ConnectorsHandler {
 }
 
 func (c *ClustersFileHandler) List() ([]*cluster.Cluster, error) {
-	fmt.Println("get list")
 	var list []*cluster.Cluster
 	for _, con := range c.clusters {
+		con.Status = &cluster.Status{
+			Replicas:      int32(con.Replicas),
+			Version:       "latest",
+			Ready:         int32(con.Replicas),
+			Grpc:          "ClusterIP: 10.99.54.244:50000",
+			Rest:          "ClusterIP: 10.101.110.47:9090",
+			Api:           "ClusterIP: 10.106.19.117:8080",
+			Selector:      "",
+			LicenseType:   "",
+			LicenseTo:     "",
+			LicenseExpire: "",
+			Status:        "Deployed",
+		}
 		list = append(list, con)
 	}
 	sort.Slice(list, func(i, j int) bool {

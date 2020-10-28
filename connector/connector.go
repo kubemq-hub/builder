@@ -22,6 +22,7 @@ type Connector struct {
 	Image           string            `json:"image"`
 	Integrations    *common.Bindings  `json:"-" yaml:"-"`
 	Bridges         *bridges.Bindings `json:"-" yaml:"-"`
+	Status          *Status           `json:"-" yaml:"-"`
 	loadedOptions   common.DefaultOptions
 	targetManifest  []byte
 	sourcesManifest []byte
@@ -56,12 +57,18 @@ func (c *Connector) Clone() *Connector {
 		NodePort:        c.NodePort,
 		ServiceType:     c.ServiceType,
 		Image:           c.Image,
-		Integrations:    c.Integrations.Clone(),
-		Bridges:         c.Bridges.Clone(),
+		Integrations:    nil,
+		Bridges:         nil,
 		loadedOptions:   c.loadedOptions,
 		targetManifest:  c.targetManifest,
 		sourcesManifest: c.sourcesManifest,
 		handler:         c.handler,
+	}
+	if c.Integrations != nil {
+		con.Integrations = c.Integrations.Clone()
+	}
+	if c.Bridges != nil {
+		con.Bridges = c.Bridges.Clone()
 	}
 	return con
 }
@@ -371,8 +378,11 @@ func EditConnector(origin *Connector, isCopyMode bool) (*Connector, error) {
 		result = origin
 		return nil
 	})
-
-	form.SetOnErrorFn(survey.FormShowErrorFn)
+	errorFn := func(err error) error {
+		utils.Println("<red>error editing connector %s: %s</>", cloned.Key(), err.Error())
+		return nil
+	}
+	form.SetOnErrorFn(errorFn)
 	if err := form.Render(); err != nil {
 		return nil, err
 	}
@@ -449,6 +459,7 @@ func AddConnector(handler ConnectorsHandler, loadedOptions common.DefaultOptions
 		result = added
 		return nil
 	})
+
 	form.SetOnErrorFn(survey.FormShowErrorFn)
 	if err := form.Render(); err != nil {
 		return nil, err

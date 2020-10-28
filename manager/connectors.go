@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/kubemq-hub/builder/connector"
 	"github.com/kubemq-hub/builder/connector/common"
+	"github.com/kubemq-hub/builder/pkg/uitable"
 	"github.com/kubemq-hub/builder/pkg/utils"
 	"github.com/kubemq-hub/builder/survey"
 	"sort"
@@ -12,11 +13,11 @@ import (
 type ConnectorsManager struct {
 	handler       connector.ConnectorsHandler
 	connectors    []*connector.Connector
-	catalog       *ConnectorsCatalog
+	catalog       *CatalogManager
 	loadedOptions common.DefaultOptions
 }
 
-func NewConnectorsManager(handler connector.ConnectorsHandler, catalog *ConnectorsCatalog, loadedOptions common.DefaultOptions) *ConnectorsManager {
+func NewConnectorsManager(handler connector.ConnectorsHandler, catalog *CatalogManager, loadedOptions common.DefaultOptions) *ConnectorsManager {
 	cm := &ConnectorsManager{
 		handler:       handler,
 		catalog:       catalog,
@@ -28,34 +29,47 @@ func (cm *ConnectorsManager) SetLoadedOptions(value common.DefaultOptions) *Conn
 	cm.loadedOptions = value
 	return cm
 }
-func (cm *ConnectorsManager) GetConnectors() []*connector.Connector {
-	cm.updateConnectors()
-	return cm.connectors
+func (cm *ConnectorsManager) GetConnectors() ([]*connector.Connector, error) {
+	err := cm.updateConnectors()
+	if err != nil {
+		return nil, err
+	}
+	return cm.connectors, nil
 }
-func (cm *ConnectorsManager) updateConnectors() {
-	cm.connectors, _ = cm.handler.List()
-	for _, c := range cm.connectors {
+func (cm *ConnectorsManager) updateConnectors() error {
+	connectors, err := cm.handler.List()
+	if err != nil {
+		return err
+	}
+	for _, c := range connectors {
 		c.Update(cm.loadedOptions, cm.catalog.TargetsManifest, cm.catalog.SourcesManifest).
 			SetHandler(cm.handler)
 	}
-	sort.Slice(cm.connectors, func(i, j int) bool {
-		return cm.connectors[i].Key() < cm.connectors[j].Key()
+	sort.Slice(connectors, func(i, j int) bool {
+		return connectors[i].Key() < connectors[j].Key()
 	})
+	cm.connectors = connectors
+	return nil
 }
 func (cm *ConnectorsManager) addConnector() error {
-	if _, err := connector.AddConnector(
+	if newConnector, err := connector.AddConnector(
 		cm.handler,
 		cm.loadedOptions,
 		cm.catalog.TargetsManifest,
 		cm.catalog.SourcesManifest,
 	); err != nil {
-		return err
+		return fmt.Errorf("error adding new connector: %s", err.Error())
+	} else {
+		utils.Println(promptConnectorAdded, newConnector.Key())
 	}
 	return nil
 }
 
 func (cm *ConnectorsManager) editConnector() error {
-	cm.updateConnectors()
+	err := cm.updateConnectors()
+	if err != nil {
+		return err
+	}
 	menu := survey.NewMenu("Select Connector to edit:").
 		SetPageSize(10).
 		SetDisableLoop(true).
@@ -65,8 +79,9 @@ func (cm *ConnectorsManager) editConnector() error {
 		editedCon := con.Clone()
 		menu.AddItem(fmt.Sprintf("%s (%s)", editedCon.Key(), editedCon.Type), func() error {
 			if _, err := connector.EditConnector(editedCon, false); err != nil {
-				return err
+				return fmt.Errorf("error editing connector %s: %s", editedCon.Key(), err.Error())
 			}
+			utils.Println(promptConnectorEdited, editedCon.Key())
 			return nil
 		})
 	}
@@ -76,7 +91,10 @@ func (cm *ConnectorsManager) editConnector() error {
 	return nil
 }
 func (cm *ConnectorsManager) copyConnector() error {
-	cm.updateConnectors()
+	err := cm.updateConnectors()
+	if err != nil {
+		return err
+	}
 	menu := survey.NewMenu("Select Connector to copy:").
 		SetPageSize(10).
 		SetDisableLoop(true).
@@ -86,8 +104,9 @@ func (cm *ConnectorsManager) copyConnector() error {
 		copiedCon := con.Clone()
 		menu.AddItem(fmt.Sprintf("%s (%s)", copiedCon.Key(), copiedCon.Type), func() error {
 			if _, err := connector.CopyConnector(copiedCon); err != nil {
-				return err
+				return fmt.Errorf("error coping connector %s: %s", copiedCon.Key(), err.Error())
 			}
+			utils.Println(promptConnectorCopied, copiedCon.Key())
 			return nil
 		})
 	}
@@ -97,7 +116,10 @@ func (cm *ConnectorsManager) copyConnector() error {
 	return nil
 }
 func (cm *ConnectorsManager) deleteConnector() error {
-	cm.updateConnectors()
+	err := cm.updateConnectors()
+	if err != nil {
+		return err
+	}
 	menu := survey.NewMenu("Select Connector to delete:").
 		SetPageSize(10).
 		SetDisableLoop(true).
@@ -119,7 +141,7 @@ func (cm *ConnectorsManager) deleteConnector() error {
 			if val {
 				err := cm.handler.Delete(deletedCon)
 				if err != nil {
-					return err
+					return fmt.Errorf("error deleting connector %s: %s", deletedCon.Key(), err.Error())
 				}
 				utils.Println(promptConnectorDelete, conName)
 			}
@@ -134,7 +156,10 @@ func (cm *ConnectorsManager) deleteConnector() error {
 }
 
 func (cm *ConnectorsManager) listConnectors() error {
-	cm.updateConnectors()
+	err := cm.updateConnectors()
+	if err != nil {
+		return err
+	}
 	menu := survey.NewMenu("Browse Connectors List, Select to show configuration:").
 		SetPageSize(10).
 		SetBackOption(true)
@@ -153,9 +178,25 @@ func (cm *ConnectorsManager) listConnectors() error {
 	}
 	return nil
 }
-
-func (cm *ConnectorsManager) connectorsManagement() error {
-	return cm.catalog.Render()
+func (cm *ConnectorsManager) connectorsStatus() error {
+	err := cm.updateConnectors()
+	if err != nil {
+		return err
+	}
+	table := uitable.New()
+	table.MaxColWidth = 50
+	table.AddRow("NAMESPACE", "NAME", "TYPE", "IMAGE", "REPLICAS", "STATUS")
+	for _, con := range cm.connectors {
+		table.AddRow(
+			con.Namespace,
+			con.Name,
+			con.Status.Type,
+			con.Status.Image,
+			con.Status.Replicas,
+			con.Status.Status)
+	}
+	utils.Println("%s\n\n", table.String())
+	return nil
 }
 func (cm *ConnectorsManager) Render() error {
 	if err := survey.NewMenu(fmt.Sprintf("Select Connectors Manager Option (Context: %s):", cm.handler.Name())).
@@ -163,9 +204,10 @@ func (cm *ConnectorsManager) Render() error {
 		AddItem("<e> Edit Connector", cm.editConnector).
 		AddItem("<c> Copy Connector", cm.copyConnector).
 		AddItem("<d> Delete Connector", cm.deleteConnector).
-		AddItem("<l> List of Connectors", cm.listConnectors).
-		AddItem("<m> Catalog Management", cm.connectorsManagement).
+		AddItem("<l> List Connectors", cm.listConnectors).
+		AddItem("<s> Status Connectors", cm.connectorsStatus).
 		SetBackOption(true).
+		SetErrorHandler(survey.MenuShowErrorFn).
 		Render(); err != nil {
 		return err
 	}

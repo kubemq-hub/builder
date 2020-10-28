@@ -1,3 +1,38 @@
+ds/kubemq-cluster-sources:
+  config: |
+    bindings:
+    - name: integration-1
+      source:
+        name: integration-1-source
+        kind: aws.sqs
+        properties:
+          aws_secret_key: asd
+          awsKey: sdas
+          max_number_of_messages: "1"
+          pull_delay: "5"
+          queue: asd
+          region: da
+          token: asda
+          visibility_timeout: "0"
+          wait_time_seconds: "0"
+      target:
+        name: integration-1-target
+        kind: kubemq.queue
+        properties:
+          address: kubemq-cluster-grpc.kubemq-2:50000
+          auth_token: ""
+          channel: queues
+          delay_seconds: "0"
+          expiration_seconds: "0"
+          max_receive_count: "0"
+      properties: {}
+  image: ""
+  name: kubemq-cluster-sources
+  namespace: ds
+  node_port: 0
+  replicas: 1
+  service_type: ClusterIP
+  type: sources
 kubemq/kubemq-bridges:
   config: |
     bindings:

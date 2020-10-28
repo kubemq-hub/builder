@@ -52,7 +52,6 @@ func (c *ConnectorsFileHandler) save() error {
 	return nil
 }
 func (c *ConnectorsFileHandler) Add(connector *connector.Connector) error {
-	return fmt.Errorf("error on Addd")
 	fmt.Println("add connector")
 	c.connectors[connector.Key()] = connector
 	time.Sleep(1 * time.Second)
@@ -60,7 +59,6 @@ func (c *ConnectorsFileHandler) Add(connector *connector.Connector) error {
 }
 
 func (c *ConnectorsFileHandler) Edit(connector *connector.Connector) error {
-	return fmt.Errorf("error on edit")
 	fmt.Println("edit connector")
 	c.connectors[connector.Key()] = connector
 	time.Sleep(1 * time.Second)
@@ -68,7 +66,6 @@ func (c *ConnectorsFileHandler) Edit(connector *connector.Connector) error {
 }
 
 func (c *ConnectorsFileHandler) Delete(connector *connector.Connector) error {
-	return fmt.Errorf("error on delete")
 	fmt.Println("delete connector")
 	delete(c.connectors, connector.Key())
 	time.Sleep(1 * time.Second)
@@ -76,7 +73,6 @@ func (c *ConnectorsFileHandler) Delete(connector *connector.Connector) error {
 }
 
 func (c *ConnectorsFileHandler) Get(namespace, name string) (*connector.Connector, error) {
-	fmt.Println("get connector")
 	key := fmt.Sprintf("%s/%s", namespace, name)
 	con, ok := c.connectors[key]
 	if !ok {
@@ -88,7 +84,6 @@ func (c *ConnectorsFileHandler) Get(namespace, name string) (*connector.Connecto
 }
 
 func (c *ConnectorsFileHandler) List() ([]*connector.Connector, error) {
-	fmt.Println("get list")
 	var list []*connector.Connector
 	for _, con := range c.connectors {
 		list = append(list, con)
