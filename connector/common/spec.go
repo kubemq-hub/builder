@@ -36,7 +36,7 @@ func (s *Spec) Clone() *Spec {
 	return newSpec
 }
 func (s *Spec) TableItemShort() string {
-	return fmt.Sprintf("%s", s.Kind)
+	return s.Kind
 }
 
 func (s *Spec) IsKubemqAddress(address string) bool {

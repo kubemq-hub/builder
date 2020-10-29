@@ -9,8 +9,6 @@ import (
 )
 
 type Manager struct {
-	connectorHandler connector.ConnectorsHandler
-	clusterHandler   cluster.ClustersHandler
 	clusterManager   *ClustersManager
 	connectorManager *ConnectorsManager
 	catalogManager   *CatalogManager

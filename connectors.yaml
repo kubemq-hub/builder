@@ -1,9 +1,8 @@
 ds/kubemq-cluster-sources:
   config: |
     bindings:
-    - name: integration-1
+    - name: נ2
       source:
-        name: integration-1-source
         kind: aws.sqs
         properties:
           aws_secret_key: asd
@@ -16,7 +15,6 @@ ds/kubemq-cluster-sources:
           visibility_timeout: "0"
           wait_time_seconds: "0"
       target:
-        name: integration-1-target
         kind: kubemq.queue
         properties:
           address: kubemq-cluster-grpc.kubemq-2:50000
