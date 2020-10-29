@@ -11,6 +11,8 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"time"
 )
 
 const (
@@ -18,9 +20,10 @@ const (
 	sourceRemoteUrl  = "https://raw.githubusercontent.com/kubemq-hub/kubemq-sources/master/sources-manifest.json"
 	sourceRemoteHash = "https://raw.githubusercontent.com/kubemq-hub/kubemq-sources/master/sources-manifest-hash.txt"
 
-	targetLocalFile  = "./target-manifest.json"
-	targetRemoteUrl  = "https://raw.githubusercontent.com/kubemq-hub/kubemq-targets/master/targets-manifest.json"
-	targetRemoteHash = "https://raw.githubusercontent.com/kubemq-hub/kubemq-targets/master/targets-manifest-hash.txt"
+	targetLocalFile    = "./target-manifest.json"
+	targetRemoteUrl    = "https://raw.githubusercontent.com/kubemq-hub/kubemq-targets/master/targets-manifest.json"
+	targetRemoteHash   = "https://raw.githubusercontent.com/kubemq-hub/kubemq-targets/master/targets-manifest-hash.txt"
+	lastModifyDuration = 1440 * time.Minute
 )
 
 type CatalogManager struct {
@@ -35,6 +38,13 @@ func NewCatalogManager() *CatalogManager {
 func (cc *CatalogManager) loadFromFile(filename string) []byte {
 	data, _ := ioutil.ReadFile(filename)
 	return data
+}
+func (cc *CatalogManager) checkLastModified(filename string) bool {
+	fileInfo, err := os.Stat(filename)
+	if err != nil {
+		return true
+	}
+	return fileInfo.ModTime().Add(lastModifyDuration).Unix() < time.Now().Unix()
 }
 func (cc *CatalogManager) saveToFile(filename string, data []byte) error {
 	return ioutil.WriteFile(filename, data, 0600)
@@ -73,6 +83,9 @@ func (cc *CatalogManager) loadFromUrl(url string) []byte {
 }
 func (cc *CatalogManager) initResource(localFile, remoteUrl, remoteHash string) ([]byte, error) {
 	localData := cc.loadFromFile(localFile)
+	if !cc.checkLastModified(localFile) {
+		return localData, nil
+	}
 	remoteHashStringData := cc.loadFromUrl(remoteHash)
 	var remoteHashData []byte
 	if remoteHashStringData != nil {
@@ -150,14 +163,14 @@ func (cc *CatalogManager) browseSources() error {
 	}
 	return nil
 }
-func (cc *CatalogManager) Init() error {
-	utils.Println(promptCatalogLoadingStarted)
+func (cc *CatalogManager) Update() error {
+
 	err := cc.init()
 	if err != nil {
 		utils.Println(promptCatalogLoadingError, err.Error())
 		return err
 	}
-	utils.Println("%s\n", promptCatalogLoadingCompleted)
+	//	utils.Println("%s\n", promptCatalogLoadingCompleted)
 	return nil
 }
 func (cc *CatalogManager) Render() error {
@@ -168,9 +181,17 @@ func (cc *CatalogManager) Render() error {
 	}
 	if err := survey.NewMenu("Connectors Catalog Management: Select operation").
 		SetErrorHandler(survey.MenuShowErrorFn).
-		AddItem("Browse Targets Catalog", cc.browseTargets).
-		AddItem("Browse Sources Catalog", cc.browseSources).
-		AddItem("Update Catalogs", cc.Init).
+		AddItem("<t> Browse Targets Catalog", cc.browseTargets).
+		AddItem("<s> Browse Sources Catalog", cc.browseSources).
+		AddItem("<u> Update Catalogs", func() error {
+			utils.Println(promptCatalogLoadingStarted)
+			if err := cc.Update(); err != nil {
+				return err
+			}
+			utils.Println("%s\n", promptCatalogLoadingCompleted)
+			return nil
+
+		}).
 		SetBackOption(true).
 		Render(); err != nil {
 		return err

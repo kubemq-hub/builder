@@ -30,7 +30,7 @@ func (n *Notification) askPrefix() error {
 		SetKind("string").
 		SetName("prefix").
 		SetMessage("Set notification reporting channel prefix").
-		SetDefault("").
+		SetDefault(n.Prefix).
 		SetHelp("Set notification reporting channel prefix").
 		SetRequired(false).
 		Render(&n.Prefix)

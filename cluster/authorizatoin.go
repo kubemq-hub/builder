@@ -34,7 +34,7 @@ func (a *Authorization) askPolicy() error {
 		SetKind("multiline").
 		SetName("policy").
 		SetMessage("Load Authorization policy data").
-		SetDefault("").
+		SetDefault(a.Policy).
 		SetHelp("Load Authorization policy data").
 		SetRequired(false).
 		Render(&a.Policy)
@@ -48,7 +48,7 @@ func (a *Authorization) askUrl() error {
 		SetKind("string").
 		SetName("url").
 		SetMessage("Set URL policy loading address").
-		SetDefault("").
+		SetDefault(a.Url).
 		SetHelp("Set URL policy loading address").
 		SetRequired(false).
 		Render(&a.Url)
@@ -62,7 +62,7 @@ func (a *Authorization) askAutoReload() error {
 		SetKind("int").
 		SetName("auto-reload").
 		SetMessage("Set automatic policy reload seconds (0 - no reload)").
-		SetDefault("0").
+		SetDefault(fmt.Sprintf("%d", a.AutoReload)).
 		SetHelp("Set automatic policy reload seconds (0 - no reload)").
 		SetRequired(false).
 		SetRange(0, math.MaxInt32).

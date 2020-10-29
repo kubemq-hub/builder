@@ -17,7 +17,10 @@ type Image struct {
 }
 
 func NewImage() *Image {
-	return &Image{}
+	return &Image{
+		Image:      "docker.io/kubemq/kubemq:latest",
+		PullPolicy: "Always",
+	}
 }
 func (i *Image) Clone() *Image {
 	return &Image{
@@ -30,7 +33,7 @@ func (i *Image) askImage() error {
 		SetKind("string").
 		SetName("image").
 		SetMessage("Set docker image").
-		SetDefault("docker.io/kubemq/kubemq:latest").
+		SetDefault(i.Image).
 		SetHelp("Set cluster docker image").
 		SetRequired(true).
 		Render(&i.Image)
@@ -44,7 +47,7 @@ func (i *Image) askPullPolicy() error {
 		SetKind("string").
 		SetName("pull-policy").
 		SetMessage("Set image pull policy").
-		SetDefault("Always").
+		SetDefault(i.PullPolicy).
 		SetOptions([]string{"Always", "IfNotPresent", "Never"}).
 		SetHelp("Set image pull policy").
 		SetRequired(true).

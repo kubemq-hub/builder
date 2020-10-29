@@ -11,6 +11,7 @@ import (
 )
 
 type IntegrationsManager struct {
+	catalogManager  *CatalogManager
 	currentContext  string
 	items           []*Integration
 	itemsMap        map[string]*Integration
@@ -18,13 +19,18 @@ type IntegrationsManager struct {
 	clusterManager  *ClustersManager
 }
 
-func NewIntegrationsManager(clusterManager *ClustersManager, connectorManager *ConnectorsManager) *IntegrationsManager {
+func NewIntegrationsManager(clusterManager *ClustersManager, connectorManager *ConnectorsManager, catalogManager *CatalogManager) *IntegrationsManager {
+
 	return &IntegrationsManager{
+		catalogManager:  catalogManager,
+		currentContext:  "",
 		items:           []*Integration{},
-		clusterManager:  clusterManager,
+		itemsMap:        nil,
 		connectorManger: connectorManager,
+		clusterManager:  clusterManager,
 	}
 }
+
 func (i *IntegrationsManager) SetCurrentContext(value string) {
 	i.currentContext = value
 }
@@ -280,17 +286,24 @@ func (i *IntegrationsManager) listIntegrations() error {
 			)
 		}
 	}
-	utils.Println("\n%s\n\n", table.String())
+	utils.Println("%s\n\n", table.String())
 	return nil
 }
 
 func (i *IntegrationsManager) Render() error {
+	utils.Println("<cyan>Here are current integrations for kubernetes cluster %s:</>", i.currentContext)
+	if err := i.listIntegrations(); err != nil {
+		return err
+	}
 	if err := survey.NewMenu(fmt.Sprintf("Select Manage Integrations Option (Context: %s):", i.currentContext)).
 		AddItem("<a> Add Integration", i.addIntegration).
 		AddItem("<e> Edit Integration", i.editIntegration).
 		AddItem("<c> Copy Integrations", i.copyIntegration).
 		AddItem("<d> Delete Integrations", i.deleteIntegration).
 		AddItem("<l> List Integrations", i.listIntegrations).
+		AddItem("<m> Manage Integrations Catalog", func() error {
+			return i.catalogManager.Render()
+		}).
 		SetBackOption(true).
 		SetErrorHandler(survey.MenuShowErrorFn).
 		Render(); err != nil {

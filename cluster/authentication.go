@@ -43,7 +43,7 @@ func (a *Authentication) askKey() error {
 		SetKind("multiline").
 		SetName("key").
 		SetMessage("Load JWT Authentication verification key").
-		SetDefault("").
+		SetDefault(a.Key).
 		SetHelp("Load JWT Authentication verification key").
 		SetRequired(true).
 		Render(&a.Key)
@@ -57,7 +57,7 @@ func (a *Authentication) askType() error {
 		SetKind("string").
 		SetName("type").
 		SetMessage("Set JWT signing method").
-		SetDefault("HS256").
+		SetDefault(a.Type).
 		SetOptions([]string{"HS256", "HS384", "HS512", "RS256", "RS384", "RS512", "ES256", "ES384", "ES512"}).
 		SetHelp("Set JWT signing Method").
 		SetRequired(true).

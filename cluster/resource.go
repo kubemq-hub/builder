@@ -23,7 +23,12 @@ type Resource struct {
 }
 
 func NewResource() *Resource {
-	return &Resource{}
+	return &Resource{
+		LimitsCpu:      "1",
+		LimitsMemory:   "1Gi",
+		RequestsCpu:    "1",
+		RequestsMemory: "1Gi",
+	}
 }
 func (r *Resource) Clone() *Resource {
 	return &Resource{
@@ -81,7 +86,7 @@ func (r *Resource) askLimitCpuSize() error {
 		SetKind("string").
 		SetName("limit-cpu").
 		SetMessage("Set Limit CPU resource").
-		SetDefault("1").
+		SetDefault(r.LimitsCpu).
 		SetHelp("Set Limit CPU resource").
 		SetRequired(false).
 		SetValidator(r.checkCPU).
@@ -96,7 +101,7 @@ func (r *Resource) askRequestCpuSize() error {
 		SetKind("string").
 		SetName("request-cpu").
 		SetMessage("Set Request CPU resource").
-		SetDefault("1").
+		SetDefault(r.RequestsCpu).
 		SetHelp("Set Request CPU resource").
 		SetRequired(false).
 		SetValidator(r.checkCPU).
@@ -111,7 +116,7 @@ func (r *Resource) askLimitMemSize() error {
 		SetKind("string").
 		SetName("limit-mem").
 		SetMessage("Set Limit Memory resource").
-		SetDefault("1Gi").
+		SetDefault(r.LimitsMemory).
 		SetHelp("Set Limit Memory resource").
 		SetRequired(false).
 		SetValidator(r.checkMem).
@@ -126,7 +131,7 @@ func (r *Resource) askRequestMemSize() error {
 		SetKind("string").
 		SetName("request-mem").
 		SetMessage("Set Request Memory resource").
-		SetDefault("1Gi").
+		SetDefault(r.RequestsMemory).
 		SetHelp("Set Request Memory resource").
 		SetRequired(false).
 		SetValidator(r.checkMem).

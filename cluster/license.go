@@ -28,12 +28,12 @@ func (l *License) Validate() error {
 	}
 	return nil
 }
-func (l *License) Render() (string, error) {
+func (l *License) Render(current string) (string, error) {
 	err := survey.NewMultiline().
 		SetKind("multiline").
 		SetName("license").
 		SetMessage("Load license data").
-		SetDefault("").
+		SetDefault(current).
 		SetHelp("Set license data via editor").
 		SetRequired(false).
 		Render(&l.Data)

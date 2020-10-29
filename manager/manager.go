@@ -5,6 +5,7 @@ import (
 	"github.com/kubemq-hub/builder/cluster"
 	"github.com/kubemq-hub/builder/connector"
 	"github.com/kubemq-hub/builder/connector/common"
+	"github.com/kubemq-hub/builder/pkg/utils"
 	"github.com/kubemq-hub/builder/survey"
 )
 
@@ -23,12 +24,12 @@ func NewManager() *Manager {
 func (m *Manager) Init(loadedOptions common.DefaultOptions, connectorHandler connector.ConnectorsHandler, clusterHandler cluster.ClustersHandler, contextHandler ContextHandler) error {
 	m.loadedOptions = loadedOptions
 	m.catalogManager = NewCatalogManager()
-	if err := m.catalogManager.Init(); err != nil {
+	if err := m.catalogManager.Update(); err != nil {
 		return fmt.Errorf("error on connector catalog initialzation: %s", err.Error())
 	}
 	m.connectorManager = NewConnectorsManager(connectorHandler, m.catalogManager, loadedOptions)
 	m.clusterManager = NewClustersManager(clusterHandler, m.connectorManager, loadedOptions)
-	m.integrationsManager = NewIntegrationsManager(m.clusterManager, m.connectorManager)
+	m.integrationsManager = NewIntegrationsManager(m.clusterManager, m.connectorManager, m.catalogManager)
 	m.contextHandler = contextHandler
 	current := m.contextHandler.Get()
 	m.clusterManager.SetCurrentContext(current)
@@ -45,9 +46,11 @@ func (m *Manager) changeKubernetesContext() error {
 	m.clusterManager.SetCurrentContext(current)
 	m.connectorManager.SetCurrentContext(current)
 	m.integrationsManager.SetCurrentContext(current)
+	utils.Println("\n")
 	return nil
 }
 func (m *Manager) Render() error {
+
 	if err := survey.NewMenu("Select Manager Option:").
 		AddItem("<c> Manage KubeMQ Clusters", func() error {
 			return m.clusterManager.Render()
@@ -57,9 +60,6 @@ func (m *Manager) Render() error {
 		}).
 		AddItem("<i> Manage KubeMQ Integrations", func() error {
 			return m.integrationsManager.Render()
-		}).
-		AddItem("<a> Manage Integrations Catalog", func() error {
-			return m.catalogManager.Render()
 		}).
 		AddItem("<x> Change Kubernetes Context", func() error {
 			return m.changeKubernetesContext()

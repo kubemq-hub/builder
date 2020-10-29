@@ -30,7 +30,16 @@ type Queue struct {
 }
 
 func NewQueue() *Queue {
-	return &Queue{}
+	return &Queue{
+		MaxReceiveMessagesRequest: 1024,
+		MaxWaitTimeoutSeconds:     3600,
+		MaxExpirationSeconds:      43200,
+		MaxDelaySeconds:           43200,
+		MaxReQueues:               1024,
+		MaxVisibilitySeconds:      43200,
+		DefaultVisibilitySeconds:  60,
+		DefaultWaitTimeoutSeconds: 1,
+	}
 }
 func (q *Queue) Clone() *Queue {
 	return &Queue{
@@ -49,7 +58,7 @@ func (q *Queue) askMaxReceiveMessagesRequest() error {
 		SetKind("int").
 		SetName("MaxReceiveMessagesRequest").
 		SetMessage("Set max of sending / receiving batch of queue message").
-		SetDefault("1024").
+		SetDefault(fmt.Sprintf("%d", q.MaxReceiveMessagesRequest)).
 		SetHelp("Set max of sending / receiving batch of queue message").
 		SetRequired(true).
 		SetRange(0, math.MaxInt32).
@@ -65,7 +74,7 @@ func (q *Queue) askMaxWaitTimeoutSeconds() error {
 		SetKind("int").
 		SetName("MaxWaitTimeoutSeconds").
 		SetMessage("Set max wait timeout allowed for message").
-		SetDefault("3600").
+		SetDefault(fmt.Sprintf("%d", q.MaxWaitTimeoutSeconds)).
 		SetHelp("Set max wait timeout allowed for message").
 		SetRequired(true).
 		SetRange(1, math.MaxInt32).
@@ -80,7 +89,7 @@ func (q *Queue) askMaxExpirationSeconds() error {
 		SetKind("int").
 		SetName("MaxWaitTimeoutSeconds").
 		SetMessage("Set max expiration allowed for message").
-		SetDefault("43200").
+		SetDefault(fmt.Sprintf("%d", q.MaxExpirationSeconds)).
 		SetHelp("Set max expiration allowed for message").
 		SetRequired(true).
 		SetRange(1, math.MaxInt32).
@@ -95,7 +104,7 @@ func (q *Queue) asMaxDelaySeconds() error {
 		SetKind("int").
 		SetName("MaxDelaySeconds").
 		SetMessage("Set max delay seconds allowed for message").
-		SetDefault("43200").
+		SetDefault(fmt.Sprintf("%d", q.MaxDelaySeconds)).
 		SetHelp("Set max delay seconds allowed for message").
 		SetRequired(true).
 		SetRange(1, math.MaxInt32).
@@ -110,7 +119,7 @@ func (q *Queue) askMaxReQueues() error {
 		SetKind("int").
 		SetName("MaxReQueues").
 		SetMessage("Set max retires to receive message before discard").
-		SetDefault("1024").
+		SetDefault(fmt.Sprintf("%d", q.MaxReQueues)).
 		SetHelp("Set max retires to receive message before discard").
 		SetRequired(true).
 		SetRange(1, math.MaxInt32).
@@ -125,7 +134,7 @@ func (q *Queue) askMaxVisibilitySeconds() error {
 		SetKind("int").
 		SetName("MaxVisibilitySeconds").
 		SetMessage("Set max time of hold received message before returning to queue").
-		SetDefault("43200").
+		SetDefault(fmt.Sprintf("%d", q.MaxVisibilitySeconds)).
 		SetHelp("Set max time of hold received message before returning to queue").
 		SetRequired(true).
 		SetRange(1, math.MaxInt32).
@@ -140,7 +149,7 @@ func (q *Queue) askDefaultVisibilitySeconds() error {
 		SetKind("int").
 		SetName("DefaultVisibilitySeconds").
 		SetMessage("Set default time of hold received message before returning to queue").
-		SetDefault("60").
+		SetDefault(fmt.Sprintf("%d", q.DefaultVisibilitySeconds)).
 		SetHelp("Set default time of hold received message before returning to queue").
 		SetRequired(true).
 		SetRange(1, math.MaxInt32).
@@ -155,7 +164,7 @@ func (q *Queue) askDefaultWaitTimeoutSeconds() error {
 		SetKind("int").
 		SetName("DefaultWaitTimeoutSeconds").
 		SetMessage("Set default time to wait for a message in a queue").
-		SetDefault("1").
+		SetDefault(fmt.Sprintf("%d", q.DefaultWaitTimeoutSeconds)).
 		SetHelp("Set default time to wait for a message in a queue").
 		SetRequired(true).
 		SetRange(1, math.MaxInt32).

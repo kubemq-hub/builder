@@ -26,7 +26,14 @@ type Health struct {
 }
 
 func NewHealth() *Health {
-	return &Health{}
+	return &Health{
+		Enabled:             false,
+		InitialDelaySeconds: 10,
+		PeriodSeconds:       5,
+		TimeoutSeconds:      30,
+		SuccessThreshold:    1,
+		FailureThreshold:    3,
+	}
 }
 func (h *Health) Clone() *Health {
 	return &Health{
@@ -43,7 +50,7 @@ func (h *Health) askInitialDelaySeconds() error {
 		SetKind("int").
 		SetName("initial-delay-seconds").
 		SetMessage("Set initial delay in seconds").
-		SetDefault("10").
+		SetDefault(fmt.Sprintf("%d", h.InitialDelaySeconds)).
 		SetHelp("Set initial delay in seconds health point").
 		SetRequired(true).
 		SetRange(0, math.MaxInt32).
@@ -58,7 +65,7 @@ func (h *Health) askPeriodSeconds() error {
 		SetKind("int").
 		SetName("period-seconds").
 		SetMessage("Set health check period in seconds").
-		SetDefault("5").
+		SetDefault(fmt.Sprintf("%d", h.PeriodSeconds)).
 		SetHelp("Set health check period in seconds").
 		SetRequired(true).
 		SetRange(0, math.MaxInt32).
@@ -73,7 +80,7 @@ func (h *Health) askTimeoutSeconds() error {
 		SetKind("int").
 		SetName("timeout-seconds").
 		SetMessage("Set health check timeout in seconds").
-		SetDefault("5").
+		SetDefault(fmt.Sprintf("%d", h.TimeoutSeconds)).
 		SetHelp("Set health check timeout in seconds").
 		SetRequired(true).
 		SetRange(0, math.MaxInt32).
@@ -89,7 +96,7 @@ func (h *Health) askSuccessThreshold() error {
 		SetKind("int").
 		SetName("success-threshold").
 		SetMessage("Set health check success threshold").
-		SetDefault("1").
+		SetDefault(fmt.Sprintf("%d", h.SuccessThreshold)).
 		SetHelp("Set health check health check success threshold").
 		SetRequired(true).
 		SetRange(0, math.MaxInt32).
@@ -104,7 +111,7 @@ func (h *Health) askFailureThreshold() error {
 		SetKind("int").
 		SetName("failure threshold").
 		SetMessage("Set health check failure threshold").
-		SetDefault("3").
+		SetDefault(fmt.Sprintf("%d", h.askFailureThreshold())).
 		SetHelp("Set health check health check success threshold").
 		SetRequired(true).
 		SetRange(0, math.MaxInt32).

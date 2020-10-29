@@ -1,35 +1,38 @@
 kubemq/kubemq-cluster:
-  ApiServiceSpec: ""
-  AuthenticationSpec: ""
-  AuthorizationSpec: ""
-  GrpcServiceSpec: ""
-  HealthSpec: ""
-  ImageSpec: ""
-  LicenseSpec: ""
-  LogSpec: ""
-  NodeSelectorsSpec: ""
-  NotificationSpec: ""
-  QueueSpec: ""
-  ResourcesSpec: ""
-  RestServiceSpec: ""
-  RoutingSpec: ""
-  StoreSpec: ""
-  TlsSpec: ""
-  VolumeSpec: ""
   api: null
-  authentication: null
+  authentication:
+    key: asdasd
+    type: HS384
   authorization: null
-  grpc: null
+  grpc:
+    body_limit: 0
+    buffer_size: 100
+    expose: NodePort
+    node_port: 30000
   health: null
   image: null
-  license: ""
+  license: |-
+    -----BEGIN KUBEMQ KEY-----
+    eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJMYWJlbHMiOnsibGljZW5zZS1
+    tYXgtaW5zdGFuY2VzIjoiMTUiLCJsaWNlbnNlLXNvdXJjZSI6Ikdvb2dsZS1NYXJ
+    rZXRwbGFjZSIsImxpY2Vuc2UtdHlwZSI6Ikdvb2dsZS1NYXJrZXRwbGFjZSIsInR
+    lc3QiOiJ0ZXN0In0sImF1ZCI6Ikdvb2dsZS1NYXJrZXRwbGFjZSIsImV4cCI6MTk
+    xNTcxMDQ4NCwianRpIjoiR29vZ2xlLU1hcmtldHBsYWNlLUxpY2Vuc2UiLCJpYXQ
+    iOjE2MDAzNTA0ODQsImlzcyI6Ikt1YmVNUSIsInN1YiI6Ikt1YmVNUSBFbnRlcnB
+    yaXNlIEVkaXRpb24gTGljZW5zZSJ9.ILOcMq8ygBlQHNCIccEnYp60qrY7pSEnK0
+    AnzhvIHUZ5Fa61Ztrvkng2xdHJk5rYq7k0EpAASRyaZtrYg4Z1CINv_M0SUIAyx_
+    B2gsrW0Ou3QNpCtT4H8PoDX1vOv3YX-FHjQ4nbyvs6neGWk0ouha1Vi9nLAfSMf9
+    HLyar2r0IZIysH83XUcJV53LOssVMwCbAp936EekqYGn7iEclQ2Wiz8y5bXx6hcm
+    sr_odkKNOO3FEvRPZL9CAt49ymEWuN6s1Afw_6rtYcMjadUW8EnDU5S9FIxBTFHl
+    JqBpVmtiDsNWbhTDrDK-BV74w5y6cCtDBaiyKmYOVcRlQhcWDTmw
+    -----END KUBEMQ KEY-----
   log: null
   name: kubemq-cluster
   namespace: kubemq
   node_selectors: null
   notification: null
   queue: null
-  replicas: 3
+  replicas: 5
   resource: null
   rest: null
   routing: null

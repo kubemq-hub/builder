@@ -35,7 +35,7 @@ func (t *Tls) askCert() error {
 		SetKind("multiline").
 		SetName("cert").
 		SetMessage("Load TLS certificate data").
-		SetDefault("").
+		SetDefault(t.Cert).
 		SetHelp("Load TLS certificate data").
 		SetRequired(true).
 		Render(&t.Cert)
@@ -49,7 +49,7 @@ func (t *Tls) askKey() error {
 		SetKind("multiline").
 		SetName("key").
 		SetMessage("Load TLS key data").
-		SetDefault("").
+		SetDefault(t.Key).
 		SetHelp("Load TLS key data").
 		SetRequired(true).
 		Render(&t.Key)
@@ -72,13 +72,14 @@ func (t *Tls) askCA() error {
 		return err
 	}
 	if !boolVal {
+		t.Ca = ""
 		return nil
 	}
 	err = survey.NewMultiline().
 		SetKind("multiline").
 		SetName("ca").
 		SetMessage("Load TLS certificate authority (CA) data").
-		SetDefault("").
+		SetDefault(t.Ca).
 		SetHelp("Load TLS certificate authority (CA) data").
 		SetRequired(false).
 		Render(&t.Ca)

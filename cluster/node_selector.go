@@ -30,8 +30,13 @@ func (n *NodeSelector) Clone() *NodeSelector {
 func (n *NodeSelector) Validate() error {
 	return nil
 }
-func (n *NodeSelector) Render() (map[string]string, error) {
-	n.values = map[string]string{}
+func (n *NodeSelector) Render(values map[string]string) (map[string]string, error) {
+	if values != nil {
+		n.values = values
+	} else {
+		n.values = map[string]string{}
+	}
+
 	val := ""
 	err := survey.NewString().
 		SetKind("string").

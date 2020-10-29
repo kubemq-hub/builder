@@ -16,7 +16,10 @@ type Log struct {
 }
 
 func NewLog() *Log {
-	return &Log{}
+	return &Log{
+		Level:       2,
+		levelString: "",
+	}
 }
 func (l *Log) Clone() *Log {
 	return &Log{
@@ -25,12 +28,13 @@ func (l *Log) Clone() *Log {
 	}
 }
 func (l *Log) askLog() error {
+	options := []string{"Trace", "Debug", "Info", "Warn", "Error", "Fatal"}
 	err := survey.NewString().
 		SetKind("string").
 		SetName("level string").
 		SetMessage("Set log level printing").
-		SetOptions([]string{"Trace", "Debug", "Info", "Warn", "Error", "Fatal"}).
-		SetDefault("Info").
+		SetOptions(options).
+		SetDefault(options[l.Level]).
 		SetHelp("Set log level printing").
 		SetRequired(true).
 		Render(&l.levelString)

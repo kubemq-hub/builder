@@ -60,23 +60,23 @@ type Cluster struct {
 	questionsMap       map[string]func() error
 	questionOptions    []string
 	handler            ClustersHandler
-	ImageSpec          string
-	AuthenticationSpec string
-	AuthorizationSpec  string
-	HealthSpec         string
-	NotificationSpec   string
-	QueueSpec          string
-	StoreSpec          string
-	ApiServiceSpec     string
-	GrpcServiceSpec    string
-	RestServiceSpec    string
-	VolumeSpec         string
-	TlsSpec            string
-	ResourcesSpec      string
-	RoutingSpec        string
-	LogSpec            string
-	NodeSelectorsSpec  string
-	LicenseSpec        string
+	ImageSpec          string `json:"-" yaml:"-"`
+	AuthenticationSpec string `json:"-" yaml:"-"`
+	AuthorizationSpec  string `json:"-" yaml:"-"`
+	HealthSpec         string `json:"-" yaml:"-"`
+	NotificationSpec   string `json:"-" yaml:"-"`
+	QueueSpec          string `json:"-" yaml:"-"`
+	StoreSpec          string `json:"-" yaml:"-"`
+	ApiServiceSpec     string `json:"-" yaml:"-"`
+	GrpcServiceSpec    string `json:"-" yaml:"-"`
+	RestServiceSpec    string `json:"-" yaml:"-"`
+	VolumeSpec         string `json:"-" yaml:"-"`
+	TlsSpec            string `json:"-" yaml:"-"`
+	ResourcesSpec      string `json:"-" yaml:"-"`
+	RoutingSpec        string `json:"-" yaml:"-"`
+	LogSpec            string `json:"-" yaml:"-"`
+	NodeSelectorsSpec  string `json:"-" yaml:"-"`
+	LicenseSpec        string `json:"-" yaml:"-"`
 	license            *License
 	nodeSelectors      *NodeSelector
 	grpcEndPoints      string
@@ -234,7 +234,7 @@ func (c *Cluster) askNamespace(defaultNamespace string) error {
 func (c *Cluster) askLicense() error {
 	var err error
 	if c.License, err = NewLicense().
-		Render(); err != nil {
+		Render(c.License); err != nil {
 		return err
 	}
 	return nil
@@ -249,17 +249,22 @@ func (c *Cluster) askReplicas() error {
 }
 
 func (c *Cluster) askAuthentication() error {
+	if c.Authentication == nil {
+		c.Authentication = NewAuthentication()
+	}
 	var err error
-	if c.Authentication, err = NewAuthentication().
-		Render(); err != nil {
+	if c.Authentication, err = c.Authentication.Render(); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (c *Cluster) askAuthorization() error {
+	if c.Authorization == nil {
+		c.Authorization = NewAuthorization()
+	}
 	var err error
-	if c.Authorization, err = NewAuthorization().
+	if c.Authorization, err = c.Authorization.
 		Render(); err != nil {
 		return err
 	}
@@ -267,8 +272,11 @@ func (c *Cluster) askAuthorization() error {
 }
 
 func (c *Cluster) askHealth() error {
+	if c.Health == nil {
+		c.Health = NewHealth()
+	}
 	var err error
-	if c.Health, err = NewHealth().
+	if c.Health, err = c.Health.
 		Render(); err != nil {
 		return err
 	}
@@ -276,8 +284,11 @@ func (c *Cluster) askHealth() error {
 }
 
 func (c *Cluster) askImage() error {
+	if c.Image == nil {
+		c.Image = NewImage()
+	}
 	var err error
-	if c.Image, err = NewImage().
+	if c.Image, err = c.Image.
 		Render(); err != nil {
 		return err
 	}
@@ -285,8 +296,11 @@ func (c *Cluster) askImage() error {
 }
 
 func (c *Cluster) askLog() error {
+	if c.Log == nil {
+		c.Log = NewLog()
+	}
 	var err error
-	if c.Log, err = NewLog().
+	if c.Log, err = c.Log.
 		Render(); err != nil {
 		return err
 	}
@@ -295,38 +309,50 @@ func (c *Cluster) askLog() error {
 func (c *Cluster) askNodeSelectors() error {
 	var err error
 	if c.NodeSelectors, err = NewNodeSelector().
-		Render(); err != nil {
+		Render(c.NodeSelectors); err != nil {
 		return err
 	}
 	return nil
 }
 func (c *Cluster) askNotification() error {
+	if c.Notification == nil {
+		c.Notification = NewNotification()
+	}
 	var err error
-	if c.Notification, err = NewNotification().
+	if c.Notification, err = c.Notification.
 		Render(); err != nil {
 		return err
 	}
 	return nil
 }
 func (c *Cluster) askQueue() error {
+	if c.Queue == nil {
+		c.Queue = NewQueue()
+	}
 	var err error
-	if c.Queue, err = NewQueue().
+	if c.Queue, err = c.Queue.
 		Render(); err != nil {
 		return err
 	}
 	return nil
 }
 func (c *Cluster) askResource() error {
+	if c.Resource == nil {
+		c.Resource = NewResource()
+	}
 	var err error
-	if c.Resource, err = NewResource().
+	if c.Resource, err = c.Resource.
 		Render(); err != nil {
 		return err
 	}
 	return nil
 }
 func (c *Cluster) askApi() error {
+	if c.Api == nil {
+		c.Api = NewService()
+	}
 	var err error
-	if c.Api, err = NewService().
+	if c.Api, err = c.Api.
 		SetKind("api").
 		Render(); err != nil {
 		return err
@@ -335,8 +361,11 @@ func (c *Cluster) askApi() error {
 }
 
 func (c *Cluster) askRest() error {
+	if c.Rest == nil {
+		c.Rest = NewService()
+	}
 	var err error
-	if c.Rest, err = NewService().
+	if c.Rest, err = c.Rest.
 		SetKind("rest").
 		Render(); err != nil {
 		return err
@@ -344,8 +373,11 @@ func (c *Cluster) askRest() error {
 	return nil
 }
 func (c *Cluster) askGrpc() error {
+	if c.Grpc == nil {
+		c.Grpc = NewService()
+	}
 	var err error
-	if c.Grpc, err = NewService().
+	if c.Grpc, err = c.Grpc.
 		SetKind("grpc").
 		Render(); err != nil {
 		return err
@@ -353,32 +385,44 @@ func (c *Cluster) askGrpc() error {
 	return nil
 }
 func (c *Cluster) askRouting() error {
+	if c.Routing == nil {
+		c.Routing = NewRouting()
+	}
 	var err error
-	if c.Routing, err = NewRouting().
+	if c.Routing, err = c.Routing.
 		Render(); err != nil {
 		return err
 	}
 	return nil
 }
 func (c *Cluster) askStore() error {
+	if c.Store == nil {
+		c.Store = NewStore()
+	}
 	var err error
-	if c.Store, err = NewStore().
+	if c.Store, err = c.Store.
 		Render(); err != nil {
 		return err
 	}
 	return nil
 }
 func (c *Cluster) askTls() error {
+	if c.Tls == nil {
+		c.Tls = NewTls()
+	}
 	var err error
-	if c.Tls, err = NewTls().
+	if c.Tls, err = c.Tls.
 		Render(); err != nil {
 		return err
 	}
 	return nil
 }
 func (c *Cluster) askVolume() error {
+	if c.Volume == nil {
+		c.Volume = NewVolume()
+	}
 	var err error
-	if c.Volume, err = NewVolume().
+	if c.Volume, err = c.Volume.
 		Render(); err != nil {
 		return err
 	}
@@ -667,6 +711,7 @@ func (c *Cluster) EndPoints() []string {
 	return list
 }
 func (c *Cluster) ColoredYaml() (string, error) {
+	c.LicenseSpec = c.License
 	if c.Image != nil {
 		if spec, err := c.Image.ColoredYaml(); err != nil {
 			return "", err
@@ -693,13 +738,6 @@ func (c *Cluster) ColoredYaml() (string, error) {
 			return "", err
 		} else {
 			c.HealthSpec = spec
-		}
-	}
-	if c.license != nil {
-		if spec, err := c.license.ColoredYaml(); err != nil {
-			return "", err
-		} else {
-			c.LicenseSpec = spec
 		}
 	}
 	if c.Notification != nil {

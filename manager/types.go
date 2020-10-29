@@ -1,9 +1,9 @@
 package manager
 
 const (
-	promptCatalogLoadingStarted         = `<yellow>Loading Connectors catalog...</>`
-	promptCatalogLoadingCompleted       = `<yellow>Loading Connectors catalog completed.</>`
-	promptCatalogLoadingError           = `<red>Loading Connectors catalog error:%s</>`
+	promptCatalogLoadingStarted         = `<yellow>Loading Integrations catalog...</>`
+	promptCatalogLoadingCompleted       = `<yellow>Loading Integrations catalog completed.</>`
+	promptCatalogLoadingError           = `<red>Loading Integrations catalog error:%s</>`
 	promptConnectorDelete               = "<cyan>Connector %s deleted successfully\n</>"
 	promptConnectorAdded                = "<cyan>Connector %s added successfully\n</>"
 	promptClusterAdded                  = "<cyan>Cluster %s added successfully\n</>"

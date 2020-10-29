@@ -20,7 +20,11 @@ type Volume struct {
 }
 
 func NewVolume() *Volume {
-	return &Volume{}
+	return &Volume{
+		Size:           "",
+		StorageClass:   "default",
+		storageClasses: nil,
+	}
 }
 func (v *Volume) Clone() *Volume {
 	return &Volume{
@@ -61,7 +65,7 @@ func (v *Volume) askSize() error {
 		SetKind("string").
 		SetName("size").
 		SetMessage("Set persistence volume size").
-		SetDefault("30Gi").
+		SetDefault(v.Size).
 		SetHelp("Set persistence volume size for each node").
 		SetRequired(true).
 		SetValidator(v.checkSize).
@@ -76,7 +80,7 @@ func (v *Volume) askStorageClass() error {
 		SetKind("string").
 		SetName("storage-class").
 		SetMessage("Set persistence volume storage class").
-		SetDefault("default").
+		SetDefault(v.StorageClass).
 		SetOptions(v.storageClasses).
 		SetHelp("Set persistence volume size storage class").
 		SetRequired(false).

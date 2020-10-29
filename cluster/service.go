@@ -35,7 +35,13 @@ type Service struct {
 }
 
 func NewService() *Service {
-	return &Service{}
+	return &Service{
+		NodePort:   0,
+		Expose:     "",
+		BufferSize: 100,
+		BodyLimit:  0,
+		kind:       "",
+	}
 }
 func (s *Service) Clone() *Service {
 	return &Service{
@@ -70,7 +76,7 @@ func (s *Service) askExpose() error {
 		SetKind("string").
 		SetName("expose").
 		SetMessage(fmt.Sprintf("Set cluster %s service type", s.kind)).
-		SetDefault("ClusterIP").
+		SetDefault(s.Expose).
 		SetOptions([]string{"ClusterIP", "NodePort", "LoadBalancer"}).
 		SetHelp(fmt.Sprintf("Set cluster %s service type", s.kind)).
 		SetRequired(true).
@@ -85,7 +91,7 @@ func (s *Service) askNodePort() error {
 		SetKind("int").
 		SetName("node-port").
 		SetMessage(fmt.Sprintf("Set cluster %s service NodePort value", s.kind)).
-		SetDefault("30000").
+		SetDefault(fmt.Sprintf("%d", s.NodePort)).
 		SetHelp(fmt.Sprintf("Set cluster %s service NodePort value", s.kind)).
 		SetRequired(false).
 		SetRange(30000, 32767).
@@ -100,7 +106,7 @@ func (s *Service) askBufferSize() error {
 		SetKind("int").
 		SetName("buffer-size").
 		SetMessage("Set subscribe message / requests buffer size to use on server").
-		SetDefault("100").
+		SetDefault(fmt.Sprintf("%d", s.BufferSize)).
 		SetHelp("Set subscribe message / requests buffer size to use on server").
 		SetRequired(false).
 		SetRange(0, math.MaxInt32).
@@ -115,7 +121,7 @@ func (s *Service) askBodyLimit() error {
 		SetKind("int").
 		SetName("body=limit").
 		SetMessage("Set max size of payload in bytes (0 - no limit)").
-		SetDefault("0").
+		SetDefault(fmt.Sprintf("%d", s.BodyLimit)).
 		SetHelp("Set max size of payload in bytes").
 		SetRequired(false).
 		SetRange(0, math.MaxInt32).

@@ -34,7 +34,7 @@ func (r *Routing) askData() error {
 		SetKind("multiline").
 		SetName("policy").
 		SetMessage("Load smart routing data").
-		SetDefault("").
+		SetDefault(r.Data).
 		SetHelp("Load smart routing data").
 		SetRequired(false).
 		Render(&r.Data)
@@ -48,7 +48,7 @@ func (r *Routing) askUrl() error {
 		SetKind("string").
 		SetName("url").
 		SetMessage("Set URL routing data loading address").
-		SetDefault("").
+		SetDefault(r.Url).
 		SetHelp("Set URL routing data loading address").
 		SetRequired(false).
 		Render(&r.Url)
@@ -62,7 +62,7 @@ func (r *Routing) askAutoReload() error {
 		SetKind("int").
 		SetName("auto-reload").
 		SetMessage("Set automatic routing data reload seconds (0 - no reload)").
-		SetDefault("0").
+		SetDefault(fmt.Sprintf("%d", r.AutoReload)).
 		SetHelp("Set automatic routing data reload seconds (0 - no reload)").
 		SetRequired(false).
 		SetRange(0, math.MaxInt32).

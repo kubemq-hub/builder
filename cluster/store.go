@@ -30,7 +30,16 @@ type Store struct {
 }
 
 func NewStore() *Store {
-	return &Store{}
+	return &Store{
+		Clean:                    false,
+		Path:                     "./store",
+		MaxChannels:              0,
+		MaxSubscribers:           0,
+		MaxMessages:              0,
+		MaxChannelSize:           0,
+		MessagesRetentionMinutes: 1440,
+		PurgeInactiveMinutes:     1440,
+	}
 }
 func (s *Store) Clone() *Store {
 	return &Store{
@@ -49,7 +58,7 @@ func (s *Store) askClean() error {
 		SetKind("bool").
 		SetName("Clean").
 		SetMessage("Set clear persistence data on start-up").
-		SetDefault("false").
+		SetDefault(fmt.Sprintf("%t", s.Clean)).
 		SetHelp("Set clear persistence data on start-up").
 		SetRequired(true).
 		Render(&s.Clean)
@@ -70,7 +79,7 @@ func (s *Store) askPath() error {
 		SetKind("string").
 		SetName("path").
 		SetMessage("Set persistence file path").
-		SetDefault("./store").
+		SetDefault(s.Path).
 		SetHelp("Set persistence file path").
 		SetRequired(true).
 		SetValidator(s.checkNonPathEmpty).
@@ -85,7 +94,7 @@ func (s *Store) askMaxChannels() error {
 		SetKind("int").
 		SetName("max channels").
 		SetMessage("Set limit number of persistence channels (0 - no limit)").
-		SetDefault("0").
+		SetDefault(fmt.Sprintf("%d", s.MaxChannels)).
 		SetHelp("Set limit number of persistence channels").
 		SetRequired(true).
 		SetRange(0, math.MaxInt32).
@@ -101,7 +110,7 @@ func (s *Store) askMaxSubscribers() error {
 		SetKind("int").
 		SetName("max subscribers").
 		SetMessage("Set limit of subscribers per channel (0 - no limit)").
-		SetDefault("0").
+		SetDefault(fmt.Sprintf("%d", s.MaxSubscribers)).
 		SetHelp("Set limit of subscribers per channel").
 		SetRequired(true).
 		SetRange(0, math.MaxInt32).
@@ -116,7 +125,7 @@ func (s *Store) askMaxMessages() error {
 		SetKind("int").
 		SetName("max messages").
 		SetMessage("Set limit of messages per channel (0 - no limit)").
-		SetDefault("0").
+		SetDefault(fmt.Sprintf("%d", s.MaxMessages)).
 		SetHelp("Set limit of messages per channel").
 		SetRequired(true).
 		SetRange(0, math.MaxInt32).
@@ -131,7 +140,7 @@ func (s *Store) asMaxChannelSize() error {
 		SetKind("int").
 		SetName("max channel size").
 		SetMessage("Set limit size of channel in bytes (0 - no limit)").
-		SetDefault("0").
+		SetDefault(fmt.Sprintf("%d", s.MaxChannelSize)).
 		SetHelp("Set limit size of channel in bytes").
 		SetRequired(true).
 		SetRange(0, math.MaxInt32).
@@ -146,7 +155,7 @@ func (s *Store) askMessagesRetentionMinutes() error {
 		SetKind("int").
 		SetName("message retention").
 		SetMessage("Set message retention time in minutes (0 - no limit)").
-		SetDefault("1440").
+		SetDefault(fmt.Sprintf("%d", s.MessagesRetentionMinutes)).
 		SetHelp("Set message retention time in minutes").
 		SetRequired(true).
 		SetRange(0, math.MaxInt32).
@@ -161,7 +170,7 @@ func (s *Store) askPurgeInactiveMinutes() error {
 		SetKind("int").
 		SetName("purge inactive minutes").
 		SetMessage("Set time in minutes of channel inactivity to delete (0 - no limit)").
-		SetDefault("1440").
+		SetDefault(fmt.Sprintf("%d", s.PurgeInactiveMinutes)).
 		SetHelp("Set health check health check success threshold").
 		SetRequired(true).
 		SetRange(0, math.MaxInt32).
