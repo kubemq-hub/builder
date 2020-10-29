@@ -11,10 +11,11 @@ import (
 )
 
 type ConnectorsManager struct {
-	handler       connector.ConnectorsHandler
-	connectors    []*connector.Connector
-	catalog       *CatalogManager
-	loadedOptions common.DefaultOptions
+	currentContext string
+	handler        connector.ConnectorsHandler
+	connectors     []*connector.Connector
+	catalog        *CatalogManager
+	loadedOptions  common.DefaultOptions
 }
 
 func NewConnectorsManager(handler connector.ConnectorsHandler, catalog *CatalogManager, loadedOptions common.DefaultOptions) *ConnectorsManager {
@@ -35,6 +36,9 @@ func (cm *ConnectorsManager) GetConnectors() ([]*connector.Connector, error) {
 		return nil, err
 	}
 	return cm.connectors, nil
+}
+func (cm *ConnectorsManager) SetCurrentContext(value string) {
+	cm.currentContext = value
 }
 func (cm *ConnectorsManager) updateConnectors() error {
 	connectors, err := cm.handler.List()
@@ -194,11 +198,11 @@ func (cm *ConnectorsManager) connectorsStatus() error {
 	return nil
 }
 func (cm *ConnectorsManager) Render() error {
-	if err := survey.NewMenu(fmt.Sprintf("Select Connectors Manager Option (Context: %s):", cm.handler.Name())).
+	if err := survey.NewMenu(fmt.Sprintf("Select Connectors Manager Option (Context: %s):", cm.currentContext)).
 		AddItem("<a> Add Connector", cm.addConnector).
 		AddItem("<e> Edit Connector", cm.editConnector).
-		AddItem("<c> Copy Connector", cm.copyConnector).
-		AddItem("<d> Delete Connector", cm.deleteConnector).
+		AddItem("<c> Copy Connectors", cm.copyConnector).
+		AddItem("<d> Delete Connectors", cm.deleteConnector).
 		AddItem("<l> List Connectors", cm.listConnectors).
 		AddItem("<s> Status Connectors", cm.connectorsStatus).
 		SetBackOption(true).

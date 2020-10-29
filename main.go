@@ -17,7 +17,7 @@ func main() {
 	}
 	loadedOptions := common.NewDefaultOptions()
 	m := manager.NewManager()
-	err = m.Init(loadedOptions, conHandler, clusterHandler)
+	err = m.Init(loadedOptions, conHandler, clusterHandler, &Context{})
 	if err != nil {
 		log.Fatal(err)
 	}

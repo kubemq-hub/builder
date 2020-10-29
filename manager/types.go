@@ -1,10 +1,5 @@
 package manager
 
-import (
-	"github.com/kubemq-hub/builder/cluster"
-	"github.com/kubemq-hub/builder/connector"
-)
-
 const (
 	promptCatalogLoadingStarted         = `<yellow>Loading Connectors catalog...</>`
 	promptCatalogLoadingCompleted       = `<yellow>Loading Connectors catalog completed.</>`
@@ -23,7 +18,7 @@ const (
 	promptIntegrationCopiedConfirmation = "<cyan>Integration %s copied successfully\n</>"
 )
 
-type Handler interface {
-	Cluster() cluster.ClustersHandler
-	Connectors() connector.ConnectorsHandler
+type ContextHandler interface {
+	Set() error
+	Get() string
 }

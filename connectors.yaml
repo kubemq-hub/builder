@@ -92,7 +92,19 @@ kubemq/kubemq-cluster-sources:
   type: sources
 kubemq/kubemq-cluster-targets:
   config: |
-    bindings: []
+    bindings:
+    - name: integration-2
+      source:
+        kind: kubemq.queue
+        properties:
+          address: kubemq-cluster-grpc.kubemq:50000
+          auth_token: ""
+          channel: queues
+      target:
+        kind: cache.redis
+        properties:
+          url: redis://localhost:6379
+      properties: {}
   image: ""
   name: kubemq-cluster-targets
   namespace: kubemq

@@ -5,61 +5,72 @@ import (
 	"github.com/kubemq-hub/builder/cluster"
 	"github.com/kubemq-hub/builder/connector"
 	"github.com/kubemq-hub/builder/connector/common"
+	"github.com/kubemq-hub/builder/pkg/uitable"
 	"github.com/kubemq-hub/builder/pkg/utils"
 	"github.com/kubemq-hub/builder/survey"
 )
 
-type Integrations struct {
+type IntegrationsManager struct {
+	currentContext  string
 	items           []*Integration
 	itemsMap        map[string]*Integration
-	cluster         *cluster.Cluster
 	connectorManger *ConnectorsManager
+	clusterManager  *ClustersManager
 }
 
-func NewIntegrations(cluster *cluster.Cluster, connectorManager *ConnectorsManager) *Integrations {
-	return &Integrations{
+func NewIntegrationsManager(clusterManager *ClustersManager, connectorManager *ConnectorsManager) *IntegrationsManager {
+	return &IntegrationsManager{
 		items:           []*Integration{},
-		cluster:         cluster,
+		clusterManager:  clusterManager,
 		connectorManger: connectorManager,
 	}
 }
-
-func (i *Integrations) populate() error {
+func (i *IntegrationsManager) SetCurrentContext(value string) {
+	i.currentContext = value
+}
+func (i *IntegrationsManager) populate() error {
 	i.items = nil
 	i.itemsMap = map[string]*Integration{}
-	clusterAddress := i.cluster.EndPoints()
-	connectorsList, err := i.connectorManger.GetConnectors()
+	clustersList, err := i.clusterManager.GetClusters()
 	if err != nil {
 		return err
 	}
-	for _, con := range connectorsList {
-		bindings := con.GetIntegrationsForCluster(clusterAddress)
-		for _, binding := range bindings {
-			integration := NewIntegration().
-				SetBinding(binding).
-				SetCluster(i.cluster).
-				SetConnector(con)
-			i.items = append(i.items, integration)
-			i.itemsMap[integration.Name()] = integration
+	for _, cluster := range clustersList {
+		clusterAddress := cluster.EndPoints()
+		connectorsList, err := i.connectorManger.GetConnectors()
+		if err != nil {
+			return err
+		}
+		for _, con := range connectorsList {
+			bindings := con.GetIntegrationsForCluster(clusterAddress)
+			for _, binding := range bindings {
+				integration := NewIntegration().
+					SetBinding(binding).
+					SetCluster(cluster).
+					SetConnector(con)
+				i.items = append(i.items, integration)
+				i.itemsMap[integration.Name()] = integration
+			}
 		}
 	}
+
 	return nil
 }
 
-func (i *Integrations) getOrCreateConnector(kind string) (*connector.Connector, bool, error) {
+func (i *IntegrationsManager) getOrCreateConnector(cluster *cluster.Cluster, kind string) (*connector.Connector, bool, error) {
 	connectors, err := i.connectorManger.GetConnectors()
 	if err != nil {
 		return nil, false, err
 	}
 	for _, c := range connectors {
-		if c.Namespace == i.cluster.Namespace && c.Type == kind {
+		if c.Namespace == cluster.Namespace && c.Type == kind {
 			return c, false, nil
 		}
 	}
 
 	c := connector.NewConnector(i.connectorManger.handler, i.connectorManger.loadedOptions, i.connectorManger.catalog.TargetsManifest, i.connectorManger.catalog.SourcesManifest)
-	c.Name = fmt.Sprintf("%s-%s", i.cluster.Name, kind)
-	c.Namespace = i.cluster.Namespace
+	c.Name = fmt.Sprintf("%s-%s", cluster.Name, kind)
+	c.Namespace = cluster.Namespace
 	c.Type = kind
 	c.Replicas = 1
 	c.ServiceType = "ClusterIP"
@@ -73,8 +84,8 @@ func (i *Integrations) getOrCreateConnector(kind string) (*connector.Connector, 
 	c.Config = string(data)
 	return c, true, nil
 }
-func (i *Integrations) addIntegrationWithKind(kind string) error {
-	c, isNew, err := i.getOrCreateConnector(kind)
+func (i *IntegrationsManager) addIntegrationWithKind(cluster *cluster.Cluster, kind string) error {
+	c, isNew, err := i.getOrCreateConnector(cluster, kind)
 	if err != nil {
 		return err
 	}
@@ -118,13 +129,40 @@ func (i *Integrations) addIntegrationWithKind(kind string) error {
 	utils.Println(promptIntegrationAddedConfirmation, integration.Name)
 	return nil
 }
-func (i *Integrations) addIntegration() error {
+func (i *IntegrationsManager) selectCluster() (*cluster.Cluster, error) {
+	clustersList, err := i.clusterManager.GetClusters()
+	if err != nil {
+		return nil, err
+	}
+	var result *cluster.Cluster
+	menu := survey.NewMenu("Select Cluster destination:").SetDisableLoop(true)
+	for _, c := range clustersList {
+		menu.AddItem(c.Key(), func() error {
+			result = c
+			return nil
+		})
+	}
+
+	if err := menu.Render(); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (i *IntegrationsManager) addIntegration() error {
+	cluster, err := i.selectCluster()
+	if err != nil {
+		return err
+	}
+	if cluster == nil {
+		return fmt.Errorf("no cluster was selected to add an integration")
+	}
 	menu := survey.NewMenu("Select Add Integration Type:").
-		AddItem(fmt.Sprintf("Target Integration for %s", i.cluster.Key()), func() error {
-			return i.addIntegrationWithKind("targets")
+		AddItem(fmt.Sprintf("Target Integration for %s", cluster.Key()), func() error {
+			return i.addIntegrationWithKind(cluster, "targets")
 		}).
-		AddItem(fmt.Sprintf("Source Integration for %s", i.cluster.Key()), func() error {
-			return i.addIntegrationWithKind("sources")
+		AddItem(fmt.Sprintf("Source Integration for %s", cluster.Key()), func() error {
+			return i.addIntegrationWithKind(cluster, "sources")
 		}).SetBackOption(true).
 		SetErrorHandler(survey.MenuShowErrorFn).
 		SetDisableLoop(true)
@@ -135,11 +173,14 @@ func (i *Integrations) addIntegration() error {
 	return nil
 }
 
-func (i *Integrations) editIntegration() error {
+func (i *IntegrationsManager) editIntegration() error {
 	if err := i.populate(); err != nil {
 		return err
 	}
-	menu := survey.NewMultiSelectMenu("Select Integration to edit:")
+	menu := survey.NewMenu("Select Integration to edit:").
+		SetDisableLoop(true).
+		SetBackOption(true).
+		SetErrorHandler(survey.MenuShowErrorFn)
 
 	for _, integration := range i.items {
 		integrationName := new(string)
@@ -163,7 +204,7 @@ func (i *Integrations) editIntegration() error {
 
 }
 
-func (i *Integrations) deleteIntegration() error {
+func (i *IntegrationsManager) deleteIntegration() error {
 	if err := i.populate(); err != nil {
 		return err
 	}
@@ -196,7 +237,7 @@ func (i *Integrations) deleteIntegration() error {
 	return nil
 }
 
-func (i *Integrations) copyIntegration() error {
+func (i *IntegrationsManager) copyIntegration() error {
 	if err := i.populate(); err != nil {
 		return err
 	}
@@ -218,34 +259,37 @@ func (i *Integrations) copyIntegration() error {
 	return nil
 }
 
-func (i *Integrations) listIntegrations() error {
+func (i *IntegrationsManager) listIntegrations() error {
 	if err := i.populate(); err != nil {
 		return err
 	}
-	menu := survey.NewMenu("Select Integration to show:").
-		SetDisableLoop(true).
-		SetBackOption(true).
-		SetErrorHandler(survey.MenuShowErrorFn)
-	for _, integration := range i.items {
-		cloned := integration
-		showFunc := func() error {
-			utils.Println("<cyan>Here is the configuration of %s Integration:</>%s", cloned.Name(), cloned.Binding.ColoredYaml())
-			return nil
+	table := uitable.New()
+	table.MaxColWidth = 50
+	table.AddRow("CLUSTER", "CONNECTOR", "TYPE", "NAME", "TARGET", "SOURCE")
+	if len(i.items) == 0 {
+		table.AddRow("<red>no integrations available</>")
+	} else {
+		for _, item := range i.items {
+			table.AddRow(
+				item.Cluster.Key(),
+				item.Connector.Key(),
+				item.Connector.Type,
+				item.Binding.Name,
+				item.Binding.Target.Title(),
+				item.Binding.Source.Title(),
+			)
 		}
-		menu.AddItem(cloned.Name(), showFunc)
 	}
-	if err := menu.Render(); err != nil {
-		return err
-	}
+	utils.Println("\n%s\n\n", table.String())
 	return nil
 }
 
-func (i *Integrations) Render() error {
-	if err := survey.NewMenu(fmt.Sprintf("Manage Integrations for Cluster %s:", i.cluster.Key())).
+func (i *IntegrationsManager) Render() error {
+	if err := survey.NewMenu(fmt.Sprintf("Select Manage Integrations Option (Context: %s):", i.currentContext)).
 		AddItem("<a> Add Integration", i.addIntegration).
 		AddItem("<e> Edit Integration", i.editIntegration).
-		AddItem("<c> Copy Integration", i.copyIntegration).
-		AddItem("<d> Delete Integration", i.deleteIntegration).
+		AddItem("<c> Copy Integrations", i.copyIntegration).
+		AddItem("<d> Delete Integrations", i.deleteIntegration).
 		AddItem("<l> List Integrations", i.listIntegrations).
 		SetBackOption(true).
 		SetErrorHandler(survey.MenuShowErrorFn).

@@ -11,6 +11,7 @@ import (
 )
 
 type ClustersManager struct {
+	currentContext    string
 	handler           cluster.ClustersHandler
 	clusters          []*cluster.Cluster
 	connectorsManager *ConnectorsManager
@@ -26,6 +27,17 @@ func NewClustersManager(handler cluster.ClustersHandler, connectorsManager *Conn
 	}
 
 	return cm
+}
+func (cm *ClustersManager) GetClusters() ([]*cluster.Cluster, error) {
+	err := cm.updateClusters()
+	if err != nil {
+		return nil, err
+	}
+
+	return cm.clusters, nil
+}
+func (cm *ClustersManager) SetCurrentContext(value string) {
+	cm.currentContext = value
 }
 func (cm *ClustersManager) updateClusters() error {
 	clusters, err := cm.handler.List()
@@ -159,29 +171,6 @@ func (cm *ClustersManager) listClusters() error {
 	return nil
 }
 
-func (cm *ClustersManager) manageIntegrations() error {
-	err := cm.updateClusters()
-	if err != nil {
-		return err
-	}
-	menu := survey.NewMenu("Select Cluster to manage integrations:").
-		SetDisableLoop(true).
-		SetBackOption(true).
-		SetErrorHandler(survey.MenuShowErrorFn)
-	for _, c := range cm.clusters {
-		clonedCluster := c.Clone(cm.handler)
-		menu.AddItem(clonedCluster.Key(), func() error {
-			if err := NewIntegrations(clonedCluster, cm.connectorsManager).Render(); err != nil {
-				return err
-			}
-			return nil
-		})
-	}
-	if err := menu.Render(); err != nil {
-		return err
-	}
-	return nil
-}
 func (cm *ClustersManager) clustersStatus() error {
 	err := cm.updateClusters()
 	if err != nil {
@@ -189,7 +178,7 @@ func (cm *ClustersManager) clustersStatus() error {
 	}
 	table := uitable.New()
 	table.MaxColWidth = 50
-	table.AddRow("NAMESPACE", "NAME", "VERSION", "STATUS", "REPLICAS", "READY", "GRPC", "REST", "API")
+	table.AddRow("NAMESPACE", "NAME", "VERSION", "STATUS", "REPLICAS", "READY", "ADDRESS")
 	if len(cm.clusters) == 0 {
 		table.AddRow("<red>no clusters available</>")
 	} else {
@@ -197,21 +186,20 @@ func (cm *ClustersManager) clustersStatus() error {
 			table.AddRow(
 				cls.Namespace,
 				cls.Name,
-				cls.Status.Version, cls.Status.Status, cls.Status.Replicas, cls.Status.Ready, cls.Status.Grpc, cls.Status.Rest, cls.Status.Api)
+				cls.Status.Version, cls.Status.Status, cls.Status.Replicas, cls.Status.Ready, cls.Status.Grpc)
 		}
 	}
 	utils.Println("\n%s\n\n", table.String())
 	return nil
 }
 func (cm *ClustersManager) Render() error {
-	if err := survey.NewMenu(fmt.Sprintf("Select Clusters Manager Option (Context: %s):", cm.handler.Name())).
+	if err := survey.NewMenu(fmt.Sprintf("Select Manage Cluster Option (Context: %s):", cm.currentContext)).
 		AddItem("<a> Add Cluster", cm.addCluster).
 		AddItem("<e> Edit Cluster", cm.editCluster).
-		AddItem("<c> Copy Cluster", cm.copyCluster).
-		AddItem("<d> Delete Cluster", cm.deleteCluster).
+		AddItem("<c> Copy Clusters", cm.copyCluster).
+		AddItem("<d> Delete Clusters", cm.deleteCluster).
 		AddItem("<l> List Clusters", cm.listClusters).
 		AddItem("<s> Status Clusters", cm.clustersStatus).
-		AddItem("<m> Cluster Integrations", cm.manageIntegrations).
 		SetBackOption(true).
 		Render(); err != nil {
 		return err
