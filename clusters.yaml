@@ -16,20 +16,13 @@ kubemq/kubemq-cluster:
   StoreSpec: ""
   TlsSpec: ""
   VolumeSpec: ""
-  api:
-    body_limit: 0
-    buffer_size: 0
-    expose: ClusterIP
-    node_port: 0
+  api: null
   authentication: null
   authorization: null
   grpc: null
   health: null
   image: null
-  license: |-
-    sadsaasdas
-
-    asd
+  license: ""
   log: null
   name: kubemq-cluster
   namespace: kubemq
@@ -38,137 +31,7 @@ kubemq/kubemq-cluster:
   queue: null
   replicas: 3
   resource: null
-  rest:
-    body_limit: 0
-    buffer_size: 100
-    expose: NodePort
-    node_port: 30000
-  routing: null
-  store: null
-  tls: null
-  volume: null
-kubemq/kubemq-cluster-2:
-  ApiServiceSpec: |2
-
-    <red>api:</>
-      <yellow>Expose:</> <white>ClusterIP</>
-      <yellow>NodePort:</> <white>0</>
-  AuthenticationSpec: ""
-  AuthorizationSpec: ""
-  GrpcServiceSpec: ""
-  HealthSpec: ""
-  ImageSpec: ""
-  LicenseSpec: ""
-  LogSpec: ""
-  NodeSelectorsSpec: ""
-  NotificationSpec: ""
-  QueueSpec: ""
-  ResourcesSpec: ""
-  RestServiceSpec: ""
-  RoutingSpec: ""
-  StoreSpec: ""
-  TlsSpec: ""
-  VolumeSpec: ""
-  api:
-    body_limit: 0
-    buffer_size: 0
-    expose: ClusterIP
-    node_port: 0
-  authentication: null
-  authorization: null
-  grpc: null
-  health: null
-  image: null
-  license: |-
-    sadsaasdas
-
-    asd
-  log: null
-  name: kubemq-cluster-2
-  namespace: kubemq
-  node_selectors: null
-  notification: null
-  queue: null
-  replicas: 3
-  resource: null
-  rest:
-    body_limit: 0
-    buffer_size: 100
-    expose: NodePort
-    node_port: 30000
-  routing: null
-  store: null
-  tls: null
-  volume: null
-kubemq/kubemq-cluster-3:
-  ApiServiceSpec: ""
-  AuthenticationSpec: ""
-  AuthorizationSpec: ""
-  GrpcServiceSpec: ""
-  HealthSpec: ""
-  ImageSpec: |2
-
-    <red>image:</>
-      <yellow>image:</> <white>docker.io/kubemq/kubemq:latest</>
-      <yellow>pullPolicy:</> <white>IfNotPresent</>
-  LicenseSpec: ""
-  LogSpec: ""
-  NodeSelectorsSpec: ""
-  NotificationSpec: ""
-  QueueSpec: |2
-
-    <red>queue:</>
-      <yellow>maxReceiveMessagesRequest:</> <white>1024</>
-      <yellow>maxWaitTimeoutSeconds:</> <white>3600</>
-      <yellow>maxExpirationSeconds:</> <white>43200</>
-      <yellow>maxDelaySeconds:</> <white>43200</>
-      <yellow>maxReQueues:</> <white>1024</>
-      <yellow>maxVisibilitySeconds:</> <white>43200</>
-      <yellow>defaultVisibilitySeconds:</> <white>60</>
-      <yellow>defaultWaitTimeoutSeconds:</> <white>1</>
-  ResourcesSpec: ""
-  RestServiceSpec: ""
-  RoutingSpec: ""
-  StoreSpec: ""
-  TlsSpec: ""
-  VolumeSpec: ""
-  api:
-    body_limit: 0
-    buffer_size: 0
-    expose: ClusterIP
-    node_port: 0
-  authentication: null
-  authorization: null
-  grpc: null
-  health: null
-  image:
-    image: docker.io/kubemq/kubemq:latest
-    pull_policy: IfNotPresent
-  license: |-
-    sadsaasdas
-
-    asd
-  log: null
-  name: kubemq-cluster-3
-  namespace: kubemq
-  node_selectors: null
-  notification: null
-  queue:
-    default_visibility_seconds: 60
-    default_wait_timeout_seconds: 1
-    max_delay_seconds: 43200
-    max_expiration_seconds: 43200
-    max_re_queues: 1024
-    max_receive_messages_request: 1024
-    max_visibility_seconds: 43200
-    max_wait_timeout_seconds: 3600
-  replicas: 3
-  resource: null
-  rest:
-    body_limit: 0
-    buffer_size: 100
-    expose: NodePort
-    node_port: 30000
+  rest: null
   routing: null
   store: null
   tls: null

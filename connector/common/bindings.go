@@ -121,10 +121,7 @@ func (b *Bindings) editBinding() error {
 	return nil
 }
 func (b *Bindings) deleteBinding() error {
-	menu := survey.NewMenu("Select Binding to delete:").
-		SetBackOption(true).
-		SetErrorHandler(survey.MenuShowErrorFn).
-		SetDisableLoop(true)
+	menu := survey.NewMultiSelectMenu("Select Binding to delete:")
 	for _, binding := range b.Bindings {
 		deleted := binding
 		deleteFn := func() error {
@@ -154,10 +151,7 @@ func (b *Bindings) deleteBinding() error {
 }
 
 func (b *Bindings) copyBinding() error {
-	menu := survey.NewMenu("Select Binding to copy:").
-		SetBackOption(true).
-		SetErrorHandler(survey.MenuShowErrorFn).
-		SetDisableLoop(true)
+	menu := survey.NewMultiSelectMenu("Select Binding to copy:")
 	for _, binding := range b.Bindings {
 		cloned := binding.Clone()
 		origin := binding

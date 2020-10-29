@@ -59,7 +59,6 @@ func (cm *ClustersManager) editCluster() error {
 		return err
 	}
 	menu := survey.NewMenu("Select Cluster to edit:").
-		SetPageSize(10).
 		SetDisableLoop(true).
 		SetBackOption(true).
 		SetErrorHandler(survey.MenuShowErrorFn)
@@ -84,11 +83,7 @@ func (cm *ClustersManager) copyCluster() error {
 	if err != nil {
 		return err
 	}
-	menu := survey.NewMenu("Select Cluster to copy:").
-		SetPageSize(10).
-		SetDisableLoop(true).
-		SetBackOption(true).
-		SetErrorHandler(survey.MenuShowErrorFn)
+	menu := survey.NewMultiSelectMenu("Select Cluster to copy:")
 	for _, c := range cm.clusters {
 		copiedCluster := c.Clone(cm.handler)
 		menu.AddItem(copiedCluster.Key(), func() error {
@@ -110,11 +105,7 @@ func (cm *ClustersManager) deleteCluster() error {
 	if err != nil {
 		return err
 	}
-	menu := survey.NewMenu("Select Cluster to delete:").
-		SetPageSize(10).
-		SetDisableLoop(true).
-		SetBackOption(true).
-		SetErrorHandler(survey.MenuShowErrorFn)
+	menu := survey.NewMultiSelectMenu("Select Cluster to delete:")
 	for _, cls := range cm.clusters {
 		deletedCluster := cls.Clone(cm.handler)
 		deleteFn := func() error {
@@ -151,7 +142,6 @@ func (cm *ClustersManager) listClusters() error {
 		return err
 	}
 	menu := survey.NewMenu("Browse Clusters List, Select to show configuration:").
-		SetPageSize(10).
 		SetBackOption(true)
 	for _, c := range cm.clusters {
 		str, _ := c.ColoredYaml()
@@ -175,7 +165,6 @@ func (cm *ClustersManager) manageIntegrations() error {
 		return err
 	}
 	menu := survey.NewMenu("Select Cluster to manage integrations:").
-		SetPageSize(10).
 		SetDisableLoop(true).
 		SetBackOption(true).
 		SetErrorHandler(survey.MenuShowErrorFn)
@@ -201,13 +190,17 @@ func (cm *ClustersManager) clustersStatus() error {
 	table := uitable.New()
 	table.MaxColWidth = 50
 	table.AddRow("NAMESPACE", "NAME", "VERSION", "STATUS", "REPLICAS", "READY", "GRPC", "REST", "API")
-	for _, cls := range cm.clusters {
-		table.AddRow(
-			cls.Namespace,
-			cls.Name,
-			cls.Status.Version, cls.Status.Status, cls.Status.Replicas, cls.Status.Ready, cls.Status.Grpc, cls.Status.Rest, cls.Status.Api)
+	if len(cm.clusters) == 0 {
+		table.AddRow("<red>no clusters available</>")
+	} else {
+		for _, cls := range cm.clusters {
+			table.AddRow(
+				cls.Namespace,
+				cls.Name,
+				cls.Status.Version, cls.Status.Status, cls.Status.Replicas, cls.Status.Ready, cls.Status.Grpc, cls.Status.Rest, cls.Status.Api)
+		}
 	}
-	utils.Println("%s\n\n", table.String())
+	utils.Println("\n%s\n\n", table.String())
 	return nil
 }
 func (cm *ClustersManager) Render() error {
@@ -220,7 +213,6 @@ func (cm *ClustersManager) Render() error {
 		AddItem("<s> Status Clusters", cm.clustersStatus).
 		AddItem("<m> Cluster Integrations", cm.manageIntegrations).
 		SetBackOption(true).
-		SetPageSize(10).
 		Render(); err != nil {
 		return err
 	}

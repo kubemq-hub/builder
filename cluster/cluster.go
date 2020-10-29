@@ -412,7 +412,6 @@ func (c *Cluster) askSelection(withAskDefault bool) error {
 		SetMessage("Select at least one option").
 		SetOptions(c.questionOptions).
 		SetRequired(true).
-		SetPageSize(15).
 		Render(&selections)
 	if err != nil {
 		return err
@@ -625,7 +624,7 @@ func EditCluster(origin *Cluster, handler ClustersHandler, isCopyMode bool) (*Cl
 func CopyCluster(origin *Cluster, handler ClustersHandler) (*Cluster, error) {
 	copied := origin.Clone(handler)
 
-	if err := copied.askName(copied.Name); err != nil {
+	if err := copied.askName(fmt.Sprintf("%s-1", copied.Name)); err != nil {
 		return nil, err
 	}
 	if err := copied.askNamespace(copied.Namespace); err != nil {

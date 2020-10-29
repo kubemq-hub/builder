@@ -86,6 +86,13 @@ func (c *ConnectorsFileHandler) Get(namespace, name string) (*connector.Connecto
 func (c *ConnectorsFileHandler) List() ([]*connector.Connector, error) {
 	var list []*connector.Connector
 	for _, con := range c.connectors {
+		con.Status = &connector.Status{
+			Replicas: int32(con.Replicas),
+			Type:     con.Type,
+			Image:    con.Image,
+			Api:      "",
+			Status:   "Running",
+		}
 		list = append(list, con)
 	}
 	sort.Slice(list, func(i, j int) bool {

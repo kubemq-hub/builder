@@ -139,11 +139,8 @@ func (i *Integrations) editIntegration() error {
 	if err := i.populate(); err != nil {
 		return err
 	}
-	menu := survey.NewMenu("Select Integration to edit:").
-		SetPageSize(15).
-		SetDisableLoop(true).
-		SetBackOption(true).
-		SetErrorHandler(survey.MenuShowErrorFn)
+	menu := survey.NewMultiSelectMenu("Select Integration to edit:")
+
 	for _, integration := range i.items {
 		integrationName := new(string)
 		*integrationName = integration.Name()
@@ -170,11 +167,7 @@ func (i *Integrations) deleteIntegration() error {
 	if err := i.populate(); err != nil {
 		return err
 	}
-	menu := survey.NewMenu("Select Integration to delete:").
-		SetPageSize(15).
-		SetDisableLoop(true).
-		SetBackOption(true).
-		SetErrorHandler(survey.MenuShowErrorFn)
+	menu := survey.NewMultiSelectMenu("Select Integration to delete:")
 	for _, integration := range i.items {
 		cloned := integration
 		deleteFn := func() error {
@@ -207,11 +200,7 @@ func (i *Integrations) copyIntegration() error {
 	if err := i.populate(); err != nil {
 		return err
 	}
-	menu := survey.NewMenu("Select Integration to copy:").
-		SetPageSize(15).
-		SetDisableLoop(true).
-		SetBackOption(true).
-		SetErrorHandler(survey.MenuShowErrorFn)
+	menu := survey.NewMultiSelectMenu("Select Integration to copy:")
 	for _, integration := range i.items {
 		cloned := integration
 		copyFn := func() error {
@@ -234,7 +223,6 @@ func (i *Integrations) listIntegrations() error {
 		return err
 	}
 	menu := survey.NewMenu("Select Integration to show:").
-		SetPageSize(15).
 		SetDisableLoop(true).
 		SetBackOption(true).
 		SetErrorHandler(survey.MenuShowErrorFn)

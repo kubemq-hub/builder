@@ -89,7 +89,6 @@ func (b *Binding) askKind(connector string, kinds []string, currentKind string) 
 		SetOptions(kinds).
 		SetHelp("Select Connector Kind").
 		SetRequired(true).
-		SetPageSize(15).
 		Render(&val)
 	if err != nil {
 		return "", err
@@ -584,7 +583,6 @@ func AddSourceIntegration(takenNames []string, connectorsManifest []byte, loaded
 		SetDefault(sourcesKinds[0]).
 		SetOptions(sourcesKinds).
 		SetRequired(true).
-		SetPageSize(15).
 		Render(&b.Source.Kind)
 	if err != nil {
 		return nil, err
@@ -619,7 +617,6 @@ func AddSourceIntegration(takenNames []string, connectorsManifest []byte, loaded
 		SetDefault(targetsKinds[0]).
 		SetOptions(targetsKinds).
 		SetRequired(true).
-		SetPageSize(15).
 		Render(&b.Target.Kind)
 	if err != nil {
 		return nil, err
@@ -716,7 +713,6 @@ func AddTargetIntegration(takenNames []string, connectorsManifest []byte, loaded
 		SetDefault(targetsKinds[0]).
 		SetOptions(targetsKinds).
 		SetRequired(true).
-		SetPageSize(15).
 		Render(&b.Target.Kind)
 	if err != nil {
 		return nil, err
@@ -751,7 +747,6 @@ func AddTargetIntegration(takenNames []string, connectorsManifest []byte, loaded
 		SetDefault(sourcesKinds[0]).
 		SetOptions(sourcesKinds).
 		SetRequired(true).
-		SetPageSize(15).
 		Render(&b.Source.Kind)
 	if err != nil {
 		return nil, err

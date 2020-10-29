@@ -71,7 +71,6 @@ func (cm *ConnectorsManager) editConnector() error {
 		return err
 	}
 	menu := survey.NewMenu("Select Connector to edit:").
-		SetPageSize(10).
 		SetDisableLoop(true).
 		SetBackOption(true).
 		SetErrorHandler(survey.MenuShowErrorFn)
@@ -95,11 +94,7 @@ func (cm *ConnectorsManager) copyConnector() error {
 	if err != nil {
 		return err
 	}
-	menu := survey.NewMenu("Select Connector to copy:").
-		SetPageSize(10).
-		SetDisableLoop(true).
-		SetBackOption(true).
-		SetErrorHandler(survey.MenuShowErrorFn)
+	menu := survey.NewMultiSelectMenu("Select Connector to copy:")
 	for _, con := range cm.connectors {
 		copiedCon := con.Clone()
 		menu.AddItem(fmt.Sprintf("%s (%s)", copiedCon.Key(), copiedCon.Type), func() error {
@@ -120,11 +115,7 @@ func (cm *ConnectorsManager) deleteConnector() error {
 	if err != nil {
 		return err
 	}
-	menu := survey.NewMenu("Select Connector to delete:").
-		SetPageSize(10).
-		SetDisableLoop(true).
-		SetBackOption(true).
-		SetErrorHandler(survey.MenuShowErrorFn)
+	menu := survey.NewMultiSelectMenu("Select Connector to delete:")
 	for _, con := range cm.connectors {
 		deletedCon := con.Clone()
 		deleteFn := func() error {
@@ -161,7 +152,6 @@ func (cm *ConnectorsManager) listConnectors() error {
 		return err
 	}
 	menu := survey.NewMenu("Browse Connectors List, Select to show configuration:").
-		SetPageSize(10).
 		SetBackOption(true)
 	for _, con := range cm.connectors {
 		str := con.ColoredYaml()
@@ -186,16 +176,21 @@ func (cm *ConnectorsManager) connectorsStatus() error {
 	table := uitable.New()
 	table.MaxColWidth = 50
 	table.AddRow("NAMESPACE", "NAME", "TYPE", "IMAGE", "REPLICAS", "STATUS")
-	for _, con := range cm.connectors {
-		table.AddRow(
-			con.Namespace,
-			con.Name,
-			con.Status.Type,
-			con.Status.Image,
-			con.Status.Replicas,
-			con.Status.Status)
+	if len(cm.connectors) == 0 {
+		table.AddRow("<red>no connectors available</>")
+	} else {
+		for _, con := range cm.connectors {
+			table.AddRow(
+				con.Namespace,
+				con.Name,
+				con.Status.Type,
+				con.Status.Image,
+				con.Status.Replicas,
+				con.Status.Status)
+		}
 	}
-	utils.Println("%s\n\n", table.String())
+
+	utils.Println("\n%s\n\n", table.String())
 	return nil
 }
 func (cm *ConnectorsManager) Render() error {

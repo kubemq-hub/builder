@@ -98,7 +98,6 @@ func DeleteIntegration(origin *Integration, connectorManager *ConnectorsManager)
 	if err != nil {
 		return err
 	}
-	fmt.Println(len(origin.Connector.Integrations.Bindings))
 	bindings.SwitchOrRemove(origin.Binding, nil)
 	data, err := bindings.Yaml()
 	if err != nil {
@@ -107,7 +106,6 @@ func DeleteIntegration(origin *Integration, connectorManager *ConnectorsManager)
 	origin.Connector.Config = string(data)
 
 	if err := connectorManager.handler.Edit(origin.Connector); err != nil {
-		fmt.Println(len(origin.Connector.Integrations.Bindings))
 		return err
 	}
 	return nil

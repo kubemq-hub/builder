@@ -111,8 +111,6 @@ func (cc *CatalogManager) browseTargets() error {
 		return fmt.Errorf("error loading targets manifest: %s", err.Error())
 	}
 	menu := survey.NewMenu("Browse Targets Connectors").
-		SetKeepFilter(true).
-		SetPageSize(15).
 		SetBackOption(true).
 		SetErrorHandler(survey.MenuShowErrorFn)
 
@@ -136,8 +134,6 @@ func (cc *CatalogManager) browseSources() error {
 		return fmt.Errorf("error loading sources manifest: %s", err.Error())
 	}
 	menu := survey.NewMenu("Browse Sources Connectors").
-		SetKeepFilter(true).
-		SetPageSize(15).
 		SetBackOption(true)
 	for _, con := range m.Sources {
 		str := con.ColoredYaml()

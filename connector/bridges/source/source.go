@@ -7,13 +7,13 @@ import (
 )
 
 type Source struct {
-	Name           string              `json:"name"`
 	Kind           string              `json:"kind"`
 	Connections    []map[string]string `json:"connections"`
 	ConnectionSpec string              `json:"-" yaml:"-"`
 	WasEdited      bool                `json:"-" yaml:"-"`
 	defaultName    string
 	isEdit         bool
+	kubemqAddress  []string
 }
 
 func NewSource(defaultName string) *Source {
@@ -23,13 +23,12 @@ func NewSource(defaultName string) *Source {
 }
 func (s *Source) Clone() *Source {
 	newSrc := &Source{
-		Name:           s.Name,
 		Kind:           s.Kind,
 		Connections:    []map[string]string{},
 		ConnectionSpec: s.ConnectionSpec,
 		WasEdited:      s.WasEdited,
-		defaultName:    s.Name,
 		isEdit:         s.isEdit,
+		kubemqAddress:  s.kubemqAddress,
 	}
 	for _, connection := range s.Connections {
 		newConnection := map[string]string{}
@@ -40,7 +39,10 @@ func (s *Source) Clone() *Source {
 	}
 	return newSrc
 }
-
+func (s *Source) SetKubemqAddress(values []string) *Source {
+	s.kubemqAddress = values
+	return s
+}
 func (s *Source) SetIsEdit(value bool) *Source {
 	s.isEdit = value
 	return s
@@ -63,7 +65,8 @@ func (s *Source) askAddConnection() (bool, error) {
 
 func (s *Source) addConnection() error {
 	if connection, err := NewConnection().
-		Render(s.Name, s.Kind); err != nil {
+		SetAddress(s.kubemqAddress).
+		Render(s.Kind); err != nil {
 		return err
 	} else {
 		s.Connections = append(s.Connections, connection)
@@ -72,10 +75,6 @@ func (s *Source) addConnection() error {
 }
 func (s *Source) add() (*Source, error) {
 	var err error
-	if s.Name, err = NewName(s.defaultName).
-		Render(); err != nil {
-		return nil, err
-	}
 	if s.Kind, err = NewKind("").
 		Render(); err != nil {
 		return nil, err
@@ -141,7 +140,7 @@ done:
 func (s *Source) edit() (*Source, error) {
 	var result *Source
 	edited := s.Clone()
-	form := survey.NewForm(fmt.Sprintf("Select Edit %s Source Option", edited.Name))
+	form := survey.NewForm("Select Edit %s Source Option")
 
 	ftName := new(string)
 	*ftName = fmt.Sprintf("<n> Edit Source Name (%s)", edited.Name)
