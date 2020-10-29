@@ -7,7 +7,6 @@ import (
 )
 
 type Spec struct {
-	Name           string            `json:"name"`
 	Kind           string            `json:"kind"`
 	Properties     map[string]string `json:"properties"`
 	PropertiesSpec string            `json:"-" yaml:"-"`
@@ -27,7 +26,6 @@ func (s *Spec) ColoredYaml(template string) string {
 }
 func (s *Spec) Clone() *Spec {
 	newSpec := &Spec{
-		Name:           s.Name,
 		Kind:           s.Kind,
 		Properties:     map[string]string{},
 		PropertiesSpec: "",
@@ -38,7 +36,7 @@ func (s *Spec) Clone() *Spec {
 	return newSpec
 }
 func (s *Spec) TableItemShort() string {
-	return fmt.Sprintf("%s/%s", s.Name, s.Kind)
+	return fmt.Sprintf("%s", s.Kind)
 }
 
 func (s *Spec) IsKubemqAddress(address string) bool {

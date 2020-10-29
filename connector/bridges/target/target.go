@@ -7,29 +7,23 @@ import (
 )
 
 type Target struct {
-	Name           string              `json:"name"`
 	Kind           string              `json:"kind"`
 	Connections    []map[string]string `json:"connections"`
 	ConnectionSpec string              `json:"-" yaml:"-"`
 	WasEdited      bool                `json:"-" yaml:"-"`
-	defaultName    string
 	isEdit         bool
 	kubemqAddress  []string
 }
 
-func NewTarget(defaultName string) *Target {
-	return &Target{
-		defaultName: defaultName,
-	}
+func NewTarget() *Target {
+	return &Target{}
 }
 func (t *Target) Clone() *Target {
 	newTarget := &Target{
-		Name:           t.Name,
 		Kind:           t.Kind,
 		Connections:    []map[string]string{},
 		ConnectionSpec: t.ConnectionSpec,
 		WasEdited:      t.WasEdited,
-		defaultName:    t.Name,
 		isEdit:         t.isEdit,
 		kubemqAddress:  t.kubemqAddress,
 	}
@@ -68,7 +62,7 @@ func (t *Target) askAddConnection() (bool, error) {
 func (t *Target) addConnection() error {
 	if connection, err := NewConnection().
 		SetAddress(t.kubemqAddress).
-		Render(t.Name, t.Kind); err != nil {
+		Render(t.Kind); err != nil {
 		return err
 	} else {
 		t.Connections = append(t.Connections, connection)
@@ -77,10 +71,7 @@ func (t *Target) addConnection() error {
 }
 func (t *Target) add() (*Target, error) {
 	var err error
-	if t.Name, err = NewName(t.defaultName).
-		Render(); err != nil {
-		return nil, err
-	}
+
 	if t.Kind, err = NewKind("").
 		Render(); err != nil {
 		return nil, err
@@ -146,19 +137,7 @@ done:
 func (t *Target) edit() (*Target, error) {
 	var result *Target
 	edited := t.Clone()
-	form := survey.NewForm(fmt.Sprintf("Select Edit %s Target Option", edited.Name))
-
-	ftName := new(string)
-	*ftName = fmt.Sprintf("<n> Edit Target Name (%s)", edited.Name)
-	form.AddItem(ftName, func() error {
-		var err error
-		if edited.Name, err = NewName(edited.Name).
-			Render(); err != nil {
-			return err
-		}
-		*ftName = fmt.Sprintf("<n> Edit Target Name (%s)", edited.Name)
-		return nil
-	})
+	form := survey.NewForm("Select Edit Target Option:")
 
 	ftKind := new(string)
 	*ftKind = fmt.Sprintf("<k> Edit Target Kind (%s)", edited.Kind)
@@ -190,7 +169,7 @@ func (t *Target) edit() (*Target, error) {
 	})
 
 	form.AddItem("<s> Show Target Configuration", func() error {
-		utils.Println(promptShowTarget, edited.Name)
+		utils.Println(promptShowTarget)
 		utils.Println("%s\n", edited.ColoredYaml())
 		return nil
 	})
@@ -229,7 +208,7 @@ func (t *Target) ColoredYaml() string {
 }
 
 func (t *Target) TableItemShort() string {
-	return fmt.Sprintf("%s/%s/%d", t.Name, t.Kind, len(t.Connections))
+	return fmt.Sprintf("%s/%d", t.Kind, len(t.Connections))
 }
 
 func (t *Target) Validate() error {

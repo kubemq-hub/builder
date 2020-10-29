@@ -1,26 +1,8 @@
 package bridges
 
 const (
-	promptSourceStart = `
-<cyan>In the next steps, we will configure the Source connections.
-We will set:</>
-<yellow>Name -</> A unique name for the Source's binding
-<yellow>Kind -</> A Source connection type 
-<yellow>Connections -</> A list of connections properties based on the selected kind
-
-<cyan>Lets start binding source configuration:</>`
 	promptBindingAddConfirmation = "<cyan>Binding %s was added successfully</>"
-
-	promptTargetStart = `
-<cyan>In the next steps, we will configure the Target connections.
-We will set:</>
-<yellow>Name -</> A unique name for the Target's binding
-<yellow>Kind -</> A Target connection type 
-<yellow>Connections -</> A list of connections properties based on the selected kind
-
-<cyan>Lets start binding target configuration:</>`
-
-	bindingTemplate = `
+	bindingTemplate              = `
 <red>name:</> {{.Name}}
 {{- .SourcesSpec -}}
 {{- .TargetsSpec -}}

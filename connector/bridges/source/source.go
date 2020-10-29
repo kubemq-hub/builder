@@ -11,15 +11,12 @@ type Source struct {
 	Connections    []map[string]string `json:"connections"`
 	ConnectionSpec string              `json:"-" yaml:"-"`
 	WasEdited      bool                `json:"-" yaml:"-"`
-	defaultName    string
 	isEdit         bool
 	kubemqAddress  []string
 }
 
-func NewSource(defaultName string) *Source {
-	return &Source{
-		defaultName: defaultName,
-	}
+func NewSource() *Source {
+	return &Source{}
 }
 func (s *Source) Clone() *Source {
 	newSrc := &Source{
@@ -140,19 +137,7 @@ done:
 func (s *Source) edit() (*Source, error) {
 	var result *Source
 	edited := s.Clone()
-	form := survey.NewForm("Select Edit %s Source Option")
-
-	ftName := new(string)
-	*ftName = fmt.Sprintf("<n> Edit Source Name (%s)", edited.Name)
-	form.AddItem(ftName, func() error {
-		var err error
-		if edited.Name, err = NewName(edited.Name).
-			Render(); err != nil {
-			return err
-		}
-		*ftName = fmt.Sprintf("<n> Edit Source Name (%s)", edited.Name)
-		return nil
-	})
+	form := survey.NewForm("Select Edit Source Option:")
 
 	ftKind := new(string)
 	*ftKind = fmt.Sprintf("<k> Edit Source Kind (%s)", edited.Kind)
@@ -184,7 +169,7 @@ func (s *Source) edit() (*Source, error) {
 	})
 
 	form.AddItem("<s> Show Source Configuration", func() error {
-		utils.Println(promptShowSource, edited.Name)
+		utils.Println(promptShowSource)
 		utils.Println("%s\n", edited.ColoredYaml())
 		return nil
 	})
@@ -222,7 +207,7 @@ func (s *Source) ColoredYaml() string {
 	return string(b)
 }
 func (s *Source) TableItemShort() string {
-	return fmt.Sprintf("%s/%s/%d", s.Name, s.Kind, len(s.Connections))
+	return fmt.Sprintf("%s/%d", s.Kind, len(s.Connections))
 }
 
 func (s *Source) Validate() error {

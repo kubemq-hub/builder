@@ -97,18 +97,7 @@ func (b *Binding) askKind(connector string, kinds []string, currentKind string) 
 }
 
 func (b *Binding) addSource(defaultName string) error {
-	utils.Println(promptSourceStart)
 	var err error
-	sourceDefaultName := ""
-	if b.isEditMode {
-		sourceDefaultName = b.Source.Name
-	} else {
-		sourceDefaultName = defaultName
-	}
-	if b.Source.Name, err = NewName(sourceDefaultName).
-		RenderSource(); err != nil {
-		return err
-	}
 	var kinds []string
 	sources := make(map[string]*Connector)
 	for _, c := range b.sourcesList {
@@ -133,19 +122,7 @@ func (b *Binding) addSource(defaultName string) error {
 func (b *Binding) editSource() (*Spec, error) {
 	var result *Spec
 	edited := b.Clone()
-	form := survey.NewForm(fmt.Sprintf("Select Edit %s Source Option", edited.Source.Name))
-
-	ftName := new(string)
-	*ftName = fmt.Sprintf("<n> Edit Source Name (%s)", edited.Source.Name)
-	form.AddItem(ftName, func() error {
-		var err error
-		if edited.Source.Name, err = NewName(edited.Source.Name).
-			RenderSource(); err != nil {
-			return err
-		}
-		*ftName = fmt.Sprintf("<n> Edit Source Name (%s)", edited.Source.Name)
-		return nil
-	})
+	form := survey.NewForm("Select Edit Source Option:")
 
 	ftKind := new(string)
 	*ftKind = fmt.Sprintf("<k> Edit Source Kind (%s)", edited.Source.Kind)
@@ -204,7 +181,7 @@ func (b *Binding) editSource() (*Spec, error) {
 	})
 
 	form.AddItem("<s> Show Source Configuration", func() error {
-		utils.Println(promptShowSource, edited.Source.Name)
+		utils.Println(promptShowSource)
 		utils.Println("%s\n", edited.Source.ColoredYaml(sourceSpecTemplate))
 		return nil
 	})
@@ -227,18 +204,7 @@ func (b *Binding) editSource() (*Spec, error) {
 }
 
 func (b *Binding) addTarget(defaultName string) error {
-	utils.Println(promptTargetStart)
 	var err error
-	targetDefaultName := ""
-	if b.isEditMode {
-		targetDefaultName = b.Target.Name
-	} else {
-		targetDefaultName = defaultName
-	}
-	if b.Target.Name, err = NewName(targetDefaultName).
-		RenderTarget(); err != nil {
-		return err
-	}
 	var kinds []string
 	targets := make(map[string]*Connector)
 	for _, c := range b.targetsList {
@@ -261,19 +227,7 @@ func (b *Binding) addTarget(defaultName string) error {
 func (b *Binding) editTarget() (*Spec, error) {
 	var result *Spec
 	edited := b.Clone()
-	form := survey.NewForm(fmt.Sprintf("Select Edit %s Target Option", edited.Target.Name))
-
-	ftName := new(string)
-	*ftName = fmt.Sprintf("<n> Edit Target Name (%s)", edited.Target.Name)
-	form.AddItem(ftName, func() error {
-		var err error
-		if edited.Target.Name, err = NewName(edited.Target.Name).
-			RenderTarget(); err != nil {
-			return err
-		}
-		*ftName = fmt.Sprintf("<n> Edit Target Name (%s)", edited.Target.Name)
-		return nil
-	})
+	form := survey.NewForm("Select Edit Target Option:")
 
 	ftKind := new(string)
 	*ftKind = fmt.Sprintf("<k> Edit Target Kind (%s)", edited.Target.Kind)
@@ -333,7 +287,7 @@ func (b *Binding) editTarget() (*Spec, error) {
 	})
 
 	form.AddItem("<s> Show Target Configuration", func() error {
-		utils.Println(promptShowTarget, edited.Target.Name)
+		utils.Println(promptShowTarget)
 		utils.Println("%s\n", edited.Target.ColoredYaml(targetSpecTemplate))
 		return nil
 	})
@@ -560,7 +514,6 @@ func AddSourceIntegration(takenNames []string, connectorsManifest []byte, loaded
 
 	// Configuring Source Kinds
 	b.Source = &Spec{
-		Name:       fmt.Sprintf("%s-source", b.Name),
 		Kind:       "",
 		Properties: nil,
 	}
@@ -594,7 +547,6 @@ func AddSourceIntegration(takenNames []string, connectorsManifest []byte, loaded
 
 	// Configuring Targets Kinds
 	b.Target = &Spec{
-		Name:       fmt.Sprintf("%s-target", b.Name),
 		Kind:       "",
 		Properties: nil,
 	}
@@ -690,7 +642,6 @@ func AddTargetIntegration(takenNames []string, connectorsManifest []byte, loaded
 
 	// Configuring Targets Kinds
 	b.Target = &Spec{
-		Name:       fmt.Sprintf("%s-target", b.Name),
 		Kind:       "",
 		Properties: nil,
 	}
@@ -724,7 +675,6 @@ func AddTargetIntegration(takenNames []string, connectorsManifest []byte, loaded
 
 	// Configuring Source Kinds
 	b.Source = &Spec{
-		Name:       fmt.Sprintf("%s-source", b.Name),
 		Kind:       "",
 		Properties: nil,
 	}

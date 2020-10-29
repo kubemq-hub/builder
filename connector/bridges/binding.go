@@ -65,8 +65,7 @@ func (b *Binding) SetKubemqAddress(values []string) *Binding {
 }
 func (b *Binding) setSource() error {
 	if !b.isEditMode {
-		utils.Println(promptSourceStart)
-		b.Sources = source.NewSource(fmt.Sprintf("%s-source", b.defaultName)).SetKubemqAddress(b.kubemqAddress)
+		b.Sources = source.NewSource().SetKubemqAddress(b.kubemqAddress)
 	}
 
 	var err error
@@ -79,8 +78,7 @@ func (b *Binding) setSource() error {
 }
 func (b *Binding) setTarget() error {
 	if !b.isEditMode {
-		utils.Println(promptTargetStart)
-		b.Targets = target.NewTarget(fmt.Sprintf("%s-target", b.defaultName)).SetKubemqAddress(b.kubemqAddress)
+		b.Targets = target.NewTarget().SetKubemqAddress(b.kubemqAddress)
 	}
 	var err error
 	if b.Targets, err = b.Targets.
