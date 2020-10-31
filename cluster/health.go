@@ -111,7 +111,7 @@ func (h *Health) askFailureThreshold() error {
 		SetKind("int").
 		SetName("failure threshold").
 		SetMessage("Set health check failure threshold").
-		SetDefault(fmt.Sprintf("%d", h.askFailureThreshold())).
+		SetDefault(fmt.Sprintf("%d", h.FailureThreshold)).
 		SetHelp("Set health check health check success threshold").
 		SetRequired(true).
 		SetRange(0, math.MaxInt32).

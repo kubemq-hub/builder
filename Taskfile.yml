@@ -4,7 +4,7 @@ version: '2'
 
 vars:
   BINARY_NAME: builder
-  VERSION: v0.5.1
+  VERSION: v0.5.2
 
 tasks:
   check_update:

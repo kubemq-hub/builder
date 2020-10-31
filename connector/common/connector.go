@@ -12,7 +12,7 @@ type Connector struct {
 	Kind           string      `json:"kind"`
 	Description    string      `json:"description"`
 	Properties     []*Property `json:"properties"`
-	Metadata       []*Property `metadata`
+	Metadata       []*Property `json:"metadata"`
 	PropertiesSpec string
 	loadedOptions  DefaultOptions
 	values         map[string]string

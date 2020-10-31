@@ -77,7 +77,6 @@ type Cluster struct {
 	LogSpec            string `json:"-" yaml:"-"`
 	NodeSelectorsSpec  string `json:"-" yaml:"-"`
 	LicenseSpec        string `json:"-" yaml:"-"`
-	license            *License
 	nodeSelectors      *NodeSelector
 	grpcEndPoints      string
 }
