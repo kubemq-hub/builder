@@ -12,7 +12,7 @@ type Connector struct {
 	Kind           string      `json:"kind"`
 	Description    string      `json:"description"`
 	Properties     []*Property `json:"properties"`
-	Metadata       []*Property `json:"metadata"`
+	Metadata       []*Metadata `json:"metadata"`
 	PropertiesSpec string
 	loadedOptions  DefaultOptions
 	values         map[string]string
@@ -43,7 +43,7 @@ func (c *Connector) AddProperty(value *Property) *Connector {
 	c.Properties = append(c.Properties, value)
 	return c
 }
-func (c *Connector) AddMetadata(value *Property) *Connector {
+func (c *Connector) AddMetadata(value *Metadata) *Connector {
 	c.Metadata = append(c.Metadata, value)
 	return c
 }
