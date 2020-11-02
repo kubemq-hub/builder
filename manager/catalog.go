@@ -81,9 +81,9 @@ func (cc *CatalogManager) loadFromUrl(url string) []byte {
 	}
 	return buff.Bytes()
 }
-func (cc *CatalogManager) initResource(localFile, remoteUrl, remoteHash string) ([]byte, error) {
+func (cc *CatalogManager) initResource(localFile, remoteUrl, remoteHash string, force bool) ([]byte, error) {
 	localData := cc.loadFromFile(localFile)
-	if !cc.checkLastModified(localFile) {
+	if !force && !cc.checkLastModified(localFile) {
 		return localData, nil
 	}
 	remoteHashStringData := cc.loadFromUrl(remoteHash)
@@ -105,13 +105,13 @@ func (cc *CatalogManager) initResource(localFile, remoteUrl, remoteHash string) 
 	}
 	return localData, nil
 }
-func (cc *CatalogManager) init() error {
+func (cc *CatalogManager) init(force bool) error {
 
 	var err error
-	if cc.SourcesManifest, err = cc.initResource(sourceLocalFile, sourceRemoteUrl, sourceRemoteHash); err != nil {
+	if cc.SourcesManifest, err = cc.initResource(sourceLocalFile, sourceRemoteUrl, sourceRemoteHash, force); err != nil {
 		return fmt.Errorf("error loading sources connector catalog,%s", err.Error())
 	}
-	if cc.TargetsManifest, err = cc.initResource(targetLocalFile, targetRemoteUrl, targetRemoteHash); err != nil {
+	if cc.TargetsManifest, err = cc.initResource(targetLocalFile, targetRemoteUrl, targetRemoteHash, force); err != nil {
 		return fmt.Errorf("error loading targets connector catalog,%s", err.Error())
 	}
 
@@ -163,9 +163,9 @@ func (cc *CatalogManager) browseSources() error {
 	}
 	return nil
 }
-func (cc *CatalogManager) Update() error {
+func (cc *CatalogManager) Update(force bool) error {
 
-	err := cc.init()
+	err := cc.init(force)
 	if err != nil {
 		utils.Println(promptCatalogLoadingError, err.Error())
 		return err
@@ -175,7 +175,7 @@ func (cc *CatalogManager) Update() error {
 }
 func (cc *CatalogManager) Render() error {
 	if cc.SourcesManifest == nil || cc.TargetsManifest == nil {
-		if err := cc.init(); err != nil {
+		if err := cc.init(false); err != nil {
 			return err
 		}
 	}
@@ -185,7 +185,7 @@ func (cc *CatalogManager) Render() error {
 		AddItem("<s> Browse Sources Catalog", cc.browseSources).
 		AddItem("<u> Update Catalogs", func() error {
 			utils.Println(promptCatalogLoadingStarted)
-			if err := cc.Update(); err != nil {
+			if err := cc.Update(true); err != nil {
 				return err
 			}
 			utils.Println("%s\n", promptCatalogLoadingCompleted)

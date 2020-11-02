@@ -24,7 +24,7 @@ func NewManager() *Manager {
 func (m *Manager) Init(loadedOptions common.DefaultOptions, connectorHandler connector.ConnectorsHandler, clusterHandler cluster.ClustersHandler, contextHandler ContextHandler) error {
 	m.loadedOptions = loadedOptions
 	m.catalogManager = NewCatalogManager()
-	if err := m.catalogManager.Update(); err != nil {
+	if err := m.catalogManager.Update(false); err != nil {
 		return fmt.Errorf("error on connector catalog initialzation: %s", err.Error())
 	}
 	m.connectorManager = NewConnectorsManager(connectorHandler, m.catalogManager, loadedOptions)

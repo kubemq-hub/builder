@@ -1,7 +1,7 @@
 ds/kubemq-cluster-sources:
   config: |
     bindings:
-    - name: נ2
+    - name: b2
       source:
         kind: aws.sqs
         properties:
@@ -34,20 +34,18 @@ ds/kubemq-cluster-sources:
 kubemq/kubemq-bridges:
   config: |
     bindings:
-    - name: kubemq-bridges-binding-1
+    - name: b2
       properties: {}
       sources:
         connections:
-        - address: asd
-          channel: source.kubemq-bridges-binding-1-source.queues
-        kind: source.queue
-        name: kubemq-bridges-binding-1-source
+        - address: 132.12.32.32:50000
+          channel: source.events
+        kind: source.events
       targets:
         connections:
         - address: asd
-          channels: target.kubemq-bridges-binding-1-target.queues
+          channels: target.queues
         kind: target.queue
-        name: kubemq-bridges-binding-1-target
   image: ""
   name: kubemq-bridges
   namespace: kubemq
