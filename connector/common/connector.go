@@ -17,6 +17,7 @@ type Connector struct {
 	loadedOptions    DefaultOptions
 	propertiesValues map[string]string
 	metadataValues   map[string]string
+	defaultKeys      map[string]string
 }
 
 func NewConnector() *Connector {
@@ -65,6 +66,18 @@ func (c *Connector) Validate() error {
 	}
 	return nil
 }
+func (c *Connector) checkDefaultKey(p *Property) string {
+
+	if c.defaultKeys != nil {
+		if p.DefaultFromKey != "" {
+			val, ok := c.defaultKeys[p.DefaultFromKey]
+			if ok {
+				return val
+			}
+		}
+	}
+	return p.Default
+}
 func (c *Connector) askString(p *Property, targetValues map[string]string) error {
 	val := ""
 	options := p.Options
@@ -76,7 +89,7 @@ func (c *Connector) askString(p *Property, targetValues map[string]string) error
 		SetKind("string").
 		SetName(p.Name).
 		SetMessage(p.Description).
-		SetDefault(p.Default).
+		SetDefault(c.checkDefaultKey(p)).
 		SetOptions(options).
 		SetHelp(p.Description).
 		SetRequired(p.Must).
@@ -95,7 +108,7 @@ func (c *Connector) askInt(p *Property, targetValues map[string]string) error {
 		SetKind("int").
 		SetName(p.Name).
 		SetMessage(p.Description).
-		SetDefault(p.Default).
+		SetDefault(c.checkDefaultKey(p)).
 		SetHelp(p.Description).
 		SetRequired(p.Must).
 		SetRange(p.Min, p.Max).
@@ -112,7 +125,7 @@ func (c *Connector) askBool(p *Property, targetValues map[string]string) error {
 		SetKind("bool").
 		SetName(p.Name).
 		SetMessage(p.Description).
-		SetDefault(p.Default).
+		SetDefault(c.checkDefaultKey(p)).
 		SetHelp(p.Description).
 		SetRequired(p.Must).
 		Render(&val)
@@ -128,7 +141,7 @@ func (c *Connector) askMultilines(p *Property, targetValues map[string]string) e
 		SetKind("multiline").
 		SetName(p.Name).
 		SetMessage(p.Description).
-		SetDefault(p.Default).
+		SetDefault(c.checkDefaultKey(p)).
 		SetHelp(p.Description).
 		SetRequired(p.Must).
 		Render(&val)
@@ -145,7 +158,7 @@ func (c *Connector) askMap(p *Property, targetValues map[string]string) error {
 		SetKind("string").
 		SetName(p.Name).
 		SetMessage(p.Description).
-		SetDefault(p.Default).
+		SetDefault(c.checkDefaultKey(p)).
 		SetOptions(p.Options).
 		SetHelp(p.Description).
 		SetRequired(p.Must).
@@ -173,7 +186,7 @@ func (c *Connector) askCondition(p *Property, targetValues map[string]string) er
 		SetKind("string").
 		SetName(p.Name).
 		SetMessage(p.Description).
-		SetDefault(p.Default).
+		SetDefault(c.checkDefaultKey(p)).
 		SetOptions(p.Options).
 		SetHelp(p.Description).
 		SetRequired(p.Must).
@@ -266,17 +279,19 @@ func (c *Connector) renderList(list []*Property, targetValue map[string]string) 
 	}
 	return nil
 }
-func (c *Connector) RenderProperties(options DefaultOptions) (map[string]string, error) {
+func (c *Connector) RenderProperties(options DefaultOptions, defaultKeys map[string]string) (map[string]string, error) {
 	c.propertiesValues = map[string]string{}
 	c.loadedOptions = options
+	c.defaultKeys = defaultKeys
 	if err := c.renderList(c.Properties, c.propertiesValues); err != nil {
 		return nil, err
 	}
 	return c.propertiesValues, nil
 }
-func (c *Connector) RenderMetadata(options DefaultOptions) (map[string]string, error) {
+func (c *Connector) RenderMetadata(options DefaultOptions, defaultKeys map[string]string) (map[string]string, error) {
 	c.metadataValues = map[string]string{}
 	c.loadedOptions = options
+	c.defaultKeys = defaultKeys
 	if err := c.renderList(c.Properties, c.metadataValues); err != nil {
 		return nil, err
 	}

@@ -48,6 +48,7 @@ func (cm *ClustersManager) updateClusters() error {
 	for _, c := range clusters {
 		kubemqAddress = append(kubemqAddress, c.EndPoints()...)
 	}
+	kubemqAddress = append(kubemqAddress, "Other")
 	cm.loadedOptions.Add("kubemq-address", kubemqAddress)
 	sort.Slice(clusters, func(i, j int) bool {
 		return clusters[i].Key() < clusters[j].Key()

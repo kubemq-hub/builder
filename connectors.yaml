@@ -34,18 +34,18 @@ ds/kubemq-cluster-sources:
 kubemq/kubemq-bridges:
   config: |
     bindings:
-    - name: b2
+    - name: b1
       properties: {}
       sources:
         connections:
-        - address: 132.12.32.32:50000
-          channel: source.events
-        kind: source.events
+        - address: zdcsadf
+          channel: d
+        kind: kubemq.queue
       targets:
         connections:
         - address: asd
-          channels: target.queues
-        kind: target.queue
+          channels: queue.b1
+        kind: kubemq.queue
   image: ""
   name: kubemq-bridges
   namespace: kubemq
@@ -97,6 +97,28 @@ kubemq/kubemq-cluster-targets:
         properties:
           address: kubemq-cluster-grpc.kubemq:50000
           channel: queues
+      target:
+        kind: cache.redis
+        properties:
+          url: asd
+      properties: {}
+    - name: adasdasdasd
+      source:
+        kind: kubemq.events
+        properties:
+          address: kubemq-cluster-grpc.kubemq:50000
+          channel: events.adasdasdasd
+      target:
+        kind: cache.redis
+        properties:
+          url: asdasd
+      properties: {}
+    - name: s
+      source:
+        kind: kubemq.queue
+        properties:
+          address: asdasdasd
+          channel: queue.s
       target:
         kind: cache.redis
         properties:
