@@ -57,7 +57,7 @@ func (c *Connector) Validate() error {
 		return fmt.Errorf("connector description cannot be empty")
 	}
 	if len(c.Properties) == 0 {
-		return fmt.Errorf("connector must have at least one property")
+		return nil
 	}
 	for _, property := range c.Properties {
 		if err := property.Validate(); err != nil {
