@@ -1,28 +1,28 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/kubemq-hub/builder/connector/common"
-	"github.com/kubemq-hub/builder/manager"
-	"log"
+	"github.com/kubemq-hub/builder/web"
+	"io/ioutil"
 )
 
 func main() {
-	conHandler, err := NewConnectorsFileHandler("connectors.yaml")
-	if err != nil {
-		log.Fatal(err)
-	}
-	clusterHandler, err := NewClustersFileHandler("clusters.yaml", conHandler)
-	if err != nil {
-		log.Fatal(err)
-	}
-	loadedOptions := common.NewDefaultOptions()
-	m := manager.NewManager()
-	err = m.Init(loadedOptions, conHandler, clusterHandler, &Context{})
-	if err != nil {
-		log.Fatal(err)
-	}
-	if err := m.Render(); err != nil {
-		log.Fatal(err)
-	}
 
+	man, err := common.LoadManifestFromFile("./targets-manifest.json")
+	if err != nil {
+		panic(err)
+	}
+	schema, err := web.ConvertToJsonSchema(man.Targets)
+	if err != nil {
+		panic(err)
+	}
+	data, err := json.MarshalIndent(schema, "", "\t")
+	if err != nil {
+		panic(err)
+	}
+	err = ioutil.WriteFile("schema.json", data, 0644)
+	if err != nil {
+		panic(err)
+	}
 }
