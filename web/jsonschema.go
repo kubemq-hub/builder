@@ -31,6 +31,19 @@ func (j *JsonSchemaItem) setupCondition() {
 	j.Then = NewBaseSchema()
 	j.conditionSetup = true
 }
+func (j *JsonSchemaItem) SetKind(kind string) *JsonSchemaItem {
+	if j.Properties == nil {
+		j.Properties = NewOrderedMap()
+	}
+	j.Properties.Set("kind", struct {
+		Type  string `json:"type"`
+		Const string `json:"const"`
+	}{
+		Type:  "string",
+		Const: kind,
+	})
+	return j
+}
 func (j *JsonSchemaItem) SetItemProperties(key string, value interface{}, isRequired bool) *JsonSchemaItem {
 	if isRequired {
 		j.SetRequired(key)
@@ -57,7 +70,7 @@ type JsonSchemaList struct {
 
 func NewJsonSchemaList() *JsonSchemaList {
 	return &JsonSchemaList{
-		Title: "schema",
+		Title: "Select",
 		Type:  "object",
 		OneOf: nil,
 	}
