@@ -8,6 +8,7 @@ import (
 type Property struct {
 	Name           string   `json:"name"`
 	Kind           string   `json:"kind"`
+	Title          string   `json:"title"`
 	Description    string   `json:"description"`
 	Default        string   `json:"default"`
 	Options        []string `json:"options"`
@@ -25,6 +26,11 @@ func NewProperty() *Property {
 
 func (p *Property) SetName(value string) *Property {
 	p.Name = value
+	return p
+}
+
+func (p *Property) SetTitle(value string) *Property {
+	p.Title = value
 	return p
 }
 

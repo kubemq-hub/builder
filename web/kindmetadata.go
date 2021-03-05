@@ -1,6 +1,8 @@
 package web
 
-import "strings"
+import (
+	"strings"
+)
 
 type KindMetadata struct {
 	Kind     string          `json:"kind"`
@@ -24,13 +26,11 @@ func (s *KindMetadata) SetKind(value string) *KindMetadata {
 	if len(parts) == 1 {
 		s.Name = titler(parts[0])
 		s.Category = "General"
-		s.Provider = "Local"
 		return s
 	}
 	if len(parts) == 2 {
 		s.Name = titler(parts[1])
 		s.Category = titler(parts[0])
-		s.Provider = "Local"
 		return s
 	}
 	if len(parts) == 3 {
@@ -39,8 +39,8 @@ func (s *KindMetadata) SetKind(value string) *KindMetadata {
 		s.Provider = titler(parts[0])
 		return s
 	}
-
 	return s
+
 }
 func (s *KindMetadata) SetSchema(value *JsonSchemaItem) *KindMetadata {
 	s.Schema = value

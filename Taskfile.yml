@@ -4,7 +4,7 @@ version: '2'
 
 vars:
   BINARY_NAME: builder
-  VERSION: v0.6.2
+  VERSION: v0.7.0
 
 tasks:
   check_update:
@@ -31,6 +31,6 @@ tasks:
       - git push origin master --tags
   release:
     cmds:
-      - task: lint
+#      - task: lint
       - task: commit-modifed
       - task: tag

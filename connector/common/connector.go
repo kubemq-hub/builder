@@ -10,6 +10,9 @@ import (
 
 type Connector struct {
 	Kind             string      `json:"kind"`
+	Name             string      `json:"name"`
+	Provider         string      `json:"provider"`
+	Category         string      `json:"category"`
 	Description      string      `json:"description"`
 	Properties       []*Property `json:"properties"`
 	Metadata         []*Metadata `json:"metadata"`
@@ -23,12 +26,17 @@ type Connector struct {
 func NewConnector() *Connector {
 	return &Connector{
 		Kind:             "",
+		Name:             "",
+		Provider:         "",
+		Category:         "",
 		Description:      "",
 		Properties:       nil,
 		Metadata:         nil,
 		PropertiesSpec:   "",
 		loadedOptions:    nil,
 		propertiesValues: nil,
+		metadataValues:   nil,
+		defaultKeys:      nil,
 	}
 }
 
@@ -36,7 +44,18 @@ func (c *Connector) SetKind(value string) *Connector {
 	c.Kind = value
 	return c
 }
-
+func (c *Connector) SetName(value string) *Connector {
+	c.Name = value
+	return c
+}
+func (c *Connector) SetCategoryName(value string) *Connector {
+	c.Category = value
+	return c
+}
+func (c *Connector) SetProviderName(value string) *Connector {
+	c.Provider = value
+	return c
+}
 func (c *Connector) SetDescription(value string) *Connector {
 	c.Description = value
 	return c
