@@ -95,6 +95,7 @@ func (i *IntegrationsSchema) toKindMetadata(group string, connectors common.Conn
 	var list []*KindMetadata
 	for _, connector := range connectors {
 		j := NewJsonSchemaItem().SetKind(connector.Kind)
+		j.AnnotationSchema = NewAnnotationSchema().SetClass("vjsf")
 		for _, property := range connector.Properties {
 			key, val, err := propertyToJsonComponent(property)
 			if err != nil {
@@ -105,6 +106,10 @@ func (i *IntegrationsSchema) toKindMetadata(group string, connectors common.Conn
 		list = append(list, NewKindMetadata().
 			SetType(group).
 			SetKind(connector.Kind).
+			SetName(connector.Name).
+			SetCategory(connector.Category).
+			SetProvider(connector.Provider).
+			SetTags(connector.Tags).
 			SetSchema(j))
 	}
 	return list, nil

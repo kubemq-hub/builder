@@ -3,9 +3,10 @@
 		{
 			"kind": "HTTP",
 			"type": "sources",
-			"name": "HTTP",
-			"category": "General",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"methods",
@@ -35,15 +36,17 @@
 						"default": true,
 						"description": "Set Path/Channel Dynamic Mapping"
 					}
-				}
+				},
+				"x-class": "vjsf"
 			}
 		},
 		{
 			"kind": "storage.filesystem",
 			"type": "sources",
-			"name": "Filesystem",
-			"category": "Storage",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"folders",
@@ -84,6 +87,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -110,9 +114,10 @@
 		{
 			"kind": "messaging.rabbitmq",
 			"type": "sources",
-			"name": "Rabbitmq",
-			"category": "Messaging",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"url",
@@ -147,6 +152,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -189,9 +195,10 @@
 		{
 			"kind": "messaging.mqtt",
 			"type": "sources",
-			"name": "Mqtt",
-			"category": "Messaging",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"host",
@@ -226,6 +233,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -268,9 +276,10 @@
 		{
 			"kind": "messaging.kafka",
 			"type": "sources",
-			"name": "Kafka",
-			"category": "Messaging",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"brokers",
@@ -311,6 +320,7 @@
 						"description": "Set Topic/Channel Dynamic Mapping"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -340,9 +350,10 @@
 		{
 			"kind": "messaging.activemq",
 			"type": "sources",
-			"name": "Activemq",
-			"category": "Messaging",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"host",
@@ -370,6 +381,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -399,9 +411,10 @@
 		{
 			"kind": "messaging.ibmmq",
 			"type": "sources",
-			"name": "Ibmmq",
-			"category": "Messaging",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"queue_manager_name",
@@ -447,6 +460,7 @@
 						"description": "Sets Ibm-Mq Queue Name"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -503,9 +517,10 @@
 		{
 			"kind": "messaging.nats",
 			"type": "sources",
-			"name": "Nats",
-			"category": "Messaging",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"url",
@@ -568,6 +583,7 @@
 						]
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -608,9 +624,10 @@
 		{
 			"kind": "aws.sqs",
 			"type": "sources",
-			"name": "Sqs",
-			"category": "Aws",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"aws_key",
@@ -650,6 +667,7 @@
 						"description": "Set Sqs Queue Name"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -706,9 +724,10 @@
 		{
 			"kind": "aws.amazonmq",
 			"type": "sources",
-			"name": "Amazonmq",
-			"category": "Aws",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"host",
@@ -748,15 +767,17 @@
 						"default": true,
 						"description": "Set Topic/Channel Dynamic Mapping"
 					}
-				}
+				},
+				"x-class": "vjsf"
 			}
 		},
 		{
 			"kind": "aws.msk",
 			"type": "sources",
-			"name": "Msk",
-			"category": "Aws",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"brokers",
@@ -797,6 +818,7 @@
 						"description": "Set Topic/Channel Dynamic Mapping"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -826,9 +848,10 @@
 		{
 			"kind": "gcp.pubsub",
 			"type": "sources",
-			"name": "Pubsub",
-			"category": "Gcp",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"project_id",
@@ -856,15 +879,17 @@
 						"description": "Set Gcp Credentials",
 						"x-display": "textarea"
 					}
-				}
+				},
+				"x-class": "vjsf"
 			}
 		},
 		{
 			"kind": "azure.eventhubs",
 			"type": "sources",
-			"name": "Eventhubs",
-			"category": "Azure",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"end_point",
@@ -909,6 +934,37 @@
 						"type": "object",
 						"title": "Receive Type",
 						"oneOf": [
+							{
+								"title": "With Prefetch Count",
+								"properties": {
+									"key": {
+										"type": "string",
+										"const": "with_prefetch_count"
+									},
+									"prefetch_count": {
+										"type": "integer",
+										"title": "Prefetch Count",
+										"default": 0,
+										"description": "Set Prefetch Count To Collect Events From",
+										"minimum": 0,
+										"maximum": 2147483647
+									}
+								}
+							},
+							{
+								"title": "With Starting Offset",
+								"properties": {
+									"key": {
+										"type": "string",
+										"const": "with_starting_offset"
+									},
+									"starting_offset": {
+										"type": "string",
+										"title": "Starting Offset",
+										"description": "Set Starting Offset"
+									}
+								}
+							},
 							{
 								"title": "From Timestamp",
 								"properties": {
@@ -956,49 +1012,20 @@
 										"maximum": 2147483647
 									}
 								}
-							},
-							{
-								"title": "With Prefetch Count",
-								"properties": {
-									"key": {
-										"type": "string",
-										"const": "with_prefetch_count"
-									},
-									"prefetch_count": {
-										"type": "integer",
-										"title": "Prefetch Count",
-										"default": 0,
-										"description": "Set Prefetch Count To Collect Events From",
-										"minimum": 0,
-										"maximum": 2147483647
-									}
-								}
-							},
-							{
-								"title": "With Starting Offset",
-								"properties": {
-									"key": {
-										"type": "string",
-										"const": "with_starting_offset"
-									},
-									"starting_offset": {
-										"type": "string",
-										"title": "Starting Offset",
-										"description": "Set Starting Offset"
-									}
-								}
 							}
 						]
 					}
-				}
+				},
+				"x-class": "vjsf"
 			}
 		},
 		{
 			"kind": "azure.servicebus",
 			"type": "sources",
-			"name": "Servicebus",
-			"category": "Azure",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"end_point",
@@ -1031,30 +1058,34 @@
 						"title": "Queue Name",
 						"description": "Set Servicebus Queue Name"
 					}
-				}
+				},
+				"x-class": "vjsf"
 			}
 		},
 		{
 			"kind": "echo",
 			"type": "targets",
-			"name": "Echo",
-			"category": "General",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"properties": {
 					"kind": {
 						"type": "string",
 						"const": "echo"
 					}
-				}
+				},
+				"x-class": "vjsf"
 			}
 		},
 		{
 			"kind": "cache.redis",
 			"type": "targets",
-			"name": "Redis",
-			"category": "Cache",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"url"
@@ -1069,15 +1100,17 @@
 						"title": "Url",
 						"description": "Set Redis Url"
 					}
-				}
+				},
+				"x-class": "vjsf"
 			}
 		},
 		{
 			"kind": "cache.memcached",
 			"type": "targets",
-			"name": "Memcached",
-			"category": "Cache",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"hosts"
@@ -1099,6 +1132,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -1134,9 +1168,10 @@
 		{
 			"kind": "stores.postgres",
 			"type": "targets",
-			"name": "Postgres",
-			"category": "Stores",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"connection"
@@ -1158,6 +1193,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -1201,9 +1237,10 @@
 		{
 			"kind": "stores.mysql",
 			"type": "targets",
-			"name": "Mysql",
-			"category": "Stores",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"connection"
@@ -1225,6 +1262,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -1268,9 +1306,10 @@
 		{
 			"kind": "stores.mssql",
 			"type": "targets",
-			"name": "Mssql",
-			"category": "Stores",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"connection"
@@ -1292,6 +1331,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -1335,9 +1375,10 @@
 		{
 			"kind": "stores.mongodb",
 			"type": "targets",
-			"name": "Mongodb",
-			"category": "Stores",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"host",
@@ -1371,6 +1412,7 @@
 						"description": "Set Mongodb Collection"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -1436,9 +1478,10 @@
 		{
 			"kind": "stores.elasticsearch",
 			"type": "targets",
-			"name": "Elasticsearch",
-			"category": "Stores",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"urls"
@@ -1460,6 +1503,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -1495,9 +1539,10 @@
 		{
 			"kind": "stores.cassandra",
 			"type": "targets",
-			"name": "Cassandra",
-			"category": "Stores",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"hosts",
@@ -1528,6 +1573,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -1608,9 +1654,10 @@
 		{
 			"kind": "stores.couchbase",
 			"type": "targets",
-			"name": "Couchbase",
-			"category": "Stores",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"url",
@@ -1638,6 +1685,7 @@
 						"description": "Set Couchbase Bucket"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -1688,9 +1736,10 @@
 		{
 			"kind": "stores.cockroachdb",
 			"type": "targets",
-			"name": "Cockroachdb",
-			"category": "Stores",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"connection"
@@ -1712,6 +1761,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -1755,9 +1805,10 @@
 		{
 			"kind": "stores.percona",
 			"type": "targets",
-			"name": "Percona",
-			"category": "Stores",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"connection"
@@ -1779,6 +1830,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -1822,9 +1874,10 @@
 		{
 			"kind": "stores.aerospike",
 			"type": "targets",
-			"name": "Aerospike",
-			"category": "Stores",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"host",
@@ -1855,6 +1908,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -1892,9 +1946,10 @@
 		{
 			"kind": "stores.rethinkdb",
 			"type": "targets",
-			"name": "Rethinkdb",
-			"category": "Stores",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"host",
@@ -1944,6 +1999,7 @@
 						]
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -2026,9 +2082,10 @@
 		{
 			"kind": "stores.singlestore",
 			"type": "targets",
-			"name": "Singlestore",
-			"category": "Stores",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"connection"
@@ -2050,6 +2107,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -2093,9 +2151,10 @@
 		{
 			"kind": "stores.consulkv",
 			"type": "targets",
-			"name": "Consulkv",
-			"category": "Stores",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"address",
@@ -2145,6 +2204,7 @@
 						]
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -2204,9 +2264,10 @@
 		{
 			"kind": "HTTP",
 			"type": "targets",
-			"name": "HTTP",
-			"category": "General",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"auth_type"
@@ -2220,6 +2281,22 @@
 						"type": "object",
 						"title": "Auth Type",
 						"oneOf": [
+							{
+								"title": "Token",
+								"properties": {
+									"key": {
+										"type": "string",
+										"const": "Token"
+									},
+									"": null,
+									"token": {
+										"type": "string",
+										"title": "Token",
+										"description": "Set Auth Token",
+										"x-display": "textarea"
+									}
+								}
+							},
 							{
 								"title": "Basic",
 								"properties": {
@@ -2249,22 +2326,6 @@
 									},
 									"": null
 								}
-							},
-							{
-								"title": "Token",
-								"properties": {
-									"key": {
-										"type": "string",
-										"const": "Token"
-									},
-									"": null,
-									"token": {
-										"type": "string",
-										"title": "Token",
-										"description": "Set Auth Token",
-										"x-display": "textarea"
-									}
-								}
 							}
 						]
 					},
@@ -2275,6 +2336,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -2338,9 +2400,10 @@
 		{
 			"kind": "messaging.mqtt",
 			"type": "targets",
-			"name": "Mqtt",
-			"category": "Messaging",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"host"
@@ -2362,6 +2425,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -2396,9 +2460,10 @@
 		{
 			"kind": "messaging.rabbitmq",
 			"type": "targets",
-			"name": "Rabbitmq",
-			"category": "Messaging",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"url"
@@ -2413,15 +2478,17 @@
 						"title": "Url",
 						"description": "Set Rabbitmq Url Connection String"
 					}
-				}
+				},
+				"x-class": "vjsf"
 			}
 		},
 		{
 			"kind": "messaging.kafka",
 			"type": "targets",
-			"name": "Kafka",
-			"category": "Messaging",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"brokers",
@@ -2450,6 +2517,7 @@
 						"description": "Set Kafka Topic"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -2479,9 +2547,10 @@
 		{
 			"kind": "messaging.activemq",
 			"type": "targets",
-			"name": "Activemq",
-			"category": "Messaging",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"host"
@@ -2503,6 +2572,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -2532,9 +2602,10 @@
 		{
 			"kind": "messaging.nats",
 			"type": "targets",
-			"name": "Nats",
-			"category": "Messaging",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"url",
@@ -2584,6 +2655,7 @@
 						]
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -2624,9 +2696,10 @@
 		{
 			"kind": "cache.hazelcast",
 			"type": "targets",
-			"name": "Hazelcast",
-			"category": "Cache",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"address",
@@ -2682,6 +2755,7 @@
 						]
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -2741,9 +2815,10 @@
 		{
 			"kind": "storage.minio",
 			"type": "targets",
-			"name": "Minio",
-			"category": "Storage",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"endpoint"
@@ -2765,6 +2840,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -2801,9 +2877,10 @@
 		{
 			"kind": "storage.hdfs",
 			"type": "targets",
-			"name": "Hdfs",
-			"category": "Storage",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"address"
@@ -2825,6 +2902,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -2849,9 +2927,10 @@
 		{
 			"kind": "storage.filesystem",
 			"type": "targets",
-			"name": "Filesystem",
-			"category": "Storage",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"base_path"
@@ -2867,15 +2946,17 @@
 						"default": "./",
 						"description": "Set Local File System Base Path"
 					}
-				}
+				},
+				"x-class": "vjsf"
 			}
 		},
 		{
 			"kind": "serverless.openfaas",
 			"type": "targets",
-			"name": "Openfaas",
-			"category": "Serverless",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"gateway",
@@ -2903,15 +2984,17 @@
 						"title": "Password",
 						"description": "Set Openfaas Password"
 					}
-				}
+				},
+				"x-class": "vjsf"
 			}
 		},
 		{
 			"kind": "aws.sqs",
 			"type": "targets",
-			"name": "Sqs",
-			"category": "Aws",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"aws_key",
@@ -2945,6 +3028,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -2998,9 +3082,10 @@
 		{
 			"kind": "aws.sns",
 			"type": "targets",
-			"name": "Sns",
-			"category": "Aws",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"aws_key",
@@ -3034,6 +3119,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -3058,9 +3144,10 @@
 		{
 			"kind": "aws.s3",
 			"type": "targets",
-			"name": "S3",
-			"category": "Aws",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"aws_key",
@@ -3094,6 +3181,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -3130,9 +3218,10 @@
 		{
 			"kind": "aws.amazonmq",
 			"type": "targets",
-			"name": "Amazonmq",
-			"category": "Aws",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"host",
@@ -3159,15 +3248,17 @@
 						"title": "Password",
 						"description": "Set Amazonmq Password"
 					}
-				}
+				},
+				"x-class": "vjsf"
 			}
 		},
 		{
 			"kind": "aws.rds.postgres",
 			"type": "targets",
-			"name": "Postgres",
-			"category": "Rds",
-			"provider": "Aws",
+			"name": "",
+			"category": "",
+			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"aws_key",
@@ -3228,6 +3319,7 @@
 						"description": "Set Postgres Db Name"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -3276,9 +3368,10 @@
 		{
 			"kind": "aws.rds.mysql",
 			"type": "targets",
-			"name": "Mysql",
-			"category": "Rds",
-			"provider": "Aws",
+			"name": "",
+			"category": "",
+			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"aws_key",
@@ -3339,6 +3432,7 @@
 						"description": "Set Mysql Db Name"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -3387,9 +3481,10 @@
 		{
 			"kind": "aws.rds.mariadb",
 			"type": "targets",
-			"name": "Mariadb",
-			"category": "Rds",
-			"provider": "Aws",
+			"name": "",
+			"category": "",
+			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"connection"
@@ -3412,6 +3507,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -3455,9 +3551,10 @@
 		{
 			"kind": "aws.rds.mssql",
 			"type": "targets",
-			"name": "Mssql",
-			"category": "Rds",
-			"provider": "Aws",
+			"name": "",
+			"category": "",
+			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"connection"
@@ -3480,6 +3577,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -3523,9 +3621,10 @@
 		{
 			"kind": "aws.dynamodb",
 			"type": "targets",
-			"name": "Dynamodb",
-			"category": "Aws",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"aws_key",
@@ -3559,6 +3658,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -3583,9 +3683,10 @@
 		{
 			"kind": "aws.rds.redshift",
 			"type": "targets",
-			"name": "Redshift",
-			"category": "Rds",
-			"provider": "Aws",
+			"name": "",
+			"category": "",
+			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"connection"
@@ -3607,6 +3708,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -3650,9 +3752,10 @@
 		{
 			"kind": "aws.redshift.service",
 			"type": "targets",
-			"name": "Service",
-			"category": "Redshift",
-			"provider": "Aws",
+			"name": "",
+			"category": "",
+			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"aws_key",
@@ -3686,6 +3789,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -3710,9 +3814,10 @@
 		{
 			"kind": "aws.athena",
 			"type": "targets",
-			"name": "Athena",
-			"category": "Aws",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"aws_key",
@@ -3746,6 +3851,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -3770,9 +3876,10 @@
 		{
 			"kind": "aws.msk",
 			"type": "targets",
-			"name": "Msk",
-			"category": "Aws",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"brokers",
@@ -3801,6 +3908,7 @@
 						"description": "Set Msk Topic"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -3830,9 +3938,10 @@
 		{
 			"kind": "aws.lambda",
 			"type": "targets",
-			"name": "Lambda",
-			"category": "Aws",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"aws_key",
@@ -3866,6 +3975,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -3890,9 +4000,10 @@
 		{
 			"kind": "aws.kinesis",
 			"type": "targets",
-			"name": "Kinesis",
-			"category": "Aws",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"aws_key",
@@ -3926,6 +4037,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -3950,9 +4062,10 @@
 		{
 			"kind": "aws.keyspaces",
 			"type": "targets",
-			"name": "Keyspaces",
-			"category": "Aws",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"hosts",
@@ -4013,6 +4126,7 @@
 						]
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -4074,9 +4188,10 @@
 		{
 			"kind": "aws.elasticsearch",
 			"type": "targets",
-			"name": "Elasticsearch",
-			"category": "Aws",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"aws_key",
@@ -4104,6 +4219,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -4128,9 +4244,10 @@
 		{
 			"kind": "aws.cloudwatch.events",
 			"type": "targets",
-			"name": "Events",
-			"category": "Cloudwatch",
-			"provider": "Aws",
+			"name": "",
+			"category": "",
+			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"aws_key",
@@ -4164,6 +4281,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -4188,9 +4306,10 @@
 		{
 			"kind": "aws.cloudwatch.logs",
 			"type": "targets",
-			"name": "Logs",
-			"category": "Cloudwatch",
-			"provider": "Aws",
+			"name": "",
+			"category": "",
+			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"aws_key",
@@ -4224,6 +4343,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -4248,9 +4368,10 @@
 		{
 			"kind": "aws.cloudwatch.metrics",
 			"type": "targets",
-			"name": "Metrics",
-			"category": "Cloudwatch",
-			"provider": "Aws",
+			"name": "",
+			"category": "",
+			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"aws_key",
@@ -4284,6 +4405,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -4308,9 +4430,10 @@
 		{
 			"kind": "gcp.pubsub",
 			"type": "targets",
-			"name": "Pubsub",
-			"category": "Gcp",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"project_id",
@@ -4339,6 +4462,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -4366,9 +4490,10 @@
 		{
 			"kind": "gcp.cache.redis",
 			"type": "targets",
-			"name": "Redis",
-			"category": "Cache",
-			"provider": "Gcp",
+			"name": "",
+			"category": "",
+			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"url"
@@ -4384,15 +4509,17 @@
 						"default": "redis://localhost:6379",
 						"description": "Set Redis Url"
 					}
-				}
+				},
+				"x-class": "vjsf"
 			}
 		},
 		{
 			"kind": "gcp.cache.memcached",
 			"type": "targets",
-			"name": "Memcached",
-			"category": "Cache",
-			"provider": "Gcp",
+			"name": "",
+			"category": "",
+			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"hosts"
@@ -4415,6 +4542,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -4450,9 +4578,10 @@
 		{
 			"kind": "gcp.stores.postgres",
 			"type": "targets",
-			"name": "Postgres",
-			"category": "Stores",
-			"provider": "Gcp",
+			"name": "",
+			"category": "",
+			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"connection-type"
@@ -4522,6 +4651,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -4565,9 +4695,10 @@
 		{
 			"kind": "gcp.stores.mysql",
 			"type": "targets",
-			"name": "Mysql",
-			"category": "Stores",
-			"provider": "Gcp",
+			"name": "",
+			"category": "",
+			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"connection-type"
@@ -4642,6 +4773,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -4685,9 +4817,10 @@
 		{
 			"kind": "gcp.spanner",
 			"type": "targets",
-			"name": "Spanner",
-			"category": "Gcp",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"db",
@@ -4709,15 +4842,17 @@
 						"description": "Set Gcp Credentials",
 						"x-display": "textarea"
 					}
-				}
+				},
+				"x-class": "vjsf"
 			}
 		},
 		{
 			"kind": "gcp.bigtable",
 			"type": "targets",
-			"name": "Bigtable",
-			"category": "Gcp",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"project_id",
@@ -4745,15 +4880,17 @@
 						"title": "Instance",
 						"description": "Set Bigtable Instance"
 					}
-				}
+				},
+				"x-class": "vjsf"
 			}
 		},
 		{
 			"kind": "gcp.bigquery",
 			"type": "targets",
-			"name": "Bigquery",
-			"category": "Gcp",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"project_id",
@@ -4775,15 +4912,17 @@
 						"description": "Set Gcp Credentials",
 						"x-display": "textarea"
 					}
-				}
+				},
+				"x-class": "vjsf"
 			}
 		},
 		{
 			"kind": "gcp.cloudfunctions",
 			"type": "targets",
-			"name": "Cloudfunctions",
-			"category": "Gcp",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"project_id",
@@ -4812,6 +4951,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -4837,9 +4977,10 @@
 		{
 			"kind": "gcp.firebase",
 			"type": "targets",
-			"name": "Firebase",
-			"category": "Gcp",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"project_id",
@@ -4868,6 +5009,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -4910,9 +5052,10 @@
 		{
 			"kind": "gcp.firestore",
 			"type": "targets",
-			"name": "Firestore",
-			"category": "Gcp",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"project_id",
@@ -4934,15 +5077,17 @@
 						"description": "Set Gcp Credentials",
 						"x-display": "textarea"
 					}
-				}
+				},
+				"x-class": "vjsf"
 			}
 		},
 		{
 			"kind": "gcp.storage",
 			"type": "targets",
-			"name": "Storage",
-			"category": "Gcp",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"credentials"
@@ -4958,15 +5103,17 @@
 						"description": "Set Gcp Credentials",
 						"x-display": "textarea"
 					}
-				}
+				},
+				"x-class": "vjsf"
 			}
 		},
 		{
 			"kind": "azure.stores.postgres",
 			"type": "targets",
-			"name": "Postgres",
-			"category": "Stores",
-			"provider": "Azure",
+			"name": "",
+			"category": "",
+			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"connection"
@@ -4989,6 +5136,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -5032,9 +5180,10 @@
 		{
 			"kind": "azure.stores.mysql",
 			"type": "targets",
-			"name": "Mysql",
-			"category": "Stores",
-			"provider": "Azure",
+			"name": "",
+			"category": "",
+			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"connection"
@@ -5057,6 +5206,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -5100,9 +5250,10 @@
 		{
 			"kind": "azure.stores.azuresql",
 			"type": "targets",
-			"name": "Azuresql",
-			"category": "Stores",
-			"provider": "Azure",
+			"name": "",
+			"category": "",
+			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"connection"
@@ -5125,6 +5276,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -5168,9 +5320,10 @@
 		{
 			"kind": "azure.storage.queue",
 			"type": "targets",
-			"name": "Queue",
-			"category": "Storage",
-			"provider": "Azure",
+			"name": "",
+			"category": "",
+			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"storage_access_key",
@@ -5209,6 +5362,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -5260,9 +5414,10 @@
 		{
 			"kind": "azure.storage.files",
 			"type": "targets",
-			"name": "Files",
-			"category": "Storage",
-			"provider": "Azure",
+			"name": "",
+			"category": "",
+			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"storage_access_key",
@@ -5301,6 +5456,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -5352,9 +5508,10 @@
 		{
 			"kind": "azure.storage.blob",
 			"type": "targets",
-			"name": "Blob",
-			"category": "Storage",
-			"provider": "Azure",
+			"name": "",
+			"category": "",
+			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"storage_access_key",
@@ -5393,6 +5550,7 @@
 						"x-display": "checkbox"
 					}
 				},
+				"x-class": "vjsf",
 				"if": {
 					"required": [
 						"setDefaults"
@@ -5444,9 +5602,10 @@
 		{
 			"kind": "azure.servicebus",
 			"type": "targets",
-			"name": "Servicebus",
-			"category": "Azure",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"end_point",
@@ -5479,15 +5638,17 @@
 						"title": "Queue Name",
 						"description": "Set Service Bus Queue Name"
 					}
-				}
+				},
+				"x-class": "vjsf"
 			}
 		},
 		{
 			"kind": "azure.eventhubs",
 			"type": "targets",
-			"name": "Eventhubs",
-			"category": "Azure",
+			"name": "",
+			"category": "",
 			"provider": "",
+			"tags": null,
 			"schema": {
 				"required": [
 					"end_point",
@@ -5520,7 +5681,8 @@
 						"title": "Entity Path",
 						"description": "Set Eventhubs Entity Path"
 					}
-				}
+				},
+				"x-class": "vjsf"
 			}
 		}
 	],

@@ -1,15 +1,12 @@
 package web
 
-import (
-	"strings"
-)
-
 type KindMetadata struct {
 	Kind     string          `json:"kind"`
 	Type     string          `json:"type"`
 	Name     string          `json:"name"`
 	Category string          `json:"category"`
 	Provider string          `json:"provider"`
+	Tags     []string        `json:"tags"`
 	Schema   *JsonSchemaItem `json:"schema"`
 }
 
@@ -20,25 +17,26 @@ func (s *KindMetadata) SetType(value string) *KindMetadata {
 	s.Type = value
 	return s
 }
+
+func (s *KindMetadata) SetName(value string) *KindMetadata {
+	s.Name = value
+	return s
+}
+func (s *KindMetadata) SetProvider(value string) *KindMetadata {
+	s.Provider = value
+	return s
+}
+func (s *KindMetadata) SetCategory(value string) *KindMetadata {
+	s.Category = value
+	return s
+}
+func (s *KindMetadata) SetTags(value []string) *KindMetadata {
+	s.Tags = value
+	return s
+}
+
 func (s *KindMetadata) SetKind(value string) *KindMetadata {
 	s.Kind = value
-	parts := strings.Split(value, ".")
-	if len(parts) == 1 {
-		s.Name = titler(parts[0])
-		s.Category = "General"
-		return s
-	}
-	if len(parts) == 2 {
-		s.Name = titler(parts[1])
-		s.Category = titler(parts[0])
-		return s
-	}
-	if len(parts) == 3 {
-		s.Name = titler(parts[2])
-		s.Category = titler(parts[1])
-		s.Provider = titler(parts[0])
-		return s
-	}
 	return s
 
 }
