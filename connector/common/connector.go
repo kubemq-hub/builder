@@ -14,6 +14,7 @@ type Connector struct {
 	Provider         string      `json:"provider"`
 	Category         string      `json:"category"`
 	Description      string      `json:"description"`
+	Tags             []string    `json:"tags"`
 	Properties       []*Property `json:"properties"`
 	Metadata         []*Metadata `json:"metadata"`
 	PropertiesSpec   string
@@ -30,6 +31,7 @@ func NewConnector() *Connector {
 		Provider:         "",
 		Category:         "",
 		Description:      "",
+		Tags:             []string{},
 		Properties:       nil,
 		Metadata:         nil,
 		PropertiesSpec:   "",
@@ -48,12 +50,16 @@ func (c *Connector) SetName(value string) *Connector {
 	c.Name = value
 	return c
 }
-func (c *Connector) SetCategoryName(value string) *Connector {
+func (c *Connector) SetCategory(value string) *Connector {
 	c.Category = value
 	return c
 }
-func (c *Connector) SetProviderName(value string) *Connector {
+func (c *Connector) SetProvider(value string) *Connector {
 	c.Provider = value
+	return c
+}
+func (c *Connector) SetTags(values ...string) *Connector {
+	c.Tags = values
 	return c
 }
 func (c *Connector) SetDescription(value string) *Connector {
