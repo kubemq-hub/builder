@@ -27,15 +27,19 @@ func NewMapSchema() *MapSchema {
 		},
 		AnnotationSchema: nil,
 	}
-	m.Items.Properties.Set("key", NewStringSchema().SetTitle("Set Key"))
-	m.Items.Properties.Set("value", NewStringSchema().SetTitle("Set Value"))
+	m.Items.Properties.Set("key", NewStringSchema().SetTitle("Set Key", ""))
+	m.Items.Properties.Set("value", NewStringSchema().SetTitle("Set Value", ""))
 	return m
 }
-func (s *MapSchema) SetTitle(value string) *MapSchema {
-	s.Title = value
-	return s
+func (m *MapSchema) SetTitle(title, name string) *MapSchema {
+	if title != "" {
+		m.Title = title
+	} else {
+		m.Title = titler(name)
+	}
+	return m
 }
-func (s *MapSchema) SetAnnotations(value *AnnotationSchema) *MapSchema {
-	s.AnnotationSchema = value
-	return s
+func (m *MapSchema) SetAnnotations(value *AnnotationSchema) *MapSchema {
+	m.AnnotationSchema = value
+	return m
 }

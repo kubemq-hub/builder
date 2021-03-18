@@ -15,8 +15,12 @@ func NewStringSchema() *StringSchema {
 	}
 }
 
-func (s *StringSchema) SetTitle(value string) *StringSchema {
-	s.Title = titler(value)
+func (s *StringSchema) SetTitle(title, name string) *StringSchema {
+	if title != "" {
+		s.Title = title
+	} else {
+		s.Title = titler(name)
+	}
 	return s
 }
 func (s *StringSchema) SetDefault(value string) *StringSchema {

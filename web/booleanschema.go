@@ -17,9 +17,12 @@ func NewBooleanSchema() *BooleanSchema {
 		Type: "boolean",
 	}
 }
-
-func (b *BooleanSchema) SetTitle(value string) *BooleanSchema {
-	b.Title = titler(value)
+func (b *BooleanSchema) SetTitle(title, name string) *BooleanSchema {
+	if title != "" {
+		b.Title = title
+	} else {
+		b.Title = titler(name)
+	}
 	return b
 }
 func (b *BooleanSchema) SetDefault(value string) *BooleanSchema {

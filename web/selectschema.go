@@ -32,8 +32,12 @@ func NewSelectConditionSchema() *SelectConditionSchema {
 		Type: "object",
 	}
 }
-func (s *SelectConditionSchema) SetTitle(value string) *SelectConditionSchema {
-	s.Title = titler(value)
+func (s *SelectConditionSchema) SetTitle(title, name string) *SelectConditionSchema {
+	if title != "" {
+		s.Title = title
+	} else {
+		s.Title = titler(name)
+	}
 	return s
 }
 func (s *SelectConditionSchema) SetOneOf(value string, properties *OrderedMap) *SelectConditionSchema {

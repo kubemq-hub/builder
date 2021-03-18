@@ -20,8 +20,12 @@ func NewIntegerSchema() *IntegerSchema {
 	}
 }
 
-func (i *IntegerSchema) SetTitle(value string) *IntegerSchema {
-	i.Title = titler(value)
+func (i *IntegerSchema) SetTitle(title, name string) *IntegerSchema {
+	if title != "" {
+		i.Title = title
+	} else {
+		i.Title = titler(name)
+	}
 	return i
 }
 func (i *IntegerSchema) SetDefault(value string) *IntegerSchema {

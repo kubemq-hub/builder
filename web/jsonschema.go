@@ -17,7 +17,7 @@ func NewJsonSchemaItem() *JsonSchemaItem {
 func (j *JsonSchemaItem) setupCondition() {
 	j.Properties.Set("setDefaults",
 		NewBooleanSchema().
-			SetTitle("Set Defaults Properties").
+			SetTitle("Set Defaults Properties", "").
 			SetDefault("true").
 			SetAnnotations(NewAnnotationSchema().
 				SetDisplay("checkbox")))
@@ -66,6 +66,7 @@ type JsonSchemaList struct {
 	Title string            `json:"title"`
 	Type  string            `json:"type"`
 	OneOf []*JsonSchemaItem `json:"oneOf"`
+	Class string            `json:"x-class"`
 }
 
 func NewJsonSchemaList() *JsonSchemaList {
@@ -73,6 +74,7 @@ func NewJsonSchemaList() *JsonSchemaList {
 		Title: "Select",
 		Type:  "object",
 		OneOf: nil,
+		Class: "vjsf",
 	}
 }
 func (j *JsonSchemaList) AddItem(value *JsonSchemaItem) *JsonSchemaList {

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/kubemq-hub/builder/connector/common"
+	"sort"
 )
 
 type IntegrationsSchema struct {
@@ -19,13 +20,13 @@ func propertyToJsonComponent(p *common.Property) (string, interface{}, error) {
 	switch p.Kind {
 	case "string":
 		return p.Name, NewStringSchema().
-				SetTitle(p.Name).
+				SetTitle(p.Title, p.Name).
 				SetDescription(p.Description).
 				SetEnum(p.Options...).
 				SetDefault(p.Default),
 			nil
 	case "condition":
-		conditional := NewSelectConditionSchema().SetTitle(p.Name)
+		conditional := NewSelectConditionSchema().SetTitle(p.Title, p.Name)
 		for name, properties := range p.Conditional {
 			subProperties := NewOrderedMap()
 			for _, property := range properties {
@@ -40,7 +41,7 @@ func propertyToJsonComponent(p *common.Property) (string, interface{}, error) {
 		return p.Name, conditional, nil
 	case "int":
 		return p.Name, NewIntegerSchema().
-				SetTitle(p.Name).
+				SetTitle(p.Title, p.Name).
 				SetDescription(p.Description).
 				SetDefault(p.Default).
 				SetMinimum(p.Min).
@@ -48,20 +49,24 @@ func propertyToJsonComponent(p *common.Property) (string, interface{}, error) {
 			nil
 	case "multilines":
 		return p.Name, NewStringSchema().
-				SetTitle(p.Name).
+				SetTitle(p.Title, p.Name).
 				SetDescription(p.Description).
 				SetDefault(p.Default).
 				SetAnnotations(NewAnnotationSchema().SetDisplay("textarea")),
 			nil
 	case "bool":
 		return p.Name, NewBooleanSchema().
-				SetTitle(p.Name).
+				SetTitle(p.Title, p.Name).
 				SetDescription(p.Description).
 				SetDefault(p.Default),
 			nil
 	case "map":
 		m := NewMapSchema()
-		m.SetTitle(fmt.Sprintf("Add %s Key Value Pairs", titler(p.Name)))
+		title := titler(p.Name)
+		if p.Title != "" {
+			title = p.Title
+		}
+		m.SetTitle(fmt.Sprintf("Add %s Key Value Pairs", title), "")
 		return p.Name, m, nil
 	case "null":
 		return "", nil, nil
@@ -115,6 +120,17 @@ func (i *IntegrationsSchema) toKindMetadata(group string, connectors common.Conn
 	return list, nil
 }
 func (i *IntegrationsSchema) Load(sources, targets string) (*IntegrationsSchema, error) {
+	targetManifest, err := common.LoadManifestFromFile(targets)
+	if err != nil {
+		return nil, err
+	}
+
+	targetsList, err := i.toKindMetadata("targets", targetManifest.Targets)
+	if err != nil {
+		return nil, err
+	}
+	i.Integrations = append(i.Integrations, targetsList...)
+
 	sourcesManifest, err := common.LoadManifestFromFile(sources)
 	if err != nil {
 		return nil, err
@@ -125,25 +141,20 @@ func (i *IntegrationsSchema) Load(sources, targets string) (*IntegrationsSchema,
 		return nil, err
 	}
 	i.Integrations = append(i.Integrations, sourcesList...)
+
 	i.KubemqTargets, err = i.toJsonSchemaList(sourcesManifest.Targets)
 	if err != nil {
 		return nil, err
 	}
 
-	targetManifest, err := common.LoadManifestFromFile(targets)
-	if err != nil {
-		return nil, err
-	}
-
-	targesList, err := i.toKindMetadata("targets", targetManifest.Targets)
-	if err != nil {
-		return nil, err
-	}
 	i.KubemqSources, err = i.toJsonSchemaList(targetManifest.Sources)
 	if err != nil {
 		return nil, err
 	}
-	i.Integrations = append(i.Integrations, targesList...)
+	sort.Slice(i.Integrations, func(t, j int) bool {
+		return i.Integrations[t].Name < i.Integrations[j].Name
+
+	})
 	return i, nil
 }
 
