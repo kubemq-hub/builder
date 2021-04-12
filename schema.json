@@ -1190,6 +1190,79 @@
 			}
 		},
 		{
+			"kind": "stores.crate",
+			"type": "targets",
+			"name": "Crate",
+			"category": "Store",
+			"provider": "",
+			"tags": [
+				"db",
+				"sql"
+			],
+			"schema": {
+				"required": [
+					"connection"
+				],
+				"properties": {
+					"kind": {
+						"type": "string",
+						"const": "stores.crate"
+					},
+					"connection": {
+						"type": "string",
+						"title": "Connection String",
+						"default": "postgresql://crate@localhost:5432/doc?sslmode=disable",
+						"description": "Set Crate Connection String"
+					},
+					"setDefaults": {
+						"type": "boolean",
+						"title": "Set Defaults Properties",
+						"default": true,
+						"x-display": "checkbox"
+					}
+				},
+				"x-class": "vjsf",
+				"if": {
+					"required": [
+						"setDefaults"
+					],
+					"properties": {
+						"setDefaults": {
+							"const": false
+						}
+					}
+				},
+				"then": {
+					"properties": {
+						"max_idle_connections": {
+							"type": "integer",
+							"title": "Max Idle Connections",
+							"default": 10,
+							"description": "Set Crate Max Idle Connections",
+							"minimum": 1,
+							"maximum": 2147483647
+						},
+						"max_open_connections": {
+							"type": "integer",
+							"title": "Max Open Connections",
+							"default": 100,
+							"description": "Set Crate Max Open Connections",
+							"minimum": 1,
+							"maximum": 2147483647
+						},
+						"connection_max_lifetime_seconds": {
+							"type": "integer",
+							"title": "Connection Lifetime (Seconds)",
+							"default": 3600,
+							"description": "Set Crate Connection Max Lifetime Seconds",
+							"minimum": 1,
+							"maximum": 2147483647
+						}
+					}
+				}
+			}
+		},
+		{
 			"kind": "aws.dynamodb",
 			"type": "targets",
 			"name": "DynamoDB",
@@ -1503,20 +1576,6 @@
 						"title": "Receive Type",
 						"oneOf": [
 							{
-								"title": "With Starting Offset",
-								"properties": {
-									"key": {
-										"type": "string",
-										"const": "with_starting_offset"
-									},
-									"starting_offset": {
-										"type": "string",
-										"title": "Starting Offset",
-										"description": "Set Starting Offset"
-									}
-								}
-							},
-							{
 								"title": "From Timestamp",
 								"properties": {
 									"key": {
@@ -1580,37 +1639,22 @@
 										"maximum": 2147483647
 									}
 								}
+							},
+							{
+								"title": "With Starting Offset",
+								"properties": {
+									"key": {
+										"type": "string",
+										"const": "with_starting_offset"
+									},
+									"starting_offset": {
+										"type": "string",
+										"title": "Starting Offset",
+										"description": "Set Starting Offset"
+									}
+								}
 							}
 						]
-					}
-				},
-				"x-class": "vjsf"
-			}
-		},
-		{
-			"kind": "storage.filesystem",
-			"type": "targets",
-			"name": "File System",
-			"category": "Storage",
-			"provider": "",
-			"tags": [
-				"filesystem",
-				"s3"
-			],
-			"schema": {
-				"required": [
-					"base_path"
-				],
-				"properties": {
-					"kind": {
-						"type": "string",
-						"const": "storage.filesystem"
-					},
-					"base_path": {
-						"type": "string",
-						"title": "Destination Path",
-						"default": "./",
-						"description": "Set Local File System Base Path"
 					}
 				},
 				"x-class": "vjsf"
@@ -1688,6 +1732,35 @@
 						}
 					}
 				}
+			}
+		},
+		{
+			"kind": "storage.filesystem",
+			"type": "targets",
+			"name": "File System",
+			"category": "Storage",
+			"provider": "",
+			"tags": [
+				"filesystem",
+				"s3"
+			],
+			"schema": {
+				"required": [
+					"base_path"
+				],
+				"properties": {
+					"kind": {
+						"type": "string",
+						"const": "storage.filesystem"
+					},
+					"base_path": {
+						"type": "string",
+						"title": "Destination Path",
+						"default": "./",
+						"description": "Set Local File System Base Path"
+					}
+				},
+				"x-class": "vjsf"
 			}
 		},
 		{
@@ -2044,6 +2117,22 @@
 						"title": "Authentication Type",
 						"oneOf": [
 							{
+								"title": "Token",
+								"properties": {
+									"key": {
+										"type": "string",
+										"const": "Token"
+									},
+									"": null,
+									"token": {
+										"type": "string",
+										"title": "Token",
+										"description": "Set Auth Token",
+										"x-display": "textarea"
+									}
+								}
+							},
+							{
 								"title": "Basic",
 								"properties": {
 									"key": {
@@ -2071,22 +2160,6 @@
 										"const": "No Auth"
 									},
 									"": null
-								}
-							},
-							{
-								"title": "Token",
-								"properties": {
-									"key": {
-										"type": "string",
-										"const": "Token"
-									},
-									"": null,
-									"token": {
-										"type": "string",
-										"title": "Token",
-										"description": "Set Auth Token",
-										"x-display": "textarea"
-									}
 								}
 							}
 						]
@@ -5509,18 +5582,6 @@
 							"type": "string",
 							"title": "Token",
 							"description": "Set S3 Token"
-						},
-						"downloader": {
-							"type": "boolean",
-							"title": "Allow Downloads",
-							"default": true,
-							"description": "Create S3 Downloader Instance"
-						},
-						"uploader": {
-							"type": "boolean",
-							"title": "Allow Uploads",
-							"default": true,
-							"description": "Create S3 Uploader Instance"
 						}
 					}
 				}
@@ -6048,8 +6109,8 @@
 					},
 					"address": {
 						"type": "string",
-						"title": "KubeMQ Address",
-						"default": "kubemq-cluster-grpc:50000",
+						"title": "KubeMQ gRPC Service Address",
+						"default": "kubemq-cluster-grpc.kubemq:50000",
 						"description": "Set Kubemq Grpc Endpoint Address"
 					},
 					"channel": {
@@ -6136,8 +6197,8 @@
 					},
 					"address": {
 						"type": "string",
-						"title": "KubeMQ Address",
-						"default": "kubemq-cluster-grpc:50000",
+						"title": "KubeMQ gRPC Service Address",
+						"default": "kubemq-cluster-grpc.kubemq:50000",
 						"description": "Set Kubemq Grpc Endpoint Address"
 					},
 					"channel": {
@@ -6217,8 +6278,8 @@
 					},
 					"address": {
 						"type": "string",
-						"title": "KubeMQ Address",
-						"default": "kubemq-cluster-grpc:50000",
+						"title": "KubeMQ gRPC Service Address",
+						"default": "kubemq-cluster-grpc.kubemq:50000",
 						"description": "Set Kubemq Grpc Endpoint Address"
 					},
 					"channel": {
@@ -6304,8 +6365,8 @@
 					},
 					"address": {
 						"type": "string",
-						"title": "KubeMQ Address",
-						"default": "kubemq-cluster-grpc:50000",
+						"title": "KubeMQ gRPC Service Address",
+						"default": "kubemq-cluster-grpc.kubemq:50000",
 						"description": "Set Kubemq Grpc Endpoint Address"
 					},
 					"channel": {
@@ -6396,8 +6457,8 @@
 					},
 					"address": {
 						"type": "string",
-						"title": "KubeMQ Address",
-						"default": "kubemq-cluster-grpc:50000",
+						"title": "KubeMQ gRPC Service Address",
+						"default": "kubemq-cluster-grpc.kubemq:50000",
 						"description": "Set Kubemq Grpc Endpoint Address"
 					},
 					"channel": {
@@ -6488,8 +6549,8 @@
 					},
 					"address": {
 						"type": "string",
-						"title": "KubeMQ Address",
-						"default": "kubemq-cluster-grpc:50000",
+						"title": "KubeMQ gRPC Service Address",
+						"default": "kubemq-cluster-grpc.kubemq:50000",
 						"description": "Set Kubemq Grpc Endpoint Address"
 					},
 					"channel": {
@@ -6582,8 +6643,8 @@
 					},
 					"address": {
 						"type": "string",
-						"title": "KubeMQ Address",
-						"default": "kubemq-cluster-grpc:50000",
+						"title": "KubeMQ gRPC Service Address",
+						"default": "kubemq-cluster-grpc.kubemq:50000",
 						"description": "Set Kubemq Grpc Endpoint Address"
 					},
 					"channel": {
@@ -6667,8 +6728,8 @@
 					},
 					"address": {
 						"type": "string",
-						"title": "KubeMQ Address",
-						"default": "kubemq-cluster-grpc:50000",
+						"title": "KubeMQ gRPC Service Address",
+						"default": "kubemq-cluster-grpc.kubemq:50000",
 						"description": "Set Kubemq Grpc Endpoint Address"
 					},
 					"channel": {
@@ -6731,8 +6792,8 @@
 					},
 					"address": {
 						"type": "string",
-						"title": "KubeMQ Address",
-						"default": "kubemq-cluster-grpc:50000",
+						"title": "KubeMQ gRPC Service Address",
+						"default": "kubemq-cluster-grpc.kubemq:50000",
 						"description": "Set Kubemq Grpc Endpoint Address"
 					},
 					"channel": {
@@ -6787,8 +6848,8 @@
 					},
 					"address": {
 						"type": "string",
-						"title": "KubeMQ Address",
-						"default": "kubemq-cluster-grpc:50000",
+						"title": "KubeMQ gRPC Service Address",
+						"default": "kubemq-cluster-grpc.kubemq:50000",
 						"description": "Set Kubemq Grpc Endpoint Address"
 					},
 					"channel": {
@@ -6843,8 +6904,8 @@
 					},
 					"address": {
 						"type": "string",
-						"title": "KubeMQ Address",
-						"default": "kubemq-cluster-grpc:50000",
+						"title": "KubeMQ gRPC Service Address",
+						"default": "kubemq-cluster-grpc.kubemq:50000",
 						"description": "Set Kubemq Grpc Endpoint Address"
 					},
 					"channel": {
