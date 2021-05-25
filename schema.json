@@ -1606,37 +1606,6 @@
 						"title": "Receive Type",
 						"oneOf": [
 							{
-								"title": "With Consumer Group",
-								"properties": {
-									"key": {
-										"type": "string",
-										"const": "with_consumer_group"
-									},
-									"consumer_group": {
-										"type": "string",
-										"title": "Consumer Group",
-										"description": "Set The Consumer Group To Collect Events From"
-									}
-								}
-							},
-							{
-								"title": "With Epoch",
-								"properties": {
-									"key": {
-										"type": "string",
-										"const": "with_epoch"
-									},
-									"epoch": {
-										"type": "integer",
-										"title": "Epoch",
-										"default": 0,
-										"description": "Set Timestamp To Collect Events From (Epoch)",
-										"minimum": 0,
-										"maximum": 2147483647
-									}
-								}
-							},
-							{
 								"title": "With Prefetch Count",
 								"properties": {
 									"key": {
@@ -1679,6 +1648,37 @@
 										"title": "Timestamp",
 										"default": 0,
 										"description": "Set Timestamp To Collect Events From (Rfc3339)",
+										"minimum": 0,
+										"maximum": 2147483647
+									}
+								}
+							},
+							{
+								"title": "With Consumer Group",
+								"properties": {
+									"key": {
+										"type": "string",
+										"const": "with_consumer_group"
+									},
+									"consumer_group": {
+										"type": "string",
+										"title": "Consumer Group",
+										"description": "Set The Consumer Group To Collect Events From"
+									}
+								}
+							},
+							{
+								"title": "With Epoch",
+								"properties": {
+									"key": {
+										"type": "string",
+										"const": "with_epoch"
+									},
+									"epoch": {
+										"type": "integer",
+										"title": "Epoch",
+										"default": 0,
+										"description": "Set Timestamp To Collect Events From (Epoch)",
 										"minimum": 0,
 										"maximum": 2147483647
 									}
@@ -1753,6 +1753,11 @@
 				},
 				"then": {
 					"properties": {
+						"backup_folder": {
+							"type": "string",
+							"title": "Set Backup Folder",
+							"description": "Set Backup Folder After Sending Files"
+						},
 						"concurrency": {
 							"type": "integer",
 							"title": "Concurrency",
