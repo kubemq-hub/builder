@@ -117,6 +117,11 @@
 							"type": "string",
 							"title": "Password",
 							"description": "Set Activemq Password"
+						},
+						"default_destination": {
+							"type": "string",
+							"title": "Default Destination",
+							"description": "Set Activemq Default Destination"
 						}
 					}
 				}
@@ -287,9 +292,34 @@
 						"type": "string",
 						"title": "Password",
 						"description": "Set Amazonmq Password"
+					},
+					"setDefaults": {
+						"type": "boolean",
+						"title": "Set Defaults Properties",
+						"default": true,
+						"x-display": "checkbox"
 					}
 				},
-				"x-class": "vjsf"
+				"x-class": "vjsf",
+				"if": {
+					"required": [
+						"setDefaults"
+					],
+					"properties": {
+						"setDefaults": {
+							"const": false
+						}
+					}
+				},
+				"then": {
+					"properties": {
+						"default_destination": {
+							"type": "string",
+							"title": "Default Destination",
+							"description": "Set Amazonmq Default Destination"
+						}
+					}
+				}
 			}
 		},
 		{
@@ -1576,6 +1606,37 @@
 						"title": "Receive Type",
 						"oneOf": [
 							{
+								"title": "With Consumer Group",
+								"properties": {
+									"key": {
+										"type": "string",
+										"const": "with_consumer_group"
+									},
+									"consumer_group": {
+										"type": "string",
+										"title": "Consumer Group",
+										"description": "Set The Consumer Group To Collect Events From"
+									}
+								}
+							},
+							{
+								"title": "With Epoch",
+								"properties": {
+									"key": {
+										"type": "string",
+										"const": "with_epoch"
+									},
+									"epoch": {
+										"type": "integer",
+										"title": "Epoch",
+										"default": 0,
+										"description": "Set Timestamp To Collect Events From (Epoch)",
+										"minimum": 0,
+										"maximum": 2147483647
+									}
+								}
+							},
+							{
 								"title": "With Prefetch Count",
 								"properties": {
 									"key": {
@@ -1618,37 +1679,6 @@
 										"title": "Timestamp",
 										"default": 0,
 										"description": "Set Timestamp To Collect Events From (Rfc3339)",
-										"minimum": 0,
-										"maximum": 2147483647
-									}
-								}
-							},
-							{
-								"title": "With Consumer Group",
-								"properties": {
-									"key": {
-										"type": "string",
-										"const": "with_consumer_group"
-									},
-									"consumer_group": {
-										"type": "string",
-										"title": "Consumer Group",
-										"description": "Set The Consumer Group To Collect Events From"
-									}
-								}
-							},
-							{
-								"title": "With Epoch",
-								"properties": {
-									"key": {
-										"type": "string",
-										"const": "with_epoch"
-									},
-									"epoch": {
-										"type": "integer",
-										"title": "Epoch",
-										"default": 0,
-										"description": "Set Timestamp To Collect Events From (Epoch)",
 										"minimum": 0,
 										"maximum": 2147483647
 									}
@@ -1741,8 +1771,7 @@
 			"category": "Storage",
 			"provider": "",
 			"tags": [
-				"filesystem",
-				"s3"
+				"filesystem"
 			],
 			"schema": {
 				"required": [
@@ -3010,6 +3039,19 @@
 							"type": "string",
 							"title": "Client ID",
 							"description": "Set Mqtt Broker Client Id"
+						},
+						"default_topic": {
+							"type": "string",
+							"title": "Default Topic",
+							"description": "Set Mqtt Default Topic"
+						},
+						"default_qos": {
+							"type": "integer",
+							"title": "Default Qos",
+							"default": 0,
+							"description": "Set Mqtt Default Qos Level",
+							"minimum": 0,
+							"maximum": 2
 						}
 					}
 				}
@@ -5091,9 +5133,45 @@
 						"type": "string",
 						"title": "Url",
 						"description": "Set Rabbitmq Url Connection String"
+					},
+					"setDefaults": {
+						"type": "boolean",
+						"title": "Set Defaults Properties",
+						"default": true,
+						"x-display": "checkbox"
 					}
 				},
-				"x-class": "vjsf"
+				"x-class": "vjsf",
+				"if": {
+					"required": [
+						"setDefaults"
+					],
+					"properties": {
+						"setDefaults": {
+							"const": false
+						}
+					}
+				},
+				"then": {
+					"properties": {
+						"default_exchange": {
+							"type": "string",
+							"title": "Default Exchange",
+							"description": "Set Default Exchange For Routing"
+						},
+						"default_topic": {
+							"type": "string",
+							"title": "Default Topic",
+							"description": "Set Default Topic For Routing"
+						},
+						"default_persistence": {
+							"type": "boolean",
+							"title": "Default Persistence",
+							"default": true,
+							"description": "Set Default Persistence For Routed Message"
+						}
+					}
+				}
 			}
 		},
 		{
@@ -5743,6 +5821,11 @@
 							"type": "string",
 							"title": "Dead Letter Queue",
 							"description": "Set Sqs Dead Letter Queue"
+						},
+						"default_queue": {
+							"type": "string",
+							"title": "Default Queue",
+							"description": "Set Sqs Default Queue"
 						}
 					}
 				}
