@@ -1576,6 +1576,37 @@
 						"title": "Receive Type",
 						"oneOf": [
 							{
+								"title": "With Prefetch Count",
+								"properties": {
+									"key": {
+										"type": "string",
+										"const": "with_prefetch_count"
+									},
+									"prefetch_count": {
+										"type": "integer",
+										"title": "Prefetch Count",
+										"default": 0,
+										"description": "Set Prefetch Count To Collect Events From",
+										"minimum": 0,
+										"maximum": 2147483647
+									}
+								}
+							},
+							{
+								"title": "With Starting Offset",
+								"properties": {
+									"key": {
+										"type": "string",
+										"const": "with_starting_offset"
+									},
+									"starting_offset": {
+										"type": "string",
+										"title": "Starting Offset",
+										"description": "Set Starting Offset"
+									}
+								}
+							},
+							{
 								"title": "From Timestamp",
 								"properties": {
 									"key": {
@@ -1620,37 +1651,6 @@
 										"description": "Set Timestamp To Collect Events From (Epoch)",
 										"minimum": 0,
 										"maximum": 2147483647
-									}
-								}
-							},
-							{
-								"title": "With Prefetch Count",
-								"properties": {
-									"key": {
-										"type": "string",
-										"const": "with_prefetch_count"
-									},
-									"prefetch_count": {
-										"type": "integer",
-										"title": "Prefetch Count",
-										"default": 0,
-										"description": "Set Prefetch Count To Collect Events From",
-										"minimum": 0,
-										"maximum": 2147483647
-									}
-								}
-							},
-							{
-								"title": "With Starting Offset",
-								"properties": {
-									"key": {
-										"type": "string",
-										"const": "with_starting_offset"
-									},
-									"starting_offset": {
-										"type": "string",
-										"title": "Starting Offset",
-										"description": "Set Starting Offset"
 									}
 								}
 							}
@@ -2117,22 +2117,6 @@
 						"title": "Authentication Type",
 						"oneOf": [
 							{
-								"title": "Token",
-								"properties": {
-									"key": {
-										"type": "string",
-										"const": "Token"
-									},
-									"": null,
-									"token": {
-										"type": "string",
-										"title": "Token",
-										"description": "Set Auth Token",
-										"x-display": "textarea"
-									}
-								}
-							},
-							{
 								"title": "Basic",
 								"properties": {
 									"key": {
@@ -2160,6 +2144,22 @@
 										"const": "No Auth"
 									},
 									"": null
+								}
+							},
+							{
+								"title": "Token",
+								"properties": {
+									"key": {
+										"type": "string",
+										"const": "Token"
+									},
+									"": null,
+									"token": {
+										"type": "string",
+										"title": "Token",
+										"description": "Set Auth Token",
+										"x-display": "textarea"
+									}
 								}
 							}
 						]
