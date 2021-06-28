@@ -1377,6 +1377,67 @@
 			}
 		},
 		{
+			"kind": "aws.elasticsearch",
+			"type": "targets",
+			"name": "Elasticsearch",
+			"category": "Store",
+			"provider": "AWS",
+			"tags": [
+				"db",
+				"log",
+				"cloud",
+				"managed"
+			],
+			"schema": {
+				"required": [
+					"aws_key",
+					"aws_secret_key"
+				],
+				"properties": {
+					"kind": {
+						"type": "string",
+						"const": "aws.elasticsearch"
+					},
+					"aws_key": {
+						"type": "string",
+						"title": "Aws Key",
+						"description": "Set Elastic Search Aws Key"
+					},
+					"aws_secret_key": {
+						"type": "string",
+						"title": "Aws Secret Key",
+						"description": "Set Elastic Search Aws Secret Key"
+					},
+					"setDefaults": {
+						"type": "boolean",
+						"title": "Set Defaults Properties",
+						"default": true,
+						"x-display": "checkbox"
+					}
+				},
+				"x-class": "vjsf",
+				"if": {
+					"required": [
+						"setDefaults"
+					],
+					"properties": {
+						"setDefaults": {
+							"const": false
+						}
+					}
+				},
+				"then": {
+					"properties": {
+						"token": {
+							"type": "string",
+							"title": "Token",
+							"description": "Set Elastic Search Aws Token"
+						}
+					}
+				}
+			}
+		},
+		{
 			"kind": "stores.elasticsearch",
 			"type": "targets",
 			"name": "Elasticsearch",
@@ -1435,67 +1496,6 @@
 							"title": "Use Sniff",
 							"default": false,
 							"description": "Set Elastic Search Sniff Mode"
-						}
-					}
-				}
-			}
-		},
-		{
-			"kind": "aws.elasticsearch",
-			"type": "targets",
-			"name": "Elasticsearch",
-			"category": "Store",
-			"provider": "AWS",
-			"tags": [
-				"db",
-				"log",
-				"cloud",
-				"managed"
-			],
-			"schema": {
-				"required": [
-					"aws_key",
-					"aws_secret_key"
-				],
-				"properties": {
-					"kind": {
-						"type": "string",
-						"const": "aws.elasticsearch"
-					},
-					"aws_key": {
-						"type": "string",
-						"title": "Aws Key",
-						"description": "Set Elastic Search Aws Key"
-					},
-					"aws_secret_key": {
-						"type": "string",
-						"title": "Aws Secret Key",
-						"description": "Set Elastic Search Aws Secret Key"
-					},
-					"setDefaults": {
-						"type": "boolean",
-						"title": "Set Defaults Properties",
-						"default": true,
-						"x-display": "checkbox"
-					}
-				},
-				"x-class": "vjsf",
-				"if": {
-					"required": [
-						"setDefaults"
-					],
-					"properties": {
-						"setDefaults": {
-							"const": false
-						}
-					}
-				},
-				"then": {
-					"properties": {
-						"token": {
-							"type": "string",
-							"title": "Token",
-							"description": "Set Elastic Search Aws Token"
 						}
 					}
 				}
@@ -1606,37 +1606,6 @@
 						"title": "Receive Type",
 						"oneOf": [
 							{
-								"title": "With Prefetch Count",
-								"properties": {
-									"key": {
-										"type": "string",
-										"const": "with_prefetch_count"
-									},
-									"prefetch_count": {
-										"type": "integer",
-										"title": "Prefetch Count",
-										"default": 0,
-										"description": "Set Prefetch Count To Collect Events From",
-										"minimum": 0,
-										"maximum": 2147483647
-									}
-								}
-							},
-							{
-								"title": "With Starting Offset",
-								"properties": {
-									"key": {
-										"type": "string",
-										"const": "with_starting_offset"
-									},
-									"starting_offset": {
-										"type": "string",
-										"title": "Starting Offset",
-										"description": "Set Starting Offset"
-									}
-								}
-							},
-							{
 								"title": "From Timestamp",
 								"properties": {
 									"key": {
@@ -1683,6 +1652,37 @@
 										"maximum": 2147483647
 									}
 								}
+							},
+							{
+								"title": "With Prefetch Count",
+								"properties": {
+									"key": {
+										"type": "string",
+										"const": "with_prefetch_count"
+									},
+									"prefetch_count": {
+										"type": "integer",
+										"title": "Prefetch Count",
+										"default": 0,
+										"description": "Set Prefetch Count To Collect Events From",
+										"minimum": 0,
+										"maximum": 2147483647
+									}
+								}
+							},
+							{
+								"title": "With Starting Offset",
+								"properties": {
+									"key": {
+										"type": "string",
+										"const": "with_starting_offset"
+									},
+									"starting_offset": {
+										"type": "string",
+										"title": "Starting Offset",
+										"description": "Set Starting Offset"
+									}
+								}
 							}
 						]
 					}
@@ -1720,12 +1720,15 @@
 						"type": "string",
 						"title": "Sync Target Type",
 						"default": "aws",
-						"description": "Set Remote Target Bucket Type",
+						"description": "Set Remote Target Type",
 						"enum": [
 							"aws",
 							"gcp",
 							"minio",
-							"filesystem"
+							"filesystem",
+							"hdfs",
+							"azure",
+							"pass-through"
 						]
 					},
 					"bucket_name": {
@@ -1763,6 +1766,13 @@
 							"title": "Concurrency",
 							"default": 1,
 							"description": "Set Execution Concurrency",
+							"minimum": 0
+						},
+						"scan_interval": {
+							"type": "integer",
+							"title": "Scan Interval",
+							"default": 5,
+							"description": "Set Scan Interval In Seconds",
 							"minimum": 0
 						}
 					}
@@ -2904,6 +2914,82 @@
 		},
 		{
 			"kind": "messaging.mqtt",
+			"type": "targets",
+			"name": "MQTT",
+			"category": "Messaging",
+			"provider": "",
+			"tags": [
+				"iot",
+				"pub/sub"
+			],
+			"schema": {
+				"required": [
+					"host"
+				],
+				"properties": {
+					"kind": {
+						"type": "string",
+						"const": "messaging.mqtt"
+					},
+					"host": {
+						"type": "string",
+						"title": "Host Address",
+						"description": "Set Mqtt Broker Host"
+					},
+					"setDefaults": {
+						"type": "boolean",
+						"title": "Set Defaults Properties",
+						"default": true,
+						"x-display": "checkbox"
+					}
+				},
+				"x-class": "vjsf",
+				"if": {
+					"required": [
+						"setDefaults"
+					],
+					"properties": {
+						"setDefaults": {
+							"const": false
+						}
+					}
+				},
+				"then": {
+					"properties": {
+						"username": {
+							"type": "string",
+							"title": "Username",
+							"description": "Set Mqtt Broker Username"
+						},
+						"password": {
+							"type": "string",
+							"title": "Password",
+							"description": "Set Mqtt Broker Password"
+						},
+						"client_id": {
+							"type": "string",
+							"title": "Client ID",
+							"description": "Set Mqtt Broker Client Id"
+						},
+						"default_topic": {
+							"type": "string",
+							"title": "Default Topic",
+							"description": "Set Mqtt Default Topic"
+						},
+						"default_qos": {
+							"type": "integer",
+							"title": "Default Qos",
+							"default": 0,
+							"description": "Set Mqtt Default Qos Level",
+							"minimum": 0,
+							"maximum": 2
+						}
+					}
+				}
+			}
+		},
+		{
+			"kind": "messaging.mqtt",
 			"type": "sources",
 			"name": "MQTT",
 			"category": "Messaging",
@@ -2987,149 +3073,6 @@
 			}
 		},
 		{
-			"kind": "messaging.mqtt",
-			"type": "targets",
-			"name": "MQTT",
-			"category": "Messaging",
-			"provider": "",
-			"tags": [
-				"iot",
-				"pub/sub"
-			],
-			"schema": {
-				"required": [
-					"host"
-				],
-				"properties": {
-					"kind": {
-						"type": "string",
-						"const": "messaging.mqtt"
-					},
-					"host": {
-						"type": "string",
-						"title": "Host Address",
-						"description": "Set Mqtt Broker Host"
-					},
-					"setDefaults": {
-						"type": "boolean",
-						"title": "Set Defaults Properties",
-						"default": true,
-						"x-display": "checkbox"
-					}
-				},
-				"x-class": "vjsf",
-				"if": {
-					"required": [
-						"setDefaults"
-					],
-					"properties": {
-						"setDefaults": {
-							"const": false
-						}
-					}
-				},
-				"then": {
-					"properties": {
-						"username": {
-							"type": "string",
-							"title": "Username",
-							"description": "Set Mqtt Broker Username"
-						},
-						"password": {
-							"type": "string",
-							"title": "Password",
-							"description": "Set Mqtt Broker Password"
-						},
-						"client_id": {
-							"type": "string",
-							"title": "Client ID",
-							"description": "Set Mqtt Broker Client Id"
-						},
-						"default_topic": {
-							"type": "string",
-							"title": "Default Topic",
-							"description": "Set Mqtt Default Topic"
-						},
-						"default_qos": {
-							"type": "integer",
-							"title": "Default Qos",
-							"default": 0,
-							"description": "Set Mqtt Default Qos Level",
-							"minimum": 0,
-							"maximum": 2
-						}
-					}
-				}
-			}
-		},
-		{
-			"kind": "aws.msk",
-			"type": "targets",
-			"name": "MSK",
-			"category": "Messaging",
-			"provider": "AWS",
-			"tags": [
-				"kafka",
-				"streaming",
-				"cloud",
-				"managed"
-			],
-			"schema": {
-				"required": [
-					"brokers",
-					"topic"
-				],
-				"properties": {
-					"kind": {
-						"type": "string",
-						"const": "aws.msk"
-					},
-					"brokers": {
-						"type": "string",
-						"title": "Brokers Address",
-						"default": "localhost:9092",
-						"description": "Set Msk Brokers List"
-					},
-					"setDefaults": {
-						"type": "boolean",
-						"title": "Set Defaults Properties",
-						"default": true,
-						"x-display": "checkbox"
-					},
-					"topic": {
-						"type": "string",
-						"title": "Topic",
-						"description": "Set Msk Topic"
-					}
-				},
-				"x-class": "vjsf",
-				"if": {
-					"required": [
-						"setDefaults"
-					],
-					"properties": {
-						"setDefaults": {
-							"const": false
-						}
-					}
-				},
-				"then": {
-					"properties": {
-						"sasl_username": {
-							"type": "string",
-							"title": "SASL Username",
-							"description": "Set Msk Username"
-						},
-						"sasl_password": {
-							"type": "string",
-							"title": "SASL Password",
-							"description": "Set Msk Password"
-						}
-					}
-				}
-			}
-		},
-		{
 			"kind": "aws.msk",
 			"type": "sources",
 			"name": "MSK",
@@ -3203,6 +3146,148 @@
 							"type": "string",
 							"title": "SASL Password",
 							"description": "Set Saal Password"
+						}
+					}
+				}
+			}
+		},
+		{
+			"kind": "aws.msk",
+			"type": "targets",
+			"name": "MSK",
+			"category": "Messaging",
+			"provider": "AWS",
+			"tags": [
+				"kafka",
+				"streaming",
+				"cloud",
+				"managed"
+			],
+			"schema": {
+				"required": [
+					"brokers",
+					"topic"
+				],
+				"properties": {
+					"kind": {
+						"type": "string",
+						"const": "aws.msk"
+					},
+					"brokers": {
+						"type": "string",
+						"title": "Brokers Address",
+						"default": "localhost:9092",
+						"description": "Set Msk Brokers List"
+					},
+					"setDefaults": {
+						"type": "boolean",
+						"title": "Set Defaults Properties",
+						"default": true,
+						"x-display": "checkbox"
+					},
+					"topic": {
+						"type": "string",
+						"title": "Topic",
+						"description": "Set Msk Topic"
+					}
+				},
+				"x-class": "vjsf",
+				"if": {
+					"required": [
+						"setDefaults"
+					],
+					"properties": {
+						"setDefaults": {
+							"const": false
+						}
+					}
+				},
+				"then": {
+					"properties": {
+						"sasl_username": {
+							"type": "string",
+							"title": "SASL Username",
+							"description": "Set Msk Username"
+						},
+						"sasl_password": {
+							"type": "string",
+							"title": "SASL Password",
+							"description": "Set Msk Password"
+						}
+					}
+				}
+			}
+		},
+		{
+			"kind": "azure.stores.azuresql",
+			"type": "targets",
+			"name": "MSSQL",
+			"category": "Store",
+			"provider": "Azure",
+			"tags": [
+				"sql",
+				"db",
+				"cloud",
+				"managed"
+			],
+			"schema": {
+				"required": [
+					"connection"
+				],
+				"properties": {
+					"kind": {
+						"type": "string",
+						"const": "azure.stores.azuresql"
+					},
+					"connection": {
+						"type": "string",
+						"title": "Connection String",
+						"default": "server=server.net;user id=test;password=test;port=1433;database=initial_db;",
+						"description": "Set Azuresql Connection String"
+					},
+					"setDefaults": {
+						"type": "boolean",
+						"title": "Set Defaults Properties",
+						"default": true,
+						"x-display": "checkbox"
+					}
+				},
+				"x-class": "vjsf",
+				"if": {
+					"required": [
+						"setDefaults"
+					],
+					"properties": {
+						"setDefaults": {
+							"const": false
+						}
+					}
+				},
+				"then": {
+					"properties": {
+						"max_idle_connections": {
+							"type": "integer",
+							"title": "Max Idle Connections",
+							"default": 10,
+							"description": "Set Azuresql Max Idle Connections",
+							"minimum": 1,
+							"maximum": 2147483647
+						},
+						"max_open_connections": {
+							"type": "integer",
+							"title": "Max Open Connections",
+							"default": 100,
+							"description": "Set Azuresql Max Open Connections",
+							"minimum": 1,
+							"maximum": 2147483647
+						},
+						"connection_max_lifetime_seconds": {
+							"type": "integer",
+							"title": "Connection Lifetime (Seconds)",
+							"default": 3600,
+							"description": "Set Azuresql Connection Max Lifetime Seconds",
+							"minimum": 1,
+							"maximum": 2147483647
 						}
 					}
 				}
@@ -3349,81 +3434,6 @@
 							"title": "Connection Lifetime (Seconds)",
 							"default": 3600,
 							"description": "Set Mssql Connection Max Lifetime Seconds",
-							"minimum": 1,
-							"maximum": 2147483647
-						}
-					}
-				}
-			}
-		},
-		{
-			"kind": "azure.stores.azuresql",
-			"type": "targets",
-			"name": "MSSQL",
-			"category": "Store",
-			"provider": "Azure",
-			"tags": [
-				"sql",
-				"db",
-				"cloud",
-				"managed"
-			],
-			"schema": {
-				"required": [
-					"connection"
-				],
-				"properties": {
-					"kind": {
-						"type": "string",
-						"const": "azure.stores.azuresql"
-					},
-					"connection": {
-						"type": "string",
-						"title": "Connection String",
-						"default": "server=server.net;user id=test;password=test;port=1433;database=initial_db;",
-						"description": "Set Azuresql Connection String"
-					},
-					"setDefaults": {
-						"type": "boolean",
-						"title": "Set Defaults Properties",
-						"default": true,
-						"x-display": "checkbox"
-					}
-				},
-				"x-class": "vjsf",
-				"if": {
-					"required": [
-						"setDefaults"
-					],
-					"properties": {
-						"setDefaults": {
-							"const": false
-						}
-					}
-				},
-				"then": {
-					"properties": {
-						"max_idle_connections": {
-							"type": "integer",
-							"title": "Max Idle Connections",
-							"default": 10,
-							"description": "Set Azuresql Max Idle Connections",
-							"minimum": 1,
-							"maximum": 2147483647
-						},
-						"max_open_connections": {
-							"type": "integer",
-							"title": "Max Open Connections",
-							"default": 100,
-							"description": "Set Azuresql Max Open Connections",
-							"minimum": 1,
-							"maximum": 2147483647
-						},
-						"connection_max_lifetime_seconds": {
-							"type": "integer",
-							"title": "Connection Lifetime (Seconds)",
-							"default": 3600,
-							"description": "Set Azuresql Connection Max Lifetime Seconds",
 							"minimum": 1,
 							"maximum": 2147483647
 						}
@@ -3703,6 +3713,113 @@
 			}
 		},
 		{
+			"kind": "storage.minio",
+			"type": "sources",
+			"name": "Minio",
+			"category": "Storage",
+			"provider": "",
+			"tags": [
+				"s3"
+			],
+			"schema": {
+				"required": [
+					"endpoint",
+					"bucket_name",
+					"folders",
+					"target_type"
+				],
+				"properties": {
+					"kind": {
+						"type": "string",
+						"const": "storage.minio"
+					},
+					"endpoint": {
+						"type": "string",
+						"title": "Endpoint",
+						"description": "Set Minio Endpoint Address"
+					},
+					"setDefaults": {
+						"type": "boolean",
+						"title": "Set Defaults Properties",
+						"default": true,
+						"x-display": "checkbox"
+					},
+					"bucket_name": {
+						"type": "string",
+						"title": "Bucket Source",
+						"description": "Set Remote Target Bucket/Dir Name"
+					},
+					"folders": {
+						"type": "string",
+						"title": "Sync Folders Names",
+						"default": "/",
+						"description": "Set Bucket Folders Directory To Scan"
+					},
+					"target_type": {
+						"type": "string",
+						"title": "Sync Target Type",
+						"default": "filesystem",
+						"description": "Set Remote Target Bucket Type",
+						"enum": [
+							"aws",
+							"gcp",
+							"minio",
+							"filesystem",
+							"hdfs",
+							"azure",
+							"pass-through"
+						]
+					}
+				},
+				"x-class": "vjsf",
+				"if": {
+					"required": [
+						"setDefaults"
+					],
+					"properties": {
+						"setDefaults": {
+							"const": false
+						}
+					}
+				},
+				"then": {
+					"properties": {
+						"use_ssl": {
+							"type": "boolean",
+							"title": "USE SSL",
+							"default": true,
+							"description": "Set Minio Ssl Connection"
+						},
+						"access_key_id": {
+							"type": "string",
+							"title": "Access Key ID",
+							"description": "Set Minio Access Key Id"
+						},
+						"secret_access_key": {
+							"type": "string",
+							"title": "Access Key Secret",
+							"description": "Set Minio Secret Access Key",
+							"x-display": "textarea"
+						},
+						"concurrency": {
+							"type": "integer",
+							"title": "Concurrency",
+							"default": 1,
+							"description": "Set Execution Concurrency",
+							"minimum": 0
+						},
+						"scan_interval": {
+							"type": "integer",
+							"title": "Scan Interval",
+							"default": 5,
+							"description": "Set Scan Interval In Seconds",
+							"minimum": 0
+						}
+					}
+				}
+			}
+		},
+		{
 			"kind": "stores.mongodb",
 			"type": "targets",
 			"name": "MongoDB",
@@ -3802,6 +3919,153 @@
 							"default": 90,
 							"description": "Set Mongodb Operation Timeout Seconds",
 							"minimum": 0,
+							"maximum": 2147483647
+						}
+					}
+				}
+			}
+		},
+		{
+			"kind": "stores.mysql",
+			"type": "targets",
+			"name": "MySQL",
+			"category": "Store",
+			"provider": "",
+			"tags": [
+				"db",
+				"sql"
+			],
+			"schema": {
+				"required": [
+					"connection"
+				],
+				"properties": {
+					"kind": {
+						"type": "string",
+						"const": "stores.mysql"
+					},
+					"connection": {
+						"type": "string",
+						"title": "Connection String",
+						"description": "Set Mysql Connection String"
+					},
+					"setDefaults": {
+						"type": "boolean",
+						"title": "Set Defaults Properties",
+						"default": true,
+						"x-display": "checkbox"
+					}
+				},
+				"x-class": "vjsf",
+				"if": {
+					"required": [
+						"setDefaults"
+					],
+					"properties": {
+						"setDefaults": {
+							"const": false
+						}
+					}
+				},
+				"then": {
+					"properties": {
+						"max_idle_connections": {
+							"type": "integer",
+							"title": "Max Idle Connections",
+							"default": 10,
+							"description": "Set Mysql Max Idle Connections",
+							"minimum": 1,
+							"maximum": 2147483647
+						},
+						"max_open_connections": {
+							"type": "integer",
+							"title": "Max Open Connections",
+							"default": 100,
+							"description": "Set Mysql Max Open Connections",
+							"minimum": 1,
+							"maximum": 2147483647
+						},
+						"connection_max_lifetime_seconds": {
+							"type": "integer",
+							"title": "Connection Lifetime (Seconds)",
+							"default": 3600,
+							"description": "Set Mysql Connection Max Lifetime Seconds",
+							"minimum": 1,
+							"maximum": 2147483647
+						}
+					}
+				}
+			}
+		},
+		{
+			"kind": "azure.stores.mysql",
+			"type": "targets",
+			"name": "MySQL",
+			"category": "Store",
+			"provider": "Azure",
+			"tags": [
+				"sql",
+				"db",
+				"cloud",
+				"managed"
+			],
+			"schema": {
+				"required": [
+					"connection"
+				],
+				"properties": {
+					"kind": {
+						"type": "string",
+						"const": "azure.stores.mysql"
+					},
+					"connection": {
+						"type": "string",
+						"title": "Connection lifetime String",
+						"default": "root:mysql@(localhost:3306)/store?charset=utf8\u0026parseTime=True\u0026loc=Local",
+						"description": "Set Mysql Connection String"
+					},
+					"setDefaults": {
+						"type": "boolean",
+						"title": "Set Defaults Properties",
+						"default": true,
+						"x-display": "checkbox"
+					}
+				},
+				"x-class": "vjsf",
+				"if": {
+					"required": [
+						"setDefaults"
+					],
+					"properties": {
+						"setDefaults": {
+							"const": false
+						}
+					}
+				},
+				"then": {
+					"properties": {
+						"max_idle_connections": {
+							"type": "integer",
+							"title": "Max Idle Connections",
+							"default": 10,
+							"description": "Set Mysql Max Idle Connections",
+							"minimum": 1,
+							"maximum": 2147483647
+						},
+						"max_open_connections": {
+							"type": "integer",
+							"title": "Max Open Connections",
+							"default": 100,
+							"description": "Set Mysql Max Open Connections",
+							"minimum": 1,
+							"maximum": 2147483647
+						},
+						"connection_max_lifetime_seconds": {
+							"type": "integer",
+							"title": "Connection Lifetime (Seconds)",
+							"default": 3600,
+							"description": "Set Mysql Connection Max Lifetime Seconds",
+							"minimum": 1,
 							"maximum": 2147483647
 						}
 					}
@@ -4055,250 +4319,6 @@
 			}
 		},
 		{
-			"kind": "stores.mysql",
-			"type": "targets",
-			"name": "MySQL",
-			"category": "Store",
-			"provider": "",
-			"tags": [
-				"db",
-				"sql"
-			],
-			"schema": {
-				"required": [
-					"connection"
-				],
-				"properties": {
-					"kind": {
-						"type": "string",
-						"const": "stores.mysql"
-					},
-					"connection": {
-						"type": "string",
-						"title": "Connection String",
-						"description": "Set Mysql Connection String"
-					},
-					"setDefaults": {
-						"type": "boolean",
-						"title": "Set Defaults Properties",
-						"default": true,
-						"x-display": "checkbox"
-					}
-				},
-				"x-class": "vjsf",
-				"if": {
-					"required": [
-						"setDefaults"
-					],
-					"properties": {
-						"setDefaults": {
-							"const": false
-						}
-					}
-				},
-				"then": {
-					"properties": {
-						"max_idle_connections": {
-							"type": "integer",
-							"title": "Max Idle Connections",
-							"default": 10,
-							"description": "Set Mysql Max Idle Connections",
-							"minimum": 1,
-							"maximum": 2147483647
-						},
-						"max_open_connections": {
-							"type": "integer",
-							"title": "Max Open Connections",
-							"default": 100,
-							"description": "Set Mysql Max Open Connections",
-							"minimum": 1,
-							"maximum": 2147483647
-						},
-						"connection_max_lifetime_seconds": {
-							"type": "integer",
-							"title": "Connection Lifetime (Seconds)",
-							"default": 3600,
-							"description": "Set Mysql Connection Max Lifetime Seconds",
-							"minimum": 1,
-							"maximum": 2147483647
-						}
-					}
-				}
-			}
-		},
-		{
-			"kind": "azure.stores.mysql",
-			"type": "targets",
-			"name": "MySQL",
-			"category": "Store",
-			"provider": "Azure",
-			"tags": [
-				"sql",
-				"db",
-				"cloud",
-				"managed"
-			],
-			"schema": {
-				"required": [
-					"connection"
-				],
-				"properties": {
-					"kind": {
-						"type": "string",
-						"const": "azure.stores.mysql"
-					},
-					"connection": {
-						"type": "string",
-						"title": "Connection lifetime String",
-						"default": "root:mysql@(localhost:3306)/store?charset=utf8\u0026parseTime=True\u0026loc=Local",
-						"description": "Set Mysql Connection String"
-					},
-					"setDefaults": {
-						"type": "boolean",
-						"title": "Set Defaults Properties",
-						"default": true,
-						"x-display": "checkbox"
-					}
-				},
-				"x-class": "vjsf",
-				"if": {
-					"required": [
-						"setDefaults"
-					],
-					"properties": {
-						"setDefaults": {
-							"const": false
-						}
-					}
-				},
-				"then": {
-					"properties": {
-						"max_idle_connections": {
-							"type": "integer",
-							"title": "Max Idle Connections",
-							"default": 10,
-							"description": "Set Mysql Max Idle Connections",
-							"minimum": 1,
-							"maximum": 2147483647
-						},
-						"max_open_connections": {
-							"type": "integer",
-							"title": "Max Open Connections",
-							"default": 100,
-							"description": "Set Mysql Max Open Connections",
-							"minimum": 1,
-							"maximum": 2147483647
-						},
-						"connection_max_lifetime_seconds": {
-							"type": "integer",
-							"title": "Connection Lifetime (Seconds)",
-							"default": 3600,
-							"description": "Set Mysql Connection Max Lifetime Seconds",
-							"minimum": 1,
-							"maximum": 2147483647
-						}
-					}
-				}
-			}
-		},
-		{
-			"kind": "messaging.nats",
-			"type": "targets",
-			"name": "NATS",
-			"category": "Messaging",
-			"provider": "",
-			"tags": [
-				"queue",
-				"pub/sub"
-			],
-			"schema": {
-				"required": [
-					"url",
-					"tls"
-				],
-				"properties": {
-					"kind": {
-						"type": "string",
-						"const": "messaging.nats"
-					},
-					"url": {
-						"type": "string",
-						"title": "Connection String",
-						"description": "Set Nats Url Connection"
-					},
-					"setDefaults": {
-						"type": "boolean",
-						"title": "Set Defaults Properties",
-						"default": true,
-						"x-display": "checkbox"
-					},
-					"tls": {
-						"type": "object",
-						"title": "Tls",
-						"oneOf": [
-							{
-								"title": "True",
-								"properties": {
-									"key": {
-										"type": "string",
-										"const": "true"
-									},
-									"cert_key": {
-										"type": "string",
-										"title": "Certification Key",
-										"description": "Set Certificate Key",
-										"x-display": "textarea"
-									},
-									"Certification File": {
-										"type": "string",
-										"title": "Certification File",
-										"description": "Set Certificate File",
-										"x-display": "textarea"
-									}
-								}
-							}
-						]
-					}
-				},
-				"x-class": "vjsf",
-				"if": {
-					"required": [
-						"setDefaults"
-					],
-					"properties": {
-						"setDefaults": {
-							"const": false
-						}
-					}
-				},
-				"then": {
-					"properties": {
-						"username": {
-							"type": "string",
-							"title": "Username",
-							"description": "Set Username"
-						},
-						"password": {
-							"type": "string",
-							"title": "Password",
-							"description": "Set Password"
-						},
-						"token": {
-							"type": "string",
-							"title": "Token",
-							"description": "Set Token"
-						},
-						"tls": {
-							"type": "boolean",
-							"title": "Use TLS",
-							"default": false,
-							"description": "Set If Use Tls"
-						}
-					}
-				}
-			}
-		},
-		{
 			"kind": "messaging.nats",
 			"type": "sources",
 			"name": "NATS",
@@ -4401,6 +4421,103 @@
 						"tls": {
 							"type": "boolean",
 							"title": "TLS",
+							"default": false,
+							"description": "Set If Use Tls"
+						}
+					}
+				}
+			}
+		},
+		{
+			"kind": "messaging.nats",
+			"type": "targets",
+			"name": "NATS",
+			"category": "Messaging",
+			"provider": "",
+			"tags": [
+				"queue",
+				"pub/sub"
+			],
+			"schema": {
+				"required": [
+					"url",
+					"tls"
+				],
+				"properties": {
+					"kind": {
+						"type": "string",
+						"const": "messaging.nats"
+					},
+					"url": {
+						"type": "string",
+						"title": "Connection String",
+						"description": "Set Nats Url Connection"
+					},
+					"setDefaults": {
+						"type": "boolean",
+						"title": "Set Defaults Properties",
+						"default": true,
+						"x-display": "checkbox"
+					},
+					"tls": {
+						"type": "object",
+						"title": "Tls",
+						"oneOf": [
+							{
+								"title": "True",
+								"properties": {
+									"key": {
+										"type": "string",
+										"const": "true"
+									},
+									"cert_key": {
+										"type": "string",
+										"title": "Certification Key",
+										"description": "Set Certificate Key",
+										"x-display": "textarea"
+									},
+									"Certification File": {
+										"type": "string",
+										"title": "Certification File",
+										"description": "Set Certificate File",
+										"x-display": "textarea"
+									}
+								}
+							}
+						]
+					}
+				},
+				"x-class": "vjsf",
+				"if": {
+					"required": [
+						"setDefaults"
+					],
+					"properties": {
+						"setDefaults": {
+							"const": false
+						}
+					}
+				},
+				"then": {
+					"properties": {
+						"username": {
+							"type": "string",
+							"title": "Username",
+							"description": "Set Username"
+						},
+						"password": {
+							"type": "string",
+							"title": "Password",
+							"description": "Set Password"
+						},
+						"token": {
+							"type": "string",
+							"title": "Token",
+							"description": "Set Token"
+						},
+						"tls": {
+							"type": "boolean",
+							"title": "Use TLS",
 							"default": false,
 							"description": "Set If Use Tls"
 						}
@@ -4514,6 +4631,153 @@
 							"title": "Connection Lifetime (Seconds)",
 							"default": 3600,
 							"description": "Set Percona Connection Max Lifetime Seconds",
+							"minimum": 1,
+							"maximum": 2147483647
+						}
+					}
+				}
+			}
+		},
+		{
+			"kind": "azure.stores.postgres",
+			"type": "targets",
+			"name": "Postgres",
+			"category": "Store",
+			"provider": "Azure",
+			"tags": [
+				"sql",
+				"db",
+				"cloud",
+				"managed"
+			],
+			"schema": {
+				"required": [
+					"connection"
+				],
+				"properties": {
+					"kind": {
+						"type": "string",
+						"const": "azure.stores.postgres"
+					},
+					"connection": {
+						"type": "string",
+						"title": "Connection String",
+						"default": "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable",
+						"description": "Set Postgres Connection String"
+					},
+					"setDefaults": {
+						"type": "boolean",
+						"title": "Set Defaults Properties",
+						"default": true,
+						"x-display": "checkbox"
+					}
+				},
+				"x-class": "vjsf",
+				"if": {
+					"required": [
+						"setDefaults"
+					],
+					"properties": {
+						"setDefaults": {
+							"const": false
+						}
+					}
+				},
+				"then": {
+					"properties": {
+						"max_idle_connections": {
+							"type": "integer",
+							"title": "Max Idle Connections",
+							"default": 10,
+							"description": "Set Postgres Max Idle Connections",
+							"minimum": 1,
+							"maximum": 2147483647
+						},
+						"max_open_connections": {
+							"type": "integer",
+							"title": "Max Open Connections",
+							"default": 100,
+							"description": "Set Postgres Max Open Connections",
+							"minimum": 1,
+							"maximum": 2147483647
+						},
+						"connection_max_lifetime_seconds": {
+							"type": "integer",
+							"title": "Connection Lifetime (Seconds)",
+							"default": 3600,
+							"description": "Set Postgres Connection Max Lifetime Seconds",
+							"minimum": 1,
+							"maximum": 2147483647
+						}
+					}
+				}
+			}
+		},
+		{
+			"kind": "stores.postgres",
+			"type": "targets",
+			"name": "Postgres",
+			"category": "Store",
+			"provider": "",
+			"tags": [
+				"db",
+				"sql"
+			],
+			"schema": {
+				"required": [
+					"connection"
+				],
+				"properties": {
+					"kind": {
+						"type": "string",
+						"const": "stores.postgres"
+					},
+					"connection": {
+						"type": "string",
+						"title": "Connection String",
+						"description": "Set Postgres Connection String"
+					},
+					"setDefaults": {
+						"type": "boolean",
+						"title": "Set Defaults Properties",
+						"default": true,
+						"x-display": "checkbox"
+					}
+				},
+				"x-class": "vjsf",
+				"if": {
+					"required": [
+						"setDefaults"
+					],
+					"properties": {
+						"setDefaults": {
+							"const": false
+						}
+					}
+				},
+				"then": {
+					"properties": {
+						"max_idle_connections": {
+							"type": "integer",
+							"title": "Max Idle Connections",
+							"default": 10,
+							"description": "Set Postgres Max Idle Connections",
+							"minimum": 1,
+							"maximum": 2147483647
+						},
+						"max_open_connections": {
+							"type": "integer",
+							"title": "Max Open Connections",
+							"default": 100,
+							"description": "Set Postgres Max Open Connections",
+							"minimum": 1,
+							"maximum": 2147483647
+						},
+						"connection_max_lifetime_seconds": {
+							"type": "integer",
+							"title": "Connection Lifetime (Seconds)",
+							"default": 3600,
+							"description": "Set Postgres Connection Max Lifetime Seconds",
 							"minimum": 1,
 							"maximum": 2147483647
 						}
@@ -4666,22 +4930,6 @@
 						"title": "Connection Type",
 						"oneOf": [
 							{
-								"title": "Direct",
-								"properties": {
-									"key": {
-										"type": "string",
-										"const": "Direct"
-									},
-									"": null,
-									"connection": {
-										"type": "string",
-										"title": "Connection String",
-										"default": "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable",
-										"description": "Set Postgres Connection String"
-									}
-								}
-							},
-							{
 								"title": "Proxy",
 								"properties": {
 									"key": {
@@ -4709,6 +4957,22 @@
 										"title": "Credentials",
 										"description": "Set Postgres Credentials",
 										"x-display": "textarea"
+									}
+								}
+							},
+							{
+								"title": "Direct",
+								"properties": {
+									"key": {
+										"type": "string",
+										"const": "Direct"
+									},
+									"": null,
+									"connection": {
+										"type": "string",
+										"title": "Connection String",
+										"default": "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable",
+										"description": "Set Postgres Connection String"
 									}
 								}
 							}
@@ -4760,195 +5024,6 @@
 						}
 					}
 				}
-			}
-		},
-		{
-			"kind": "stores.postgres",
-			"type": "targets",
-			"name": "Postgres",
-			"category": "Store",
-			"provider": "",
-			"tags": [
-				"db",
-				"sql"
-			],
-			"schema": {
-				"required": [
-					"connection"
-				],
-				"properties": {
-					"kind": {
-						"type": "string",
-						"const": "stores.postgres"
-					},
-					"connection": {
-						"type": "string",
-						"title": "Connection String",
-						"description": "Set Postgres Connection String"
-					},
-					"setDefaults": {
-						"type": "boolean",
-						"title": "Set Defaults Properties",
-						"default": true,
-						"x-display": "checkbox"
-					}
-				},
-				"x-class": "vjsf",
-				"if": {
-					"required": [
-						"setDefaults"
-					],
-					"properties": {
-						"setDefaults": {
-							"const": false
-						}
-					}
-				},
-				"then": {
-					"properties": {
-						"max_idle_connections": {
-							"type": "integer",
-							"title": "Max Idle Connections",
-							"default": 10,
-							"description": "Set Postgres Max Idle Connections",
-							"minimum": 1,
-							"maximum": 2147483647
-						},
-						"max_open_connections": {
-							"type": "integer",
-							"title": "Max Open Connections",
-							"default": 100,
-							"description": "Set Postgres Max Open Connections",
-							"minimum": 1,
-							"maximum": 2147483647
-						},
-						"connection_max_lifetime_seconds": {
-							"type": "integer",
-							"title": "Connection Lifetime (Seconds)",
-							"default": 3600,
-							"description": "Set Postgres Connection Max Lifetime Seconds",
-							"minimum": 1,
-							"maximum": 2147483647
-						}
-					}
-				}
-			}
-		},
-		{
-			"kind": "azure.stores.postgres",
-			"type": "targets",
-			"name": "Postgres",
-			"category": "Store",
-			"provider": "Azure",
-			"tags": [
-				"sql",
-				"db",
-				"cloud",
-				"managed"
-			],
-			"schema": {
-				"required": [
-					"connection"
-				],
-				"properties": {
-					"kind": {
-						"type": "string",
-						"const": "azure.stores.postgres"
-					},
-					"connection": {
-						"type": "string",
-						"title": "Connection String",
-						"default": "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable",
-						"description": "Set Postgres Connection String"
-					},
-					"setDefaults": {
-						"type": "boolean",
-						"title": "Set Defaults Properties",
-						"default": true,
-						"x-display": "checkbox"
-					}
-				},
-				"x-class": "vjsf",
-				"if": {
-					"required": [
-						"setDefaults"
-					],
-					"properties": {
-						"setDefaults": {
-							"const": false
-						}
-					}
-				},
-				"then": {
-					"properties": {
-						"max_idle_connections": {
-							"type": "integer",
-							"title": "Max Idle Connections",
-							"default": 10,
-							"description": "Set Postgres Max Idle Connections",
-							"minimum": 1,
-							"maximum": 2147483647
-						},
-						"max_open_connections": {
-							"type": "integer",
-							"title": "Max Open Connections",
-							"default": 100,
-							"description": "Set Postgres Max Open Connections",
-							"minimum": 1,
-							"maximum": 2147483647
-						},
-						"connection_max_lifetime_seconds": {
-							"type": "integer",
-							"title": "Connection Lifetime (Seconds)",
-							"default": 3600,
-							"description": "Set Postgres Connection Max Lifetime Seconds",
-							"minimum": 1,
-							"maximum": 2147483647
-						}
-					}
-				}
-			}
-		},
-		{
-			"kind": "gcp.pubsub",
-			"type": "sources",
-			"name": "PubSub",
-			"category": "Messaging",
-			"provider": "GCP",
-			"tags": [
-				"streaming",
-				"cloud",
-				"managed"
-			],
-			"schema": {
-				"required": [
-					"project_id",
-					"subscriber_id",
-					"credentials"
-				],
-				"properties": {
-					"kind": {
-						"type": "string",
-						"const": "gcp.pubsub"
-					},
-					"project_id": {
-						"type": "string",
-						"title": "Project ID",
-						"description": "Set Project Id"
-					},
-					"subscriber_id": {
-						"type": "string",
-						"title": "Subscriber ID",
-						"description": "Set Subscriber Id"
-					},
-					"credentials": {
-						"type": "string",
-						"title": "Json Credentials",
-						"description": "Set Gcp Credentials",
-						"x-display": "textarea"
-					}
-				},
-				"x-class": "vjsf"
 			}
 		},
 		{
@@ -5013,6 +5088,48 @@
 						}
 					}
 				}
+			}
+		},
+		{
+			"kind": "gcp.pubsub",
+			"type": "sources",
+			"name": "PubSub",
+			"category": "Messaging",
+			"provider": "GCP",
+			"tags": [
+				"streaming",
+				"cloud",
+				"managed"
+			],
+			"schema": {
+				"required": [
+					"project_id",
+					"subscriber_id",
+					"credentials"
+				],
+				"properties": {
+					"kind": {
+						"type": "string",
+						"const": "gcp.pubsub"
+					},
+					"project_id": {
+						"type": "string",
+						"title": "Project ID",
+						"description": "Set Project Id"
+					},
+					"subscriber_id": {
+						"type": "string",
+						"title": "Subscriber ID",
+						"description": "Set Subscriber Id"
+					},
+					"credentials": {
+						"type": "string",
+						"title": "Json Credentials",
+						"description": "Set Gcp Credentials",
+						"x-display": "textarea"
+					}
+				},
+				"x-class": "vjsf"
 			}
 		},
 		{
@@ -5604,6 +5721,113 @@
 		},
 		{
 			"kind": "aws.s3",
+			"type": "sources",
+			"name": "S3",
+			"category": "Storage",
+			"provider": "AWS",
+			"tags": [
+				"s3"
+			],
+			"schema": {
+				"required": [
+					"aws_key",
+					"aws_secret_key",
+					"region",
+					"bucket_name",
+					"folders",
+					"target_type"
+				],
+				"properties": {
+					"kind": {
+						"type": "string",
+						"const": "aws.s3"
+					},
+					"aws_key": {
+						"type": "string",
+						"title": "Aws Key",
+						"description": "Set S3 Aws Key"
+					},
+					"aws_secret_key": {
+						"type": "string",
+						"title": "Aws Secret Key",
+						"description": "Set S3 Aws Secret Key"
+					},
+					"region": {
+						"type": "string",
+						"title": "Region",
+						"description": "Set S3 Aws Region"
+					},
+					"setDefaults": {
+						"type": "boolean",
+						"title": "Set Defaults Properties",
+						"default": true,
+						"x-display": "checkbox"
+					},
+					"bucket_name": {
+						"type": "string",
+						"title": "Bucket Source",
+						"description": "Set Remote Target Bucket/Dir Name"
+					},
+					"folders": {
+						"type": "string",
+						"title": "Sync Folders Names",
+						"default": "/",
+						"description": "Set Bucket Folders Directory To Scan"
+					},
+					"target_type": {
+						"type": "string",
+						"title": "Sync Target Type",
+						"default": "filesystem",
+						"description": "Set Remote Target Bucket Type",
+						"enum": [
+							"aws",
+							"gcp",
+							"minio",
+							"filesystem",
+							"hdfs",
+							"azure",
+							"pass-through"
+						]
+					}
+				},
+				"x-class": "vjsf",
+				"if": {
+					"required": [
+						"setDefaults"
+					],
+					"properties": {
+						"setDefaults": {
+							"const": false
+						}
+					}
+				},
+				"then": {
+					"properties": {
+						"token": {
+							"type": "string",
+							"title": "Token",
+							"description": "Set S3 Token"
+						},
+						"concurrency": {
+							"type": "integer",
+							"title": "Concurrency",
+							"default": 1,
+							"description": "Set Execution Concurrency",
+							"minimum": 0
+						},
+						"scan_interval": {
+							"type": "integer",
+							"title": "Scan Interval",
+							"default": 5,
+							"description": "Set Scan Interval In Seconds",
+							"minimum": 0
+						}
+					}
+				}
+			}
+		},
+		{
+			"kind": "aws.s3",
 			"type": "targets",
 			"name": "S3",
 			"category": "Storage",
@@ -5738,106 +5962,6 @@
 		},
 		{
 			"kind": "aws.sqs",
-			"type": "targets",
-			"name": "SQS",
-			"category": "Messaging",
-			"provider": "AWS",
-			"tags": [
-				"queue",
-				"cloud",
-				"managed"
-			],
-			"schema": {
-				"required": [
-					"aws_key",
-					"aws_secret_key",
-					"region"
-				],
-				"properties": {
-					"kind": {
-						"type": "string",
-						"const": "aws.sqs"
-					},
-					"aws_key": {
-						"type": "string",
-						"title": "Aws Key",
-						"description": "Set Sqs Aws Key"
-					},
-					"aws_secret_key": {
-						"type": "string",
-						"title": "Aws Secret Key",
-						"description": "Set Sqs Aws Secret Key"
-					},
-					"region": {
-						"type": "string",
-						"title": "Region",
-						"description": "Set Sqs Aws Region"
-					},
-					"setDefaults": {
-						"type": "boolean",
-						"title": "Set Defaults Properties",
-						"default": true,
-						"x-display": "checkbox"
-					}
-				},
-				"x-class": "vjsf",
-				"if": {
-					"required": [
-						"setDefaults"
-					],
-					"properties": {
-						"setDefaults": {
-							"const": false
-						}
-					}
-				},
-				"then": {
-					"properties": {
-						"token": {
-							"type": "string",
-							"title": "Token",
-							"description": "Set Sqs Token"
-						},
-						"max_receive": {
-							"type": "integer",
-							"title": "Max Receive",
-							"default": 0,
-							"description": "Set Sqs Max Receive",
-							"minimum": 0,
-							"maximum": 2147483647
-						},
-						"retries": {
-							"type": "integer",
-							"title": "Retries",
-							"default": 0,
-							"description": "Set Sqs Number Of Retries On Failed Send Request",
-							"minimum": 0,
-							"maximum": 2147483647
-						},
-						"default_delay": {
-							"type": "integer",
-							"title": "Default Delay",
-							"default": 10,
-							"description": "Set Sqs Default Delay In Seconds",
-							"minimum": 0,
-							"maximum": 2147483647
-						},
-						"dead_letter": {
-							"type": "string",
-							"title": "Dead Letter Queue",
-							"description": "Set Sqs Dead Letter Queue"
-						},
-						"default_queue": {
-							"type": "string",
-							"title": "Default Queue",
-							"description": "Set Sqs Default Queue"
-						}
-					}
-				}
-			}
-		},
-		{
-			"kind": "aws.sqs",
 			"type": "sources",
 			"name": "SQS",
 			"category": "Messaging",
@@ -5935,6 +6059,106 @@
 							"description": "Set Wait Time Second",
 							"minimum": 0,
 							"maximum": 2147483647
+						}
+					}
+				}
+			}
+		},
+		{
+			"kind": "aws.sqs",
+			"type": "targets",
+			"name": "SQS",
+			"category": "Messaging",
+			"provider": "AWS",
+			"tags": [
+				"queue",
+				"cloud",
+				"managed"
+			],
+			"schema": {
+				"required": [
+					"aws_key",
+					"aws_secret_key",
+					"region"
+				],
+				"properties": {
+					"kind": {
+						"type": "string",
+						"const": "aws.sqs"
+					},
+					"aws_key": {
+						"type": "string",
+						"title": "Aws Key",
+						"description": "Set Sqs Aws Key"
+					},
+					"aws_secret_key": {
+						"type": "string",
+						"title": "Aws Secret Key",
+						"description": "Set Sqs Aws Secret Key"
+					},
+					"region": {
+						"type": "string",
+						"title": "Region",
+						"description": "Set Sqs Aws Region"
+					},
+					"setDefaults": {
+						"type": "boolean",
+						"title": "Set Defaults Properties",
+						"default": true,
+						"x-display": "checkbox"
+					}
+				},
+				"x-class": "vjsf",
+				"if": {
+					"required": [
+						"setDefaults"
+					],
+					"properties": {
+						"setDefaults": {
+							"const": false
+						}
+					}
+				},
+				"then": {
+					"properties": {
+						"token": {
+							"type": "string",
+							"title": "Token",
+							"description": "Set Sqs Token"
+						},
+						"max_receive": {
+							"type": "integer",
+							"title": "Max Receive",
+							"default": 0,
+							"description": "Set Sqs Max Receive",
+							"minimum": 0,
+							"maximum": 2147483647
+						},
+						"retries": {
+							"type": "integer",
+							"title": "Retries",
+							"default": 0,
+							"description": "Set Sqs Number Of Retries On Failed Send Request",
+							"minimum": 0,
+							"maximum": 2147483647
+						},
+						"default_delay": {
+							"type": "integer",
+							"title": "Default Delay",
+							"default": 10,
+							"description": "Set Sqs Default Delay In Seconds",
+							"minimum": 0,
+							"maximum": 2147483647
+						},
+						"dead_letter": {
+							"type": "string",
+							"title": "Dead Letter Queue",
+							"description": "Set Sqs Dead Letter Queue"
+						},
+						"default_queue": {
+							"type": "string",
+							"title": "Default Queue",
+							"description": "Set Sqs Default Queue"
 						}
 					}
 				}
@@ -6249,7 +6473,7 @@
 						},
 						"batch_size": {
 							"type": "integer",
-							"title": "PUll Batch Size",
+							"title": "Poll Batch Size",
 							"default": 1,
 							"description": "Set How Many Messages Will Pull In One Request",
 							"minimum": 0
@@ -6257,95 +6481,7 @@
 						"wait_timeout": {
 							"type": "integer",
 							"title": "Wait Timeout (Seconds)",
-							"default": 60,
-							"description": "Set How Long To Wait In Seconds For Messages During Pull Of Requests",
-							"minimum": 0
-						},
-						"max_requeue": {
-							"type": "integer",
-							"title": "Max Fails to Requeue)",
-							"default": 0,
-							"description": "Set How Many Time To Requeue A Requests Do To Target Error",
-							"minimum": 0
-						}
-					}
-				}
-			},
-			{
-				"type": "object",
-				"title": "Kubemq Queue-Stream",
-				"required": [
-					"address",
-					"channel"
-				],
-				"properties": {
-					"kind": {
-						"type": "string",
-						"const": "kubemq.queue-stream"
-					},
-					"address": {
-						"type": "string",
-						"title": "KubeMQ gRPC Service Address",
-						"default": "kubemq-cluster-grpc.kubemq:50000",
-						"description": "Set Kubemq Grpc Endpoint Address"
-					},
-					"channel": {
-						"type": "string",
-						"title": "Channel",
-						"description": "Set Queue Channel"
-					},
-					"setDefaults": {
-						"type": "boolean",
-						"title": "Set Defaults Properties",
-						"default": true,
-						"x-display": "checkbox"
-					}
-				},
-				"if": {
-					"required": [
-						"setDefaults"
-					],
-					"properties": {
-						"setDefaults": {
-							"const": false
-						}
-					}
-				},
-				"then": {
-					"properties": {
-						"response_channel": {
-							"type": "string",
-							"title": "Response Channel",
-							"description": "Set Queue Response Channel"
-						},
-						"sources": {
-							"type": "string",
-							"title": "Concurrent Connections",
-							"default": "1",
-							"description": "Set How Many Concurrent Queue Sources To Run"
-						},
-						"client_id": {
-							"type": "string",
-							"title": "Client ID",
-							"description": "Set Queue Connection Clients Id"
-						},
-						"auth_token": {
-							"type": "string",
-							"title": "Authentication Token",
-							"description": "Set Queue Connection Authentication Token",
-							"x-display": "textarea"
-						},
-						"visibility_timeout_seconds": {
-							"type": "integer",
-							"title": "Visibility Timeout (Seconds)",
-							"default": 3600,
-							"description": "Set Long To Set Visibility In Seconds To Keep The Message During Processing",
-							"minimum": 0
-						},
-						"wait_timeout": {
-							"type": "integer",
-							"title": "Wait Timeout (Seconds)",
-							"default": 3600,
+							"default": 5,
 							"description": "Set How Long To Wait In Seconds For Messages During Pull Of Requests",
 							"minimum": 0
 						}
