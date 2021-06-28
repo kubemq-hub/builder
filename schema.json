@@ -3724,6 +3724,8 @@
 			"schema": {
 				"required": [
 					"endpoint",
+					"access_key_id",
+					"secret_access_key",
 					"bucket_name",
 					"folders",
 					"target_type"
@@ -3743,6 +3745,17 @@
 						"title": "Set Defaults Properties",
 						"default": true,
 						"x-display": "checkbox"
+					},
+					"access_key_id": {
+						"type": "string",
+						"title": "Access Key ID",
+						"description": "Set Minio Access Key Id"
+					},
+					"secret_access_key": {
+						"type": "string",
+						"title": "Access Key Secret",
+						"description": "Set Minio Secret Access Key",
+						"x-display": "textarea"
 					},
 					"bucket_name": {
 						"type": "string",
@@ -3789,17 +3802,6 @@
 							"title": "USE SSL",
 							"default": true,
 							"description": "Set Minio Ssl Connection"
-						},
-						"access_key_id": {
-							"type": "string",
-							"title": "Access Key ID",
-							"description": "Set Minio Access Key Id"
-						},
-						"secret_access_key": {
-							"type": "string",
-							"title": "Access Key Secret",
-							"description": "Set Minio Secret Access Key",
-							"x-display": "textarea"
 						},
 						"concurrency": {
 							"type": "integer",
@@ -4930,6 +4932,22 @@
 						"title": "Connection Type",
 						"oneOf": [
 							{
+								"title": "Direct",
+								"properties": {
+									"key": {
+										"type": "string",
+										"const": "Direct"
+									},
+									"": null,
+									"connection": {
+										"type": "string",
+										"title": "Connection String",
+										"default": "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable",
+										"description": "Set Postgres Connection String"
+									}
+								}
+							},
+							{
 								"title": "Proxy",
 								"properties": {
 									"key": {
@@ -4957,22 +4975,6 @@
 										"title": "Credentials",
 										"description": "Set Postgres Credentials",
 										"x-display": "textarea"
-									}
-								}
-							},
-							{
-								"title": "Direct",
-								"properties": {
-									"key": {
-										"type": "string",
-										"const": "Direct"
-									},
-									"": null,
-									"connection": {
-										"type": "string",
-										"title": "Connection String",
-										"default": "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable",
-										"description": "Set Postgres Connection String"
 									}
 								}
 							}
@@ -5757,12 +5759,6 @@
 						"title": "Region",
 						"description": "Set S3 Aws Region"
 					},
-					"setDefaults": {
-						"type": "boolean",
-						"title": "Set Defaults Properties",
-						"default": true,
-						"x-display": "checkbox"
-					},
 					"bucket_name": {
 						"type": "string",
 						"title": "Bucket Source",
@@ -5788,6 +5784,12 @@
 							"azure",
 							"pass-through"
 						]
+					},
+					"setDefaults": {
+						"type": "boolean",
+						"title": "Set Defaults Properties",
+						"default": true,
+						"x-display": "checkbox"
 					}
 				},
 				"x-class": "vjsf",
